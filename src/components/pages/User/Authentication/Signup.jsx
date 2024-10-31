@@ -1,8 +1,8 @@
 import React from "react";
 
-import siginImg from "../../../assets/images/leftPlate.png";
-import placeholder from "../../../assets/images/placholder_profile.png";
-import greenGrocerLogo from "../../../assets/Logos/main.png";
+import siginImg from "../../../../assets/images/leftPlate.png";
+import placeholder from "../../../../assets/images/placholder_profile.png";
+import greenGrocerLogo from "../../../../assets/Logos/main.png";
 
 
 import { IoAdd } from "react-icons/io5"

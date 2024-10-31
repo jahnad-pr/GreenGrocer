@@ -1,5 +1,5 @@
 import React from "react";
-import MianList from "../../parts/Main/MianList";
+import MianList from "../../../parts/Main/MianList";
 
 export default function Cart() {
   return (

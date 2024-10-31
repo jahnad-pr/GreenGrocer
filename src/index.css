@@ -3,6 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* Define the custom font */
 /* @font-face {
     font-family: 'MyCustomFont';
@@ -72,3 +73,45 @@ body {
     width: 0;
     height: 0;
 }
+
+
+.custom-select {
+    appearance: none;          /* Remove default arrow */
+    -webkit-appearance: none;  /* For Safari */
+    -moz-appearance: none;     /* For Firefox */
+    background-color: #f0f0f0; /* Background color */
+    padding: 10px;
+    outline: 0;
+    border-radius: 444px;
+    padding-left: 20px;
+    padding-right: 40px;
+    color: #333;
+    background-image: url('../src/assets/images/arrow-down-double-line.svg'); /* Custom icon */
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Position the icon */
+    background-size: 20px;
+    width: 200px;
+  }
+
+  .calistoga-regular {
+    font-family: "Calistoga", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .lemon-regular {
+    font-family: "Lemon", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .price {
+    background: -webkit-linear-gradient(#2b7b22, #5c8f31);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .h1 {
+    background: -webkit-linear-gradient(#a0aa44, #4b4609);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }

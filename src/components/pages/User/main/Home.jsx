@@ -1,10 +1,10 @@
 import React from "react";
-import greenGrocerLogo from "../../../assets/Logos/main.png";
-import siginImg from "../../../assets/images/leftPlate.png";
-import fru from "../../../assets/images/fru.png";
-import veg from "../../../assets/images/veg.png";
-import homi from "../../../assets/images/homi.jpeg";
-import List from "../../parts/Main/List";
+import greenGrocerLogo from "../../../../assets/Logos/main.png";
+import siginImg from "../../../../assets/images/leftPlate.png";
+import fru from "../../../../assets/images/fru.png";
+import veg from "../../../../assets/images/veg.png";
+import homi from "../../../../assets/images/homi.jpeg";
+import List from "../../../parts/Main/List";
 
 export default function Home() {
     return (

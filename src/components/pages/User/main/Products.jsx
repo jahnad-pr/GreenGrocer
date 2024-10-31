@@ -1,5 +1,5 @@
 import React from 'react'
-import List from '../../parts/Main/List'
+import List from '../../../parts/Main/List'
 
 export default function Products() {
   return (
