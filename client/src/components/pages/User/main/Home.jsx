@@ -39,7 +39,7 @@ export default function Home() {
 
                 {/* Fruit randoms collection/fruit */}
                 <div className="w-full h-auto">
-                    <List />
+                    <List listData={{ml:false}}  />
                 </div>
 
                 {/* Message of fruits with statistics */}
@@ -77,7 +77,7 @@ export default function Home() {
 
                 {/* Veg randoms collection/Veg */}
                 <div className="w-full h-auto">
-                    <List />
+                    <List listData={{ml:false}} />
                 </div>
 
 

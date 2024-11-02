@@ -8,8 +8,12 @@ import fr from "../../../../assets/images/pro.png";
 import { IoAdd } from "react-icons/io5"
 import { FcGoogle } from "react-icons/fc";
 import { useSignInMutation } from "../../../../services/adminApi";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+
+  // necessary hooks
+  const navigater = useNavigate()
 
   // fromdata inputs
   const [formData,setForm] = useState()
@@ -27,7 +31,9 @@ export default function Login() {
     try {
 
       const userData = await signIn(formData).unwrap();
-      console.log('Signed in successfully:', userData);
+      if (userData) {
+        navigater('/admin/home')
+      }
       
     } catch (error) {
       console.error('Failed to sign in:', error);

@@ -13,8 +13,16 @@ import {
   Zap,
   MessageCircle
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminNav(){
+
+  const navigator = useNavigate()
+
+  const navigateToPage = (label)=>{
+    navigator(`admin/${label}`)
+  }
+
   const menuItems = [
     { icon: (<i className="ri-dashboard-fill text-[24px]"></i>), label: 'Dashboard' },
     { icon: (<i className="ri-user-line text-[24px]"></i>), label: 'Customers' },
@@ -34,6 +42,7 @@ export default function AdminNav(){
     <div className="h-screen w-64 bg-white flex pl-8 flex-col py-4 pt-32">
       {menuItems.map((item, index) => (
         <button
+          onClick={()=>navigateToPage(item.label)}
           key={index}
           className="flex items-center space-x-3 px-6 py-3 w-full text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200"
         >

@@ -1,13 +1,13 @@
-// src/services/userApi.js
+// src/services/adminApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const authApiSlice = createApi({
-  reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3333' }), // Replace with your API URL
+export const adminApiSlice = createApi({
+  reducerPath: 'adminApi', // Changed to avoid conflict
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3333' }),
   endpoints: (builder) => ({
     signIn: builder.mutation({
       query: (credentials) => ({
-        url: 'admin/login', // Adjust endpoint as needed
+        url: 'admin/login',
         method: 'POST',
         body: credentials,
       }),
@@ -15,4 +15,4 @@ export const authApiSlice = createApi({
   }),
 });
 
-export const { useSignInMutation } = authApiSlice;
+export const { useSignInMutation } = adminApiSlice;

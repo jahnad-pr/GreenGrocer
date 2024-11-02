@@ -1,13 +1,15 @@
 // src/app/store.js
 import { configureStore } from '@reduxjs/toolkit';
-import { authApiSlice } from '../services/adminApi';
+import { adminApiSlice } from '../services/adminApi';
+import { userApiSlice } from '../services/userApi';
 
 export const store = configureStore({
   reducer: {
-    // Add the RTK Query user API reducer
-    [authApiSlice.reducerPath]: authApiSlice.reducer,
+    [adminApiSlice.reducerPath]: adminApiSlice.reducer,
+    [userApiSlice.reducerPath]: userApiSlice.reducer,
   },
-  // Add the API middleware for caching and refetching
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApiSlice.middleware),
+    getDefaultMiddleware()
+      .concat(adminApiSlice.middleware)
+      .concat(userApiSlice.middleware),
 });

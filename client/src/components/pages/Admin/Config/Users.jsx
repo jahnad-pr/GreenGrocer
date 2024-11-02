@@ -1,8 +1,11 @@
 import React from "react";
 import pic from "../../../../assets/images/pico.jpeg";
 import Recents from "../../../parts/Main/Recents";
+import { useNavigate } from "react-router-dom";
 
 const UserTable = () => {
+
+  const navigator = useNavigate()
 
   const users = [
     {
@@ -128,7 +131,7 @@ const UserTable = () => {
                     </td>
 
                     <td className="py-2 px-4 text-center items-center justify-center">
-                      <i className="ri-pencil-line text-[30px] opacity-45"></i>
+                      <i onClick={()=>navigator('/admin/Customers/manage')} className="ri-pencil-line text-[30px] opacity-45"></i>
                       &nbsp;&nbsp;&nbsp;
                       <i className="ri-delete-bin-line text-[30px] text-[#F0491B]"></i>
                     </td>

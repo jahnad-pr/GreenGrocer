@@ -23,15 +23,16 @@
 /* Regular */
 @font-face {
     font-family: 'MyCustomFont';
-    src: url('../../green-grocer/src/assets/Font/SFPRODISPLAYREGULAR.OTF') format('truetype');
+    src: url('./assets/Font/SFPRODISPLAYREGULAR.OTF') format('truetype');
     font-weight: 400;
     font-style: normal;
+    transform: translateX(20vh);
 }
 
 /* Regular */
 @font-face {
     font-family: 'MyCustomFont';
-    src: url('../../green-grocer/src/assets/Font/SFPRODISPLAYMEDIUM.OTF') format('truetype');
+    src: url('./assets/Font/SFPRODISPLAYMEDIUM.OTF') format('truetype');
     font-weight: 500;
     font-style: normal;
 }
@@ -39,7 +40,7 @@
 /* Bold */
 @font-face {
     font-family: 'MyCustomFont';
-    src: url('../../green-grocer/src/assets/Font/SFPRODISPLAYBOLD.OTF') format('truetype');
+    src: url('./assets/Font/SFPRODISPLAYBOLD.OTF') format('truetype');
     font-weight: 700;
     font-style: normal;
 }
@@ -47,7 +48,7 @@
 /* Italic */
 @font-face {
     font-family: 'MyCustomFont';
-    src: url('../../green-grocer/src/assets/Font/SFPRODISPLAYTHINITALIC.OTF') format('truetype');
+    src: url('./assets/Font/SFPRODISPLAYTHINITALIC.OTF') format('truetype');
     font-weight: 400;
     font-style: italic;
 }
@@ -55,7 +56,7 @@
 /* Bold Italic */
 @font-face {
     font-family: 'MyCustomFont';
-    src: url('../../green-grocer/src/assets/Font/SFPRODISPLAYHEAVYITALIC.OTF') format('truetype');
+    src: url('./assets/Font/SFPRODISPLAYHEAVYITALIC.OTF') format('truetype');
     font-weight: 700;
     font-style: italic;
 }
