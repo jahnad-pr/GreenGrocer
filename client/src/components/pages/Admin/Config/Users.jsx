@@ -1,11 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import pic from "../../../../assets/images/pico.jpeg";
 import Recents from "../../../parts/Main/Recents";
 import { useNavigate } from "react-router-dom";
+import { useGetCustomersMutation, useUpdateUserAccessMutation } from "../../../../services/adminApi";
 
 const UserTable = () => {
 
   const navigator = useNavigate()
+  const [togglor,setToggler] = useState(
+    { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 9: false, 10: false }
+  )
+
+  const [getCustomers, { isLoading, error, data }] = useGetCustomersMutation();
+  const [updateUserAccess, { isLoading:accessLoading, error:accessError, data:accessData }] = useUpdateUserAccessMutation();
+  
+
+  // update user access
+  const accessUpdater = async(uniqeID,updateBool)=>{
+    await updateUserAccess({uniqeID,updateBool}).unwrap()
+  }
+  
+  // get all access 
+  // to prevent reload
+  useEffect(()=>{
+    if(data?.data){
+      data.data.map((user,index)=>{
+        setToggler({...togglor,[user._id]:user.isListed})
+      })
+    }
+  },[data])
+
+
+  // if access updated
+  useEffect(()=>{
+    if(accessData?.mission){
+      setToggler((prevData)=>({...prevData,  [accessData?.uniqeID]:!togglor[accessData?.uniqeID]}))
+    }
+  },[accessData])
+
+
+  // get users
+  useEffect(()=>{
+    (async()=>{ await getCustomers().unwrap() })()
+  },[])
 
   const users = [
     {
@@ -91,17 +128,18 @@ const UserTable = () => {
                   <th className="py-2 px-4 text-left">Email</th>
                   <th className="py-2 px-4 text-left">Number</th>
                   <th className="py-2 px-4 text-center">Access</th>
-                  <th className="py-2 px-4 text-center rounded-r-full">
-                    Update
-                  </th>
+                  <th className="py-2 px-4 text-center rounded-r-full"> Action </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>&nbsp;</tr>
 
-                {/* table contant maper */}
-                {users.map((user) => (
-                  <tr key={user.id} className="border-b">
+
+                {/* table contant maper----------------------------------------- */}
+                {data?.data?.map((user,index) => 
+
+                (
+                  <tr key={user._id} className="border-b">
                     <td className="py-4 px-4 rounded-l-full flex items-center gap-5 text-[20px] font-bold">
                       <img
                         className="w-[55px] h-[55px] object-cover rounded-full"
@@ -110,13 +148,13 @@ const UserTable = () => {
                         }
                         alt=""
                       />
-                      {user.id}
+                      {index+1}
                     </td>
                     <td className="py-2 px-4 text-[20px] font-bold">
-                      {user.name}
+                      {user.username}
                     </td>
                     <td className="py-2 px-4 text-[18px]">{user.email}</td>
-                    <td className="py-2 px-4">{user.number}</td>
+                    <td className="py-2 px-4">{user.phone}</td>
                     
                     {/* btn access */}
                     <td className="py-2 px-4 text-center">
@@ -124,16 +162,18 @@ const UserTable = () => {
                         <div className="absolute top-1/2 left-2 w-5 h-5  rounded-full transform -translate-y-1/2 transition-all duration-300"></div>
                         <div className="absolute top-1/2 right-2 w-7 h-7 bg-gray-700 rounded-full transform -translate-y-1/2"></div>
                       </div> */}
-                      <div className="relative w-20 h-10 bg-gray-800 rounded-full shadow-lg">
-                        <div className={`absolute top-1/2 left-2 w-5 h-5 ${user.access?'bg-teal-400':'bg-gray-700'}  rounded-full transform -translate-y-1/2 transition-all duration-300`}></div>
-                        <div className={`absolute top-1/2 right-2 w-7 h-2 ${user.access?'bg-gray-700':'bg-red-700'}  rounded-full transform -translate-y-1/2`}></div>
+                      {
+                      <div onClick={()=>(accessUpdater(user._id,!togglor[user._id]))} className="relative w-20 h-10 bg-gray-800 rounded-full shadow-lg">
+                        <div className={`absolute top-1/2 w-5 h-5 ${togglor[user._id]?'left-[calc(100%_-_28px)]':'left-2'} bg-gray-700  rounded-full transform -translate-y-1/2 transition-all duration-300`}></div>
+                        <div className={`absolute top-1/2 w-7 ${togglor[user._id]?'bg-teal-400 h-5 right-[calc(100%_-_36px)]':'bg-red-700 h-2 right-2'}  rounded-full transform -translate-y-1/2 duration-500`}></div>
                       </div>
+                      }
                     </td>
 
                     <td className="py-2 px-4 text-center items-center justify-center">
-                      <i onClick={()=>navigator('/admin/Customers/manage')} className="ri-pencil-line text-[30px] opacity-45"></i>
+                      <i onClick={()=>navigator('/admin/Customers/manage',{ state:{user} })} className="ri-eye-line text-[30px] opacity-45"></i>
                       &nbsp;&nbsp;&nbsp;
-                      <i className="ri-delete-bin-line text-[30px] text-[#F0491B]"></i>
+                      {/* <i className="ri-delete-bin-line text-[30px] text-[#F0491B] opacity-0"></i> */}
                     </td>
                   </tr>
                 ))}

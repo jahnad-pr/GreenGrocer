@@ -1,272 +1,250 @@
-import React, { useState } from "react";
-import pic from "../../../../assets/images/plp.png";
-import Recents from "../../../parts/Main/Recents";
+import React, { useEffect, useState } from "react";
+import { useUpsertCategoryMutation } from "../../../../services/adminApi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ChevronDown, X } from "lucide-react";
 
-const ProductManage = () => {
+const CategoryManage = () => {
+  const [formData, setForm] = useState({});
+  const [showProductDropdown, setShowProductDropdown] = useState(false);
+  const [showCollectionDropdown, setShowCollectionDropdown] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedCollections, setSelectedCollections] = useState([]);
 
-  const [products] = useState([
-    {
-      id: "01",
-      name: "Gaia Apple",
-      category: "Fruit",
-      description: "Best for blood",
-      subCategory: "Apple | Blood special",
-      price: {
-        original: 112,
-        discounted: 78
-      },
-      status: "Sahlu's farm Fresh",
-      quantity: 150,
-      unit: "KG",
-      listed: true
-    },
-    {
-      id: "02",
-      name: "Beetroot",
-      category: "Vegetable",
-      description: "Best for blood",
-      subCategory: "blood beast",
-      price: {
-        original: 85,
-        discounted: 66
-      },
-      status: "Sahlu's farm 2 house",
-      quantity: 20,
-      unit: "KG",
-      listed: true
-    },
-    {
-      id: "03",
-      name: "Pineapple",
-      category: "Fruit",
-      description: "sweety one",
-      subCategory: "summer | water content",
-      price: {
-        original: 75,
-        discounted: 50
-      },
-      status: "Sahlu's farm Fresh",
-      quantity: 50,
-      unit: "KG",
-      listed: false
-    }
-  ]);
+  const Navigator = useNavigate();
+  const [upsertCategory] = useUpsertCategoryMutation();
+  const location = useLocation();
 
+  const products = [
+    { id: 1, name: "Apple", image: "/api/placeholder/50/50" },
+    { id: 2, name: "Banana", image: "/api/placeholder/50/50" },
+    { id: 3, name: "Orange", image: "/api/placeholder/50/50" },
+  ];
 
-  return (
-    <>
-      <div className="container w-[100%] h-full pt-[56px] my-8 relative ">
-        <div className=" w-full h-full bg-[radial-gradient(circle_at_10%_10%,_rgb(237,248,255)_0%,rgba(255,0,0,0)_100%);] rounded-tl-[65px] flex justify-center relative">
-          <div className="">
+  const collections = [
+    { id: "01", name: "Summer Fruit", image: "/api/placeholder/50/50" },
+    { id: "02", name: "Spicy Veg", image: "/api/placeholder/50/50" },
+  ];
 
+  useEffect(() => {
+    setForm({ ...location.state.item });
+  }, [location]);
 
+  const inputHandler = (event) => {
+    const { name, value } = event.target;
+    setForm({ ...formData, [name]: value });
+  };
 
-            {/* Head */}
-          <span className="flex justify-center items-center flex-col my-8">
-          <h1 className="text-[30px] font-bold">Update Product Details</h1>
-          <p className="text-center opacity-45 px-80">This message prompts the admin to carefully review and confirm any updates to a product's details. It serves as a final check to ensure accuracy in pricing, descriptions, and inventory before the changes are saved and displayed to users. The confirmation reduces the likelihood of errors, helping maintain a smooth and professional experience for customers.</p>
-          </span>
+  const upsertCategorys = async () => {
+    await upsertCategory(formData).unwrap();
+  };
 
-          <span className="flex h-full w-full gap-20 justify-center items-center mt-28">
+  const handleProductSelect = (product) => {
+    setSelectedProducts((prev) => [...prev, product]);
+    setShowProductDropdown(false);
+  };
 
-          {/* image picker */} 
-          <span className="flex-col self-start mt-10">
-          <img className="w-20 h-20 mb-10" src={pic} alt="" />
-          <img className="w-20 h-20 mb-10" src={pic} alt="" />
-          <img className="w-20 h-20 mb-10" src={pic} alt="" />
-          </span>
-         
-            <span className="h-full">
- 
-          {/* editer */}
-          <div className="flex-1 h-10 w-full flex flex-col items-center  gap-5">
-            {/* Name */}
-            <div className="flex-col flex gap-1">
-              <label
-                className="font-bold opacity-55 w-full max-w-[410px] ml-2"
-                htmlFor=""
-              >
-                Product Name
-              </label>
-              <input
-                className="w-full outline-none min-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px] "
-                type="text"
-                placeholder="shalu"
-              />
-            </div>
-            {/* tag name and phone */}
-            <div className="flex gap-8">
-              {/* Category */}
-              <span className="flex flex-col flex-1 gap-1">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[420px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Category
-                </label>
+  const handleCollectionSelect = (collection) => {
+    setSelectedCollections((prev) => [...prev, collection]);
+    setShowCollectionDropdown(false);
+  };
 
-                <select
-                  className="w-52 py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
-                  name=""
-                  id=""
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </span>
-              {/* Collection */}
-              <span className="flex flex-col flex-1 gap-1">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[420px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Collection
-                </label>
+  const removeProduct = (productId) => {
+    setSelectedProducts(selectedProducts.filter((p) => p.id !== productId));
+  };
 
-                <select
-                  className="w-52 py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
-                  name=""
-                  id=""
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </span>
-            </div>
-            {/* email */}
-            <div className="flex-col flex gap-1">
-              <label
-                className="font-bold opacity-55 w-full min-w-[450px] ml-2"
-                htmlFor=""
-              >
-                Descriptionn
-              </label>
-              <input
-                className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-[20px] text-[18px] pb-20"
-                type="text"
-                placeholder="shalu@gmail.com"
-              />
-            </div>
+  const removeCollection = (collectionId) => {
+    setSelectedCollections(selectedCollections.filter((c) => c.id !== collectionId));
+  };
 
-            {/* place and gender*/}
-            <div className="flex gap-8">
-              <span className="flex flex-col gap-1">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[200px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Regular price
-                </label>
-                <input
-                  className="w-full outline-none max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                  type="text"
-                  placeholder="Techno"
-                />
-              </span>
-              {/* Gender */}
-              <span className="flex flex-col gap-1">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[200px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Sale Price
-                </label>
-                <input
-                  className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                  type="text"
-                  placeholder="Techno"
-                />
-              </span>
-            </div>
+  const ProductDropdown = ({ show, onClose }) => {
+    if (!show) return null;
 
-          </div>
-            </span>
-            
-            {/* next col */}
-            <span className="flex flex-col gap-5 items-center self-start">
-               {/* stock */}
-            <span className="flex flex-col gap-1">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[200px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Regular price
-                </label>
-                <input
-                  className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                  type="text"
-                  placeholder="Techno"
-                />
-              </span>
-
-               {/* freshness */}
-              <span className="flex flex-col gap-1 ">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[420px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Freshness
-                </label>
-
-                <select
-                  className="w-[250px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
-                  name=""
-                  id=""
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </span>
-              {/* harvest */}
-            <span className="flex flex-col gap-1">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[200px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Regular price
-                </label>
-                <input
-                  className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                  type="text"
-                  placeholder="Techno"
-                />
-              </span>
-              {/* from */}
-              <span className="flex flex-col gap-1">
-                <label
-                  className="font-bold opacity-55 w-full max-w-[200px] ml-2"
-                  htmlFor=""
-                >
-                  &nbsp;&nbsp;Regular price
-                </label>
-                <input
-                  className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                  type="text"
-                  placeholder="Techno"
-                />
-              </span>
-
-              <button className="px-0 py-[15px] bg-[linear-gradient(to_left,#4573B8,#59A5D4)] text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[300px]">
-              Logout
+    return (
+      <div className="absolute z-10 left-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200">
+        <div className="p-2">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold">Select Product</h3>
+            <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
+              <X size={16} />
             </button>
-
-            </span>
-
-          </span>
-
-
-          {/* navigate to back */}
-          <div className="flex absolute top-8 left-10 items-center justify-center bg-red opacity-55 hover:text-[59A5D4] hover:opacity-100 cursor-pointer">
-          <i className="ri-arrow-left-s-fill text-[35px]"></i>
-          <p className="text-[18px] translate-y-[-2px] font-medium">Products</p>
           </div>
-
-
+          <div className="max-h-48 overflow-y-auto">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                onClick={() => handleProductSelect(product)}
+                className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
+              >
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-8 h-8 rounded-lg object-cover"
+                />
+                <span>{product.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </>
+    );
+  };
+
+  const CollectionDropdown = ({ show, onClose }) => {
+    if (!show) return null;
+
+    return (
+      <div className="absolute z-10 left-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200">
+        <div className="p-2">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold">Select Collection</h3>
+            <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
+              <X size={16} />
+            </button>
+          </div>
+          <div className="max-h-48 overflow-y-auto">
+            {collections.map((collection) => (
+              <div
+                key={collection.id}
+                onClick={() => handleCollectionSelect(collection )}
+                className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
+              >
+                <img
+                  src={collection.image}
+                  alt={collection.name}
+                  className="w-8 h-8 rounded-lg object-cover"
+                />
+                <span>{collection.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="container w-[75%] h-full pt-[56px] my-8 relative">
+      <div className="w-full h-full bg-[radial-gradient(circle_at_0%_1%,_rgb(182_233_175)_0%,_rgb(173,216,230,50%)_30%,_rgba(255,0,0,0)_100%)] rounded-tl-[65px] flex justify-center relative">
+        <div className="">
+          {/* Head */}
+          <span className="flex justify-center items-center flex-col my-8">
+            <h1 className="text-[30px] font-bold">Manage Category</h1>
+            <p className="text-center opacity-45 px-80">
+              Admins can edit Category details, including changing the Category
+              name, updating descriptions, and adjusting associated products.
+            </p>
+          </span>
+
+          <span className="flex h-full w-full gap-20 justify-center items-center mt-16">
+            <span className="h-full flex flex-col items-center justify-center">
+              <div className="flex-1 h-10 w-full flex flex-col items-center gap-5">
+                {/* Name Input */}
+                <div className="flex-col flex gap-1">
+                  <label className="font-bold opacity-55 w-full max-w-[410px] ml-2">
+                    Product Name
+                  </label>
+                  <input
+                    name="name"
+                    value={formData?.name}
+                    onChange={inputHandler}
+                    className="w-full outline-none min-w-[500px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
+                    type="text"
+                    placeholder="Category name"
+                  />
+                </div>
+
+                <div className="flex gap-8">
+                  {/* Products Section */}
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="relative">
+                      <div
+                        onClick={() => setShowProductDropdown(!showProductDropdown)}
+                        className="w-28 h-32 bg-red-500 p-3 items-center justify-center flex flex-col gap-3 rounded-[30px] cursor-pointer hover:opacity-90"
+                      >
+                        <div className="w-full h-24 bg-gray-100 rounded-[25px] flex items-center justify-center">
+                          <ChevronDown size={24} />
+                        </div>
+                        <p className="font-medium text-[14px]">Add Product</p>
+                      </div>
+                      <ProductDropdown
+                        show={showProductDropdown}
+                        onClose={() => setShowProductDropdown(false)}
+                      />
+                    </div>
+                    {/* Selected Products Box */}
+                    <div className="w-64 h-32 border-[2px] border-red-400 rounded-[30px] p-3 overflow-y-auto">
+                      <p className="text-sm font-semibold mb-2">Selected Products</p>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedProducts.map((product) => (
+                          <div key={product.id} className="flex items-center bg-red-100 rounded-full px-2 py-1">
+                            <img src={product.image} alt={product.name} className="w-4 h-4 rounded-full mr-1" />
+                            <span className="text-xs text-red-800">{product.name}</span>
+                            <button
+                              onClick={() => removeProduct(product.id)}
+                              className="ml-1 hover:bg-red-200 rounded-full p-1"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Collections Section */}
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="relative">
+                      <div
+                        onClick={() => setShowCollectionDropdown(!showCollectionDropdown)}
+                        className="w-28 h-32 bg-green-500 p-3 items-center justify-center flex flex-col gap-3 rounded-[30px] cursor-pointer hover:opacity-90"
+                      >
+                        <div className="w-full h-24 bg-gray-100 rounded-[25px] flex items-center justify-center">
+                          <ChevronDown size={24} />
+                        </div>
+                        <p className="font-medium text-[14px]">Add Collection</p>
+                      </div>
+                      <CollectionDropdown
+                        show={showCollectionDropdown}
+                        onClose={() => setShowCollectionDropdown(false)}
+                      />
+                    </div>
+                    {/* Selected Collections Box */}
+                    <div className="w-64 h-32 border-[2px] border-green-400 rounded-[30px] p-3 overflow-y-auto">
+                      <p className="text-sm font-semibold mb-2">Selected Collections</p>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedCollections.map((collection) => (
+                          <div key={collection.id} className="flex items-center bg-green-100 rounded-full px-2 py-1">
+                            <img src={collection.image} alt={collection.name} className="w-4 h-4 rounded-full mr-1" />
+                            <span className="text-xs text-green-800">{collection.name}</span>
+                            <button
+                              onClick={() => removeCollection(collection.id)}
+                              className="ml-1 hover:bg-green-200 rounded-full p-1"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="mt-6">
+                  <button
+                    onClick={upsertCategorys}
+                    className="bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default ProductManage;
+export default CategoryManage;

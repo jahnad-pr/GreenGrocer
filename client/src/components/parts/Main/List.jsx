@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Product from '../Cards/Product'
 
 export default function List({listData}) {
+
+  useEffect(()=>{ console.log(listData.data) },[listData])
+
   return (
     <div className='w-full auto'>
         <div className="w-full h-full flex flex-col justify-between">
@@ -13,16 +16,14 @@ export default function List({listData}) {
             </div>
 
             <div className={`flex w-full h-auto gap-10 overflow-x-scroll flex-wrap`}>
-            <Product pos={listData.ml?1:0} />
-            <Product />
-            <Product />
-            <Product />
-            <Product />
-            <Product />
-            <Product />
-            <Product />
-            <Product />
-            <Product />
+              {
+                listData?.data?.map((data)=>{
+                  <Product text={data.name} />
+
+                })
+              }
+            {/* <Product pos={listData.ml?1:0} /> */}
+  
             </div>
         </div>
     </div>

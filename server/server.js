@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cors = require('cors')
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
 require('dotenv').config()
 require('./config/db')()
@@ -16,9 +17,11 @@ app.use(cors({
     origin: 'http://localhost:5173',  // Your frontend URL
     credentials: true,  // Allow credentials (cookies)
 }))
-app.use(express.json())
-app.use(express.urlencoded({ extended:true }))
+
 app.use(cookieParser())
+// Increase body-parser limit
+app.use(express.json({ limit: '10mb' })); // Set to a higher limit as needed
+app.use(express.urlencoded({ extended: true }));
 
 
 // Routes

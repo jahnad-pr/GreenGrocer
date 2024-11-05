@@ -68,13 +68,33 @@ export const userApiSlice = createApi({
       }),
     }),
 
+    // categories
+    getCategories: builder.mutation({
+      query: () => ({
+        url: 'user/getCategories',
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
+
+    // collection
+    getCollections: builder.mutation({
+      query: (array) => ({
+        url: `user/getCollections/${array}`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
+
   }),
+  
 });
 
 
 export const { useSignUpMutation,useLoginMutation,
                useGoogleLogMutation,useGetUserMutation,
                useGetOTPMutation,useConformOTPMutation,
-               useAddDetailsMutation
+               useAddDetailsMutation,useGetCategoriesMutation,
+               useGetCollectionsMutation
               
               } = userApiSlice;

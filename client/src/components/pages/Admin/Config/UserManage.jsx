@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import pic from "../../../../assets/images/pico.jpeg"; // User profile image
 import Recents from "../../../parts/Main/Recents"; // Importing Recents component
 import picr from "../../../../assets/images/picr.png"; // Unused image import (can be removed if not used)
 import ind from "../../../../assets/images/indicator.png"; // Unused image import (can be removed if not used)
+import { useLocation, useNavigate } from "react-router-dom";
 
 const UserManage = () => {
 
   const [formData,setForm] = useState()
+  const loacation = useLocation()
+
+  const navigator = useNavigate()
+
+  // useEffect(()=>{ console.log() },[loacation])
 
   // Sample user data
   const users = [
@@ -27,6 +33,7 @@ const UserManage = () => {
       update: true,
     },
   ];
+  
 
   const formHandler = (event)=>{
     const { name, value } = event.target
@@ -62,6 +69,8 @@ const UserManage = () => {
               <input onChange={formHandler}
                 className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#D6D1D1,#f5efef)] rounded-full text-[18px]"
                 type="text"
+                value={loacation.state.user.username}
+                disabled={true}
                 id="user-name"
                 placeholder="shalu"
                 name="name"
@@ -77,7 +86,8 @@ const UserManage = () => {
                 </label>
                 <input onChange={formHandler}
                   className="w-full outline-none max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#D6D1D1,#f5efef)] rounded-full text-[18px]"
-                  type="text"
+                  type="text" value={loacation.state.user.username}
+                  disabled={true}
                   id="tag-name"
                   placeholder="@shalu"
                   name="tag_name"
@@ -93,6 +103,8 @@ const UserManage = () => {
                   className="w-full outline-none max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#D6D1D1,#f5efef)] rounded-full text-[18px]"
                   type="text"
                   id="phone"
+                  value={loacation.state.user.phone}
+                  disabled={true}
                   placeholder="+918978XXXXXX"
                   name="phone"
                 />
@@ -107,6 +119,8 @@ const UserManage = () => {
               <input onChange={formHandler}
                 className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#D6D1D1,#f5efef)] rounded-full text-[18px]"
                 type="email"
+                value={loacation.state.user.email}
+                disabled={true}
                 id="email"
                 placeholder="shalu@gmail.com"
                 name="email"
@@ -123,6 +137,8 @@ const UserManage = () => {
                 <input onChange={formHandler}
                   className="w-full outline-none max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#D6D1D1,#f5efef)] rounded-full text-[18px]"
                   type="text"
+                  value={loacation.state.user.place}
+                  disabled={true}
                   id="place"
                   placeholder="Techno"
                   name="place"
@@ -136,6 +152,8 @@ const UserManage = () => {
                 </label>
                 <select onChange={formHandler}
                   name="gender"
+                  value={loacation.state.user.gender}
+                  disabled={true}
                   className="w-52 py-3 px-5 rounded-full text-[18px] custom-select"
                   id="gender"
                 >
@@ -146,13 +164,13 @@ const UserManage = () => {
             </div>
 
             {/* Logout Button */}
-            <button className="px-0 py-[15px] bg-[linear-gradient(to_left,#DDBE95,#A07601)] text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[300px]">
+            <button className="px-0 hidden py-[15px] bg-[linear-gradient(to_left,#DDBE95,#A07601)] text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[300px]">
               Logout
             </button>
           </div>
 
           {/* Navigation Back to Customers */}
-          <div className="flex absolute top-8 left-10 items-center justify-center bg-red opacity-55 hover:text-orange-800 hover:opacity-100 cursor-pointer">
+          <div onClick={()=>navigator(-1)} className="flex absolute top-8 left-10 items-center justify-center bg-red opacity-55 hover:text-orange-800 hover:opacity-100 cursor-pointer">
             <i className="ri-arrow-left-s-fill text-[35px]"></i>
             <p className="text-[18px] translate-y-[-2px] font-medium">Customers</p>
           </div>

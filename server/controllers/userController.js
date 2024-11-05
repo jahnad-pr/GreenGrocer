@@ -2,6 +2,9 @@ const User = require("../models/Auth/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { sendOTP, verifyOTP } = require("../config/sendOTP");
+const Collection = require('../models/other/collectionModel')
+const Category = require('../models/other/categoryModels')
+
 
 const SECRET_KEY = process.env.SECRET_KEY || "secret";
 
@@ -41,7 +44,7 @@ const loginUser = async (req, res) => {
 
   
   try {
-    const user = await User.find({ email });
+    const user = await User.findOne({ email });
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -50,7 +53,7 @@ const loginUser = async (req, res) => {
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Wrong Password or email" });
     }
 
     // Create a JWT token
@@ -193,6 +196,63 @@ const updateVerification = async (req, res) => {
   }
 };
 
+
+// get Categories
+const getCategories = async (req,res)=>{
+
+  try {
+
+      const categories = await Category.find({})
+      
+      if(categories.length<=0){
+
+          res.status(500).json({mission:false,message:'empty categories',data:[]})
+
+      }else{
+
+          res.status(200).json({mission:true,message:'successfull',data:categories})
+      }
+      
+  } catch (error) {
+      return res.status(500).json({mission:false,message: error.messgae }) 
+  }
+
+}
+
+const getCollections = async(req,res)=>{
+
+  const array = req.params.array
+
+  try {
+    
+    if(array){
+  
+      const categoriesNames = await Collection.find({ _id: { $in: array } }, 'name')
+  
+      if(categoriesNames){
+  
+        res.status(201).json({mission:true,message:'successfull',data:categoriesNames})
+  
+      }else{
+  
+        res.status(500).json({mission:false,message:'empty colllction',data:[]})
+  
+      }
+  
+    }
+
+  } catch (error) {
+
+    res.status(500).json({mission:false,message:error.message})
+    
+  }
+
+
+  
+
+}
+
+
 module.exports = {
   createAUser,
   loginUser,
@@ -200,5 +260,7 @@ module.exports = {
   getUserData,
   getOTP,
   conformOTP,
-  updateVerification
+  updateVerification,
+  getCategories,
+  getCollections
 };

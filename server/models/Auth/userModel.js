@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     tag_name: {
         type: String,
     },
-    pone: {
+    phone: {
         type: Number,
     },
     place: {
