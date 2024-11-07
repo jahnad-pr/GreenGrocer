@@ -1,5 +1,5 @@
 const express = require('express');
-const {createAUser,loginUser,googleLog, getUserData, getOTP, conformOTP, updateVerification,getCategories,getCollections } = require('../controllers/userController');
+const {createAUser,loginUser,googleLog, getUserData, getOTP, conformOTP, updateVerification,getCategories,getCollections,getProducts } = require('../controllers/userController');
 const authMiddleware = require('../middlewares/checkUser');
 const router = express.Router();
 
@@ -12,6 +12,7 @@ router.post('/addDetails',updateVerification);
 
 router.get('/getUser',authMiddleware,getUserData);
 router.get('/getCategories',authMiddleware,getCategories);
-router.get('/getCollections/:array',authMiddleware,getCollections);
+router.get('/getCollections/:id',authMiddleware,getCollections);
+router.get('/getProducts/:id',authMiddleware,getProducts);
 
 module.exports = router;

@@ -20,6 +20,7 @@ import Product from "./components/parts/Cards/Product"
 import Products from "./components/pages/User/main/Products"
 import ProductManage from "./components/pages/Admin/Config/PrductManage"
 import Productes from "./components/pages/Admin/Config/Product"
+import ProductPage from './components/pages/User/main/Subs/ProductPage'
 
 
 
@@ -52,6 +53,7 @@ export default function App() {
         <Route path="/user/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/user/sign" element={<ProtectedRoute><SignDetails /></ProtectedRoute>} />
         <Route path="/user/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+        <Route path="/user/productpage" element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
 
 
       </Routes>

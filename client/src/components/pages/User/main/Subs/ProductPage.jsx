@@ -1,8 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import banana from "../../../../../assets/images/banana.png";
 import star from "../../../../../assets/images/star.png";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function ProductPage() {
+
+
+  const location = useLocation()
+  const [form,setForm] = useState()
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    console.log(location?.state);
+    
+
+    if(location?.state){
+      
+      setForm(location?.state)
+    }
+
+  },[location])
+
   return (
     <div className="w-[96%] h-full relative">
       <div className="w-full h-full flex px-20">
@@ -14,10 +32,11 @@ export default function ProductPage() {
         {/* Product details------------ */}
         <div className="flex-grow-[4] h-full pt-12 pl-20">
           <div className="w-full h-full">
+            <p onClick={()=>navigate(-1)}>Back to product page</p>
             {/* category */}
-            <p className="text-[20px] font-medium opacity-45">FRUIT</p>
+            <p className="text-[20px] font-medium opacity-45">{"Fruit"}</p>
             {/* name */}
-            <p className="text-[40px] font-bold">Banana Njalipovan</p>
+            <p className="text-[40px] font-bold">{form?.name}</p>
 
             {/* stars and reviews */}
             <div className="inline-flex gap-5 items-center justify-center">
@@ -34,9 +53,9 @@ export default function ProductPage() {
               </p>
             </div>
             {/* description */}
-            <p className="min-h-16 opacity-45">The freshness of enargy</p>
+            <p className="min-h-16 opacity-45">{form?.description}</p>
             {/* Freshness sattus and time */}
-            <p className="text-[20px] text-green-700 font-bold">FRESH</p>
+            <p className="text-[20px] text-green-700 font-bold">{form?.freshness}</p>
             <p className="opacity-45">
               When the customer confirms their order, the material (wood from
               the tree) will be cut specifically for that order. This ensures
@@ -46,7 +65,7 @@ export default function ProductPage() {
             </p>
             {/* Product from */}
             <p className="pt-5 text-[16px] font-medium">From</p>
-            <p className="opacity-45">Shalu’s Farm Kochin,Kadavanthara</p>
+            <p className="opacity-45">{form?.from}</p>
 
             {/* offer banner */}
             <div className="pb-4 flex mt-5 max-w-[90%]">
@@ -134,7 +153,7 @@ export default function ProductPage() {
           />
           {/* title and count of cart */}
           <div className="">
-            <p className="text-[18px] font-medium">Banana Njalipovan</p>
+            <p className="text-[18px] font-medium">{form?.name}</p>
             <p className="text-blue-500 translate-y-[-5px]">
               3 More cart items
             </p>
@@ -143,7 +162,7 @@ export default function ProductPage() {
           {/* remaining stats */}
           <span className="leading-[25px] translate-y-[8px]">
             <p className="text-[32px] text-[#6C6C6C] font-bold font-serif calistoga-regular">
-              100kg
+              {form?.stock}.gram
             </p>
             <p className=" opacity-35">Remaining</p>
           </span>
@@ -173,9 +192,9 @@ export default function ProductPage() {
           {/* prices */}
           <div className="flex gap-3 mx-6">
             <s>
-              <p className="lemon-regular text-[26px] opacity-45">78₹</p>
+              <p className="lemon-regular text-[26px] opacity-45">{form?.regularPrice} ₹</p>
             </s>
-            <p className="lemon-regular text-[38px] price">57 ₹</p>
+            <p className="lemon-regular text-[38px] price">{form?.salePrice} ₹</p>
           </div>
 
           {/* Buy now btn */}

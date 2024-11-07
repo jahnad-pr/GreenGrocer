@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import pic from "../../../../assets/images/plp.png";
 import place_three from "../../../../assets/images/three_place.png";
 import Recents from "../../../parts/Main/Recents";
-import axios from 'axios';
-
-// import ImageCrop from "../../../parts/Main/imageCrop"
-import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   useGetCategoriesMutation,
   useGetCollectionsMutation,
@@ -13,22 +12,19 @@ import {
   useUpsertProductsMutation,
 } from "../../../../services/adminApi";
 import ImagePicker from "../../../parts/popups/ImgaePicker";
-import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ProductManage = () => {
   const navigator = useNavigate();
 
-  // Hook to get categories
-  const [ getCategories, { isLoading: catLoading, error: catError, data: catData }, ] = useGetCategoriesMutation();
-  const [ getCollections, { isLoading: collLoading, error: collError, data: collData }, ] = useGetCollectionsMutation();
-  const [ uploadImages, { isLoading: imgLoading, error: imgError, data: imgData }, ] = useUploadImagesMutation();
-  const [upsertProducts, { isLoading, error, data }] = useUpsertProductsMutation();
+  const [getCategories, { data: catData }] = useGetCategoriesMutation();
+  const [getCollections, { data: collData }] = useGetCollectionsMutation();
+  const [upsertProducts, { isLoading, error,data }] = useUpsertProductsMutation();
 
   const [action, setAction] = useState("add");
   const [popup, showPopup] = useState(false);
   const [images, setImageUrls] = useState(false);
-  const [Urls, SetUrls] = useState({});
-  const [upsert, setUpsert] = useState(false);
+  const [Urls, setUrls] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -37,46 +33,25 @@ const ProductManage = () => {
     regularPrice: "",
     salePrice: "",
     stock: "",
-    freshness: "Fresh",
-    harvestedTime: new Date().toISOString().slice(0, 16), // Set current date and time
+    freshness: "",
+    harvestedTime: "",
     from: "",
   });
 
-  // to get the date and time
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
-
   const location = useLocation();
 
+  // Set formData if updating an existing product
   useEffect(() => {
-    setFormData({ ...location.state.product });
     if (location.state.product) {
+      setFormData({ ...location.state.product });
       setAction("update");
     }
   }, [location]);
 
-  useEffect(() => {
-  }, [catData]);
-
   // Fetch categories and collections on component mount
   useEffect(() => {
-    (async () => {
-      await getCategories().unwrap();
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      await getCollections().unwrap();
-    })();
+    getCategories();
+    getCollections();
   }, []);
 
   // Update formData when an input changes
@@ -85,87 +60,153 @@ const ProductManage = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Validation function for product data
+  const validateFormData = (data) => {
+    const errors = "";
 
-// Convert base64 to file for uploading
-const base64ToFile = (dataUrl, filename) => {
-  const arr = dataUrl.split(',');
-  const mime = arr[0].match(/:(.*?);/)[1];
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
+    if (!data.name) return "Product name is required.";
+    if (!data.category) return "Category is required.";
+    if (!data.productCollection) return "Collection is required.";
+    if (!data.description) return "Description is required.";
+    if (!data.regularPrice || data.regularPrice <= 0)
+      return "Enter a valid regular price.";
+    if (data.salePrice && data.salePrice >= data.regularPrice)
+      return "Sale price should be less than regular price.";
+    if (!data.stock || data.stock <= 0) return "Enter a valid stock quantity.";
+    if (!data.from) errors.from = "Source location is required.";
+    if (!images || images.length < 3) return "Please select 3 images.";
+    return "";
+  };
 
-  while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-  }
+  // Show toast notification
+  const showToast = (message, type = "success") => {
+    if (type === "success") {
+      toast.success(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
 
-  return new File([u8arr], filename, { type: mime });
-};
+  useEffect(() => {
+    if (error?.data?.message) {
+      showToast(error.data.message, "error");
+    }
+  }, [error]);
 
-
-  async function uploadImagess(base64Images,index) {
-
-    const key = index===0?'one':index===1?'two':index===2?'three':""
-
-    if (base64Images) {
-
-      const file = base64ToFile(base64Images, 'profile.png');
-      // setFile(file);
-      
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-          const { data } = await axios.post('http://localhost:3333/admin/uploadImages', formData, { headers: { 'Content-Type': 'multipart/form-data', }, });
-          
-          
-          // setFormData((prevData)=>({ ...formData,pics:{
-          //   ...prevData?.pics,
-          //   [key]:data?.value
-          // } }))
-
-          SetUrls((prevData)=>({ ...prevData,[key]:data?.url }))
-
-
-          if(index===2){
-            setUpsert(true)
-          }
-
-      } catch (error) {
-          console.error('Upload error:', error);
-      }
-  }
-}
-
-useEffect(()=>{
-  console.log(Urls);
+  useEffect(() => {
+    if (error?.data?.message) {
+      showToast(error.data.message, "error");
+    }
+  }, [error]);
   
-  if(upsert){
-    // const id = location?.state?.product?._id || ''
-    // const pics = { one:images[0], two:images[1], three:images[2] }
-    // const upsertData = { ...formData,pics }
-    (async()=>{
-      await upsertProducts({ formData , id:'' , action:'add',Urls }).unwrap();
-    })()
-  }
-},[upsert])
-
-
-  const upsertproduct = async (id, action) => {
-    await uploadImagess(images[0],0)
-    await uploadImagess(images[1],1)
-    await uploadImagess(images[2],2)
-    // pics:{ one:images[0],two:images[1],three:images[2] }
-    // const upsertData = { ...formData }
+  useEffect(() => {
+    console.log(data);
     
+    if (data?.message) {
+      showToast(data.message, "success");
+    }
+  }, [data]);
+
+  // Convert base64 to file for uploading
+  const base64ToFile = (dataUrl, filename) => {
+    const arr = dataUrl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  // Upload image files
+  async function uploadImages(base64Images, index) {
+    const key = index === 0 ? "one" : index === 1 ? "two" : "three";
+    if (base64Images) {
+      const file = base64ToFile(base64Images, "profile.png");
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        const { data } = await axios.post(
+          "http://localhost:3333/admin/uploadImages",
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        setUrls((prevData) => ({ ...prevData, [key]: data?.url }));
+      } catch (error) {
+        console.error("Upload error:", error);
+        showToast("Image upload failed", "error");
+      }
+    }
+  }
+
+  function checkObjectValues(obj) {
+    const isEmpty = Object.values(obj).every(
+      (value) =>
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0) ||
+        (typeof value === "object" &&
+          !Array.isArray(value) &&
+          Object.keys(value).length === 0)
+    );
+
+    return isEmpty ? false : true;
+  }
+
+  const handleFormSubmit = async () => {
+    if (checkObjectValues(formData)) {
+      const errors = validateFormData(formData);
+
+      if (!errors === "") {
+        showToast(errors, "error");
+        return;
+      }
+      await Promise.all(
+        Object.values(images).map((img, idx) => uploadImages(img, idx))
+      );
+      const upsertData = { ...formData, pics: Urls };
+      try {
+        await upsertProducts({ formData: upsertData, action });
+      } catch (error) {
+        console.error("Product update error:", error);
+      }
+    } else {
+      showToast("please fill the fields", "error");
+    }
   };
 
   return (
     <>
-          {
-            popup &&
-            <ImagePicker maxImages={3} imageses={images}  setImageUrls={setImageUrls} showPopup={showPopup} />
-
-          }
+      <ToastContainer position="bottom-left" />
+      {popup && (
+        <ImagePicker
+          maxImages={3}
+          images={images}
+          setImageUrls={setImageUrls}
+          showPopup={showPopup}
+        />
+      )}
       <div className="container w-[100%] h-full pt-[56px] my-8 relative">
         <div className="w-full h-full bg-[radial-gradient(circle_at_10%_10%,_rgb(237,248,255)_0%,rgba(255,0,0,0)_100%);] rounded-tl-[65px] flex justify-center relative">
           <div className="">
@@ -185,9 +226,24 @@ useEffect(()=>{
               <span className="flex max-w-[40%] flex-col items-center self-start">
                 {images && (
                   <>
-                    <img onClick={() => showPopup(true)} className="w-40 h-40 mb-10 rounded-2xl" src={images[0]} alt="" />
-                    <img onClick={() => showPopup(true)} className="w-40 h-40 mb-10 rounded-2xl" src={images[1]} alt="" />
-                    <img onClick={() => showPopup(true)} className="w-40 h-40 mb-10 rounded-2xl" src={images[2]} alt="" />
+                    <img
+                      onClick={() => showPopup(true)}
+                      className="w-40 h-40 mb-10 rounded-2xl"
+                      src={images[0]}
+                      alt=""
+                    />
+                    <img
+                      onClick={() => showPopup(true)}
+                      className="w-40 h-40 mb-10 rounded-2xl"
+                      src={images[1]}
+                      alt=""
+                    />
+                    <img
+                      onClick={() => showPopup(true)}
+                      className="w-40 h-40 mb-10 rounded-2xl"
+                      src={images[2]}
+                      alt=""
+                    />
                   </>
                 )}
                 {!images && (
@@ -230,7 +286,7 @@ useEffect(()=>{
                       <select
                         className="w-52 py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                         name="category"
-                        value={formData.category}
+                        value={""}
                         onChange={handleChange}
                       >
                         {catData?.data?.map(
@@ -251,7 +307,7 @@ useEffect(()=>{
                       <select
                         className="w-52 py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                         name="productCollection"
-                        value={formData.collection}
+                        value={""}
                         onChange={handleChange}
                       >
                         {collData?.data?.map(
@@ -289,7 +345,7 @@ useEffect(()=>{
                       </label>
                       <input
                         className="w-full outline-none max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                        type="text"
+                        type="number"
                         name="regularPrice"
                         value={formData.regularPrice}
                         onChange={handleChange}
@@ -303,7 +359,7 @@ useEffect(()=>{
                       </label>
                       <input
                         className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                        type="text"
+                        type="number"
                         name="salePrice"
                         value={formData.salePrice}
                         onChange={handleChange}
@@ -323,7 +379,7 @@ useEffect(()=>{
                   </label>
                   <input
                     className="w-full outline-none max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#BFD3E0,#f5efef)] rounded-full text-[18px]"
-                    type="text"
+                    type="number"
                     name="stock"
                     value={formData.stock}
                     onChange={handleChange}
@@ -339,7 +395,7 @@ useEffect(()=>{
                   <select
                     className="w-[250px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                     name="freshness"
-                    value={formData.freshness}
+                    value={""}
                     onChange={handleChange}
                   >
                     <option value="Fresh">Fresh</option>
@@ -356,7 +412,7 @@ useEffect(()=>{
                     className="w-[250px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                     type="datetime-local"
                     name="harvestedTime"
-                    value={formatDate(formData.harvestedTime)}
+                    value={""}
                     onChange={handleChange}
                   />
                 </span>
@@ -377,17 +433,15 @@ useEffect(()=>{
                 </span>
 
                 <button
-                  onClick={() =>
-                    upsertproduct(
-                      action === "update" ? formData._id : "",
-                      action
-                    )
-                  }
+                  onClick={handleFormSubmit}
                   className="px-0 py-[15px] bg-[linear-gradient(to_left,#8CC850,#1F9C64)] text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[300px]"
                 >
-                  Update
+                  {isLoading
+                    ? "Saving..."
+                    : action === "update"
+                    ? "Update Product"
+                    : "Add Product"}
                 </button>
-
                 <div
                   onClick={() => navigator(-1)}
                   className="flex absolute top-8 left-10 items-center justify-center bg-red opacity-55 hover:text-[59A5D4] hover:opacity-100 cursor-pointer"

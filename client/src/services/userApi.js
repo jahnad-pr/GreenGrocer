@@ -79,8 +79,17 @@ export const userApiSlice = createApi({
 
     // collection
     getCollections: builder.mutation({
-      query: (array) => ({
-        url: `user/getCollections/${array}`,
+      query: (id) => ({
+        url: `user/getCollections/${id}`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
+
+    // products
+    getProducts: builder.mutation({
+      query: (id) => ({
+        url: `user/getProduct/${id}`,
         method: 'GET',
         credentials: 'include',
       }),
@@ -95,6 +104,6 @@ export const { useSignUpMutation,useLoginMutation,
                useGoogleLogMutation,useGetUserMutation,
                useGetOTPMutation,useConformOTPMutation,
                useAddDetailsMutation,useGetCategoriesMutation,
-               useGetCollectionsMutation
+               useGetCollectionsMutation,useGetProductsMutation
               
               } = userApiSlice;

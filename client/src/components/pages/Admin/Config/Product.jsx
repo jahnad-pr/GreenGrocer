@@ -163,7 +163,7 @@ const Productes = () => {
                 <td className="px-4 py-4 text-sm text-gray-500">{product.from}</td>
                 <td className="px-4 py-4 text-gray-900 tetx-[20px] font-bold">{product.stock}</td>
                 <td className="px-4 py-4">
-                  <img src={product.pics.one} alt="Product" className="h-10 w-10 rounded-full" />
+                  <img src={product?.pics?.one} alt="Product" className="h-10 w-10 rounded-full" />
                 </td>
                   
                 <td className="py-2 px-4 text-center inline">

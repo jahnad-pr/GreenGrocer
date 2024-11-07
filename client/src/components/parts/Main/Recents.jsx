@@ -47,7 +47,7 @@ export default function Recents() {
           onClick={() => navigate("/admin/Products/manage", { state: { name: "" } }) }
           className=" bg-[linear-gradient(to_left,#e2fff8,#e7f4f7)] my-6 flex  gap-5 items-center justify-center rounded-full" >
           <i className="ri-layout-2-line text-[35px]"></i>
-          <p className="text-[20px] font-medium">Add Collection</p>
+          <p className="text-[20px] font-medium">Add Products</p>
         </div>
       )}
 

@@ -5,7 +5,6 @@ const Admin = require('../models/Auth/adminModel');
 const User = require('../models/Auth/userModel')
 const Category = require('../models/other/categoryModels')
 const Collection = require('../models/other/collectionModel')
-const Product = require('../models/other/productModel')
 
 // Get all admins
 const getAdmins = async (req, res) => {
@@ -212,7 +211,7 @@ const upsertProducts = async(req,res)=>{
     
     
     const { formData , id , action, Urls } = req.body
-    console.log(action);
+    // console.log(req.body);
     
     try {
         
@@ -242,7 +241,8 @@ const upsertProducts = async(req,res)=>{
 
         const updateData = { ...formData,updatedAt }
 
-        const result = await Product.updateOne( { _id:id }, { $set:updateData })
+        const result = await Product.updateOne( { _id:formData._id }, { $set:updateData })
+
 
         if(result.modifiedCount>0){
 

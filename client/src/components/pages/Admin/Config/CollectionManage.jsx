@@ -1,263 +1,267 @@
 import React, { useEffect, useState } from "react";
-import { Edit2, Trash2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import place_three from "../../../../assets/images/three_place.png";
+import axios from "axios";
+
+// Component imports
+import ImagePicker from "../../../parts/popups/ImgaePicker";
+
+// API hooks
 import {
   useGetCategoriesMutation,
   useGetProductsMutation,
   useUpsertCollectionMutation,
 } from "../../../../services/adminApi";
-import ImagePicker from "../../../parts/popups/ImgaePicker";
-import axios from "axios";
+
+// Assets
+import placeholderImage from "../../../../assets/images/three_place.png";
+
+// Constants
+const UPLOAD_ENDPOINT = 'http://localhost:3333/admin/uploadImages';
+const INITIAL_FORM_STATE = {
+  name: "",
+  category: "Fruit",
+  description: "",
+  colorPrimary: "",
+  colorSecondary: "",
+};
 
 const CollectionManage = () => {
-  const [upsertCollection, { isLoading, error, data }] =
-    useUpsertCollectionMutation();
-  const [
-    getCategories,
-    { isLoading: catLoading, error: catError, data: catData },
-  ] = useGetCategoriesMutation();
-  const [
-    getProducts,
-    { isLoading: proLoading, error: proError, data: proData },
-  ] = useGetProductsMutation();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  // API Mutations
+  const [upsertCollection] = useUpsertCollectionMutation();
+  const [getCategories, { data: categoriesData }] = useGetCategoriesMutation();
+  const [getProducts, { data: productsData }] = useGetProductsMutation();
 
-  const [image, setImage] = useState();
-  const [popup, showPopup] = useState(false);
-  const [Url, SetUrl] = useState({});
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "Fruit",
-    description: "",
-    colorPrimary: "",
-    colorSecondary: "",
-  });
+  // Local State
+  const [isProductSelectorOpen, setProductSelectorOpen] = useState(false);
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
+  const [collectionImage, setCollectionImage] = useState(null);
+  const [showImagePicker, setShowImagePicker] = useState(false);
+  const [formState, setFormState] = useState(INITIAL_FORM_STATE);
 
-  // Sample product data
-  const [products] = useState([
-    { id: 1, name: "Apple", image: "/api/placeholder/50/50" },
-    { id: 2, name: "Orange", image: "/api/placeholder/50/50" },
-    { id: 3, name: "Banana", image: "/api/placeholder/50/50" },
-    { id: 4, name: "Mango", image: "/api/placeholder/50/50" },
-  ]);
-
-  const Navigator = useNavigate();
+  // Router hooks
+  const navigate = useNavigate();
   const location = useLocation();
 
+  // Initialize form data from location state
   useEffect(() => {
-    setFormData({ ...location.state.item });
+    if (location.state?.item) {
+      setFormState(location.state.item);
+    }
   }, [location]);
 
+  // Fetch initial data
   useEffect(() => {
-    console.log(data);
-  }, [data]);
-
-  useEffect(() => {
-    getCategories().unwrap();
-    getProducts().unwrap();
+    const fetchInitialData = async () => {
+      try {
+        await Promise.all([
+          getCategories().unwrap(),
+          getProducts().unwrap()
+        ]);
+      } catch (error) {
+        console.error('Failed to fetch initial data:', error);
+      }
+    };
+    
+    fetchInitialData();
   }, []);
 
-  const handleChange = (e) => {
+  // Handlers
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormState(prev => ({ ...prev, [name]: value }));
   };
 
-  const toggleProductSelection = (product) => {
-    setSelectedProducts((prev) => {
-      const isSelected = prev.find((p) => p._id === product._id);
-      if (isSelected) {
-        return prev.filter((p) => p._id !== product._id);
-      } else {
-        return [...prev, product._id];
-      }
+  const toggleProductSelection = (productId) => {
+    setSelectedProductIds(prev => {
+      const isSelected = prev.includes(productId);
+      return isSelected 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId];
     });
   };
 
-  // Convert base64 to file for uploading
-const base64ToFile = (dataUrl, filename) => {
-  const arr = dataUrl.split(',');
-  const mime = arr[0].match(/:(.*?);/)[1];
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
+  const convertBase64ToFile = (base64Data, filename) => {
+    const [header, content] = base64Data.split(',');
+    const mimeType = header.match(/:(.*?);/)[1];
+    const binaryContent = atob(content);
+    const byteArray = new Uint8Array(binaryContent.length);
 
-  while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-  }
+    for (let i = 0; i < binaryContent.length; i++) {
+      byteArray[i] = binaryContent.charCodeAt(i);
+    }
 
-  return new File([u8arr], filename, { type: mime });
-};
-
-  async function uploadImagess(base64Images,index) {
-
-    const key = index===0?'one':index===1?'two':index===2?'three':""
-
-    if (base64Images) {
-
-      const file = base64ToFile(base64Images, 'profile.png');
-      // setFile(file);
-      
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-          const { data } = await axios.post('http://localhost:3333/admin/uploadImages', formData, { headers: { 'Content-Type': 'multipart/form-data', }, });
-          
-         return data?.url
-
-      } catch (error) {
-          console.error('Upload error:', error);
-      }
-  }
-}
-
-  // add or update collection
-  const upsertCollections = async () => {
-    const url = await uploadImagess(image[0])
-    const upsertData = {
-      ...formData,
-      pic:url,
-      products: [...new Set(selectedProducts)],
-    };
-    await upsertCollection(upsertData).unwrap();
+    return new File([byteArray], filename, { type: mimeType });
   };
 
+  const uploadImage = async (base64Image) => {
+    if (!base64Image) return null;
 
-  useEffect(()=>{
-    console.log(image);
-    
-  },[image])
+    const formData = new FormData();
+    formData.append('file', convertBase64ToFile(base64Image, 'collection.png'));
+
+    try {
+      const { data } = await axios.post(UPLOAD_ENDPOINT, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return data?.url;
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      return null;
+    }
+  };
+
+  const handleCollectionUpdate = async () => {
+    try {
+      const imageUrl = await uploadImage(collectionImage?.[0]);
+      
+      const collectionData = {
+        ...formState,
+        pic: imageUrl,
+        products: [...new Set(selectedProductIds)],
+      };
+
+      await upsertCollection(collectionData).unwrap();
+      navigate('/admin/Collection');
+    } catch (error) {
+      console.error('Failed to update collection:', error);
+    }
+  };
 
   return (
     <>
-      {popup && (
+      {showImagePicker && (
         <ImagePicker
-          imageses={image}
+          imageses={collectionImage}
           maxImages={1}
-          setImageUrls={setImage}
-          showPopup={showPopup}
+          setImageUrls={setCollectionImage}
+          showPopup={setShowImagePicker}
         />
       )}
+
       <div className="container w-[105%] h-full pt-[56px] my-8 relative">
         <div className="w-full h-full bg-[radial-gradient(circle_at_10%_10%,_rgb(222,255,247)_0%,rgba(255,0,0,0)_100%);] rounded-tl-[65px] flex justify-center relative">
+          {/* Back Navigation */}
+          <div 
+            onClick={() => navigate("/admin/Collection")}
+            className="absolute top-8 left-10 flex items-center cursor-pointer opacity-55 hover:text-[#59A5D4] hover:opacity-100 transition-all duration-300"
+          >
+            <i className="ri-arrow-left-s-fill text-[35px]" />
+            <p className="text-[18px] -translate-y-[2px] font-medium">
+              Collections
+            </p>
+          </div>
+
           <div className="w-full h-full">
-            <span className="flex justify-center items-center flex-col my-8">
+            {/* Header Section */}
+            <div className="flex justify-center items-center flex-col my-8">
               <h1 className="text-[30px] font-bold">Manage Collection</h1>
               <p className="text-center opacity-45 px-80">
                 Admins can edit collection details, including changing the
                 collection name, updating descriptions, and adjusting associated
                 products. Ensure all information is accurate to maintain a clear
-                and organized structure. Save changes to implement the updates
-                across the platform immediately.
+                and organized structure.
               </p>
-            </span>
+            </div>
 
-            <div className=" flex max-w-[55%] mx-auto">
+            {/* Main Content */}
+            <div className="flex max-w-[55%] mx-auto">
+              {/* Image Section */}
               <div className="mt-20">
-                {!image && (
-                  <img
-                    onClick={() => showPopup(true)}
-                    className="w-[80%] border-2 border-gray-300 border-dashed rounded-3xl m-5 mr-10"
-                    src={place_three}
-                    alt=""
-                  />
-                )}
-                {
-                  image && 
-                  <img
-                    onClick={() => showPopup(true)}
-                    className="w-[80%] border-2 border-gray-300 border-dashed rounded-3xl m-5 mr-10"
-                    src={image[0]}
-                    alt=""
-                  />
-                }
+                <img
+                  onClick={() => setShowImagePicker(true)}
+                  className="w-[80%] border-2 border-gray-300 border-dashed rounded-3xl m-5 mr-10 cursor-pointer transition-transform hover:scale-105"
+                  src={collectionImage?.[0] || placeholderImage}
+                  alt="Collection"
+                />
               </div>
 
-              <div className="">
-                <div className="flex-1 h-10 w-full flex flex-col items-center gap-5">
-                  <div className="flex-col flex gap-1">
-                    <label className="font-bold opacity-55 w-full max-w-[410px] ml-2">
+              {/* Form Section */}
+              <div className="flex-1">
+                <div className="flex flex-col gap-5">
+                  {/* Collection Name Input */}
+                  <div className="flex flex-col gap-1">
+                    <label className="font-bold opacity-55 ml-2">
                       Collection Name
                     </label>
                     <input
                       name="name"
-                      value={formData.collectionName}
-                      onChange={handleChange}
-                      className="w-full outline-none min-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#AAEACD,#f5efef)] rounded-full text-[18px]"
-                      type="text"
+                      value={formState.name}
+                      onChange={handleInputChange}
+                      className="outline-none min-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#AAEACD,#f5efef)] rounded-full text-[18px] transition-all focus:shadow-lg"
                       placeholder="Enter collection name"
                     />
                   </div>
 
+                  {/* Category Select */}
                   <div className="flex gap-8">
-                    <span className="flex flex-col flex-1 gap-1">
-                      <label className="font-bold opacity-55 w-full max-w-[420px] ml-2">
+                    <div className="flex flex-col gap-1 flex-1">
+                      <label className="font-bold opacity-55 ml-2">
                         Category
                       </label>
                       <select
                         name="category"
-                        value={formData.category}
-                        onChange={handleChange}
-                        className="w-[450px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#AAEACD]"
+                        value={formState.category}
+                        onChange={handleInputChange}
+                        className="w-[450px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#AAEACD] transition-all focus:shadow-lg"
                       >
-                        {catData?.data?.map(
-                          (option) =>
-                            option.isListed && (
-                              <option key={option._id} value={option._id}>
-                                {option.name}
-                              </option>
-                            )
-                        )}
+                        {categoriesData?.data
+                          ?.filter(cat => cat.isListed)
+                          .map(category => (
+                            <option key={category._id} value={category._id}>
+                              {category.name}
+                            </option>
+                          ))
+                        }
                       </select>
-                    </span>
+                    </div>
                   </div>
 
-                  <div className="flex">
-                    <div className="w-full min-w-[225px] flex flex-col">
-                      <label className="font-bold opacity-55 w-full min-w-[225px] ml-2">
+                  {/* Description and Product Selection */}
+                  <div className="flex gap-4">
+                    <div className="flex flex-col flex-1">
+                      <label className="font-bold opacity-55 ml-2">
                         Description
                       </label>
-                      <input
+                      <textarea
                         name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="w-full outline-none max-w-[225px] py-3 px-5 bg-[linear-gradient(45deg,#AAEACD,#f5efef)] rounded-[20px] text-[18px] pb-20"
-                        type="text"
+                        value={formState.description}
+                        onChange={handleInputChange}
+                        className="outline-none w-[225px] py-3 px-5 bg-[linear-gradient(45deg,#AAEACD,#f5efef)] rounded-[20px] text-[18px] min-h-[120px] transition-all focus:shadow-lg"
                         placeholder="Enter description"
                       />
                     </div>
 
+                    {/* Product Selector */}
                     <div className="relative">
                       <div
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="w-48 h-32 bg-[#b9ebd4] p-3 items-center justify-center flex flex-col gap-3 rounded-[30px] cursor-pointer mt-5"
+                        onClick={() => setProductSelectorOpen(!isProductSelectorOpen)}
+                        className="w-48 h-32 bg-[#b9ebd4] p-3 flex flex-col gap-3 rounded-[30px] cursor-pointer mt-5 transition-transform hover:scale-105"
                       >
-                        <div className="w-full h-24 bg-gray-100 rounded-[25px] overflow-hidden">{
-                          }
-                          <img src="https://www.healthyeating.org/images/default-source/home-0.0/nutrition-topics-2.0/general-nutrition-wellness/2-2-2-3foodgroups_fruits_detailfeature.jpg?sfvrsn=64942d53_4" alt="" />
+                        <div className="w-full h-24 bg-gray-100 rounded-[25px] overflow-hidden">
+                          <img 
+                            src="https://www.healthyeating.org/images/default-source/home-0.0/nutrition-topics-2.0/general-nutrition-wellness/2-2-2-3foodgroups_fruits_detailfeature.jpg?sfvrsn=64942d53_4" 
+                            alt="Products" 
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <p className="font-medium text-[14px]">Add Product</p>
+                        <p className="font-medium text-[14px] text-center">Add Product</p>
                       </div>
 
-                      {/* Dropdown Menu */}
-                      {isDropdownOpen && (
+                      {/* Product Dropdown */}
+                      {isProductSelectorOpen && (
                         <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
-                          {proData?.data?.map((product, index) => (
+                          {productsData?.data?.map(product => (
                             <div
-                              key={index}
-                              onClick={() => toggleProductSelection(product)}
-                              className={`flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer ${
-                                selectedProducts.find(
-                                  (p) => p._id === product._id
-                                )
-                                  ? "bg-green-50"
-                                  : ""
-                              }`}
+                              key={product._id}
+                              onClick={() => toggleProductSelection(product._id)}
+                              className={`
+                                flex items-center gap-3 p-3 cursor-pointer
+                                transition-colors duration-200
+                                ${selectedProductIds.includes(product._id) 
+                                  ? 'bg-green-50' 
+                                  : 'hover:bg-gray-100'
+                                }
+                              `}
                             >
                               <img
                                 src={product.pics.one}
@@ -267,10 +271,8 @@ const base64ToFile = (dataUrl, filename) => {
                               <span className="flex-1 font-medium">
                                 {product.name}
                               </span>
-                              {selectedProducts.find(
-                                (p) => p._id === product._id
-                              ) && (
-                                <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                              {selectedProductIds.includes(product._id) && (
+                                <div className="w-4 h-4 rounded-full bg-green-500" />
                               )}
                             </div>
                           ))}
@@ -279,54 +281,33 @@ const base64ToFile = (dataUrl, filename) => {
                     </div>
                   </div>
 
+                  {/* Color Inputs */}
                   <div className="flex gap-8">
-                    <span className="flex flex-col gap-1">
-                      <label className="font-bold opacity-55 w-full max-w-[200px] ml-2">
-                        Color Primary
-                      </label>
-                      <input
-                        name="colorPrimary"
-                        value={formData.colorPrimary}
-                        onChange={handleChange}
-                        className="w-full outline-none max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#AAEACD,#f5efef)] rounded-full text-[18px]"
-                        type="text"
-                        placeholder="Enter primary color"
-                      />
-                    </span>
-
-                    <span className="flex flex-col gap-1">
-                      <label className="font-bold opacity-55 w-full max-w-[200px] ml-2">
-                        Color Secondary
-                      </label>
-                      <input
-                        name="colorSecondary"
-                        value={formData.colorSecondary}
-                        onChange={handleChange}
-                        className="w-full outline-none max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#AAEACD,#f5efef)] rounded-full text-[18px]"
-                        type="text"
-                        placeholder="Enter secondary color"
-                      />
-                    </span>
+                    {['Primary', 'Secondary'].map(colorType => (
+                      <div key={colorType} className="flex flex-col gap-1">
+                        <label className="font-bold opacity-55 ml-2">
+                          Color {colorType}
+                        </label>
+                        <input
+                          name={`color${colorType}`}
+                          value={formState[`color${colorType}`]}
+                          onChange={handleInputChange}
+                          className="outline-none w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#AAEACD,#f5efef)] rounded-full text-[18px] transition-all focus:shadow-lg"
+                          placeholder={`Enter ${colorType.toLowerCase()} color`}
+                        />
+                      </div>
+                    ))}
                   </div>
 
+                  {/* Update Button */}
                   <button
-                    onClick={upsertCollections}
-                    className="px-0 py-[15px] bg-[linear-gradient(to_left,#8CC850,#1F9C64)] text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[300px]"
+                    onClick={handleCollectionUpdate}
+                    className="px-0 py-[15px] bg-[linear-gradient(to_left,#8CC850,#1F9C64)] text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[300px] transition-transform hover:scale-105"
                   >
-                    Update
+                    Update Collection
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div
-              onClick={() => Navigator("/admin/Collection")}
-              className="flex absolute top-8 left-10 items-center justify-center bg-red opacity-55 hover:text-[59A5D4] hover:opacity-100 cursor-pointer"
-            >
-              <i className="ri-arrow-left-s-fill text-[35px]"></i>
-              <p className="text-[18px] translate-y-[-2px] font-medium">
-                Collections
-              </p>
             </div>
           </div>
         </div>

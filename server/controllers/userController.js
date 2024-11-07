@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const { sendOTP, verifyOTP } = require("../config/sendOTP");
 const Collection = require('../models/other/collectionModel')
 const Category = require('../models/other/categoryModels')
+const Product = require('../models/other/productModel')
 
 
 const SECRET_KEY = process.env.SECRET_KEY || "secret";
@@ -221,13 +222,15 @@ const getCategories = async (req,res)=>{
 
 const getCollections = async(req,res)=>{
 
-  const array = req.params.array
+  const id = req.params.id
 
+  
+  
   try {
     
-    if(array){
-  
-      const categoriesNames = await Collection.find({ _id: { $in: array } }, 'name')
+    if(id){
+      
+      const categoriesNames = await Collection.find({ category: id })
   
       if(categoriesNames){
   
@@ -246,12 +249,40 @@ const getCollections = async(req,res)=>{
     res.status(500).json({mission:false,message:error.message})
     
   }
-
-
-  
-
 }
 
+
+const getProducts = async(req,res)=>{
+
+  const id = req.params.id
+
+  
+  
+  try {
+    
+    if(id){
+      
+      const products = await Product.find({ category: id })
+  
+      if(products){
+  
+        res.status(201).json({mission:true,message:'successfull',data:products})
+  
+      }else{
+  
+        res.status(500).json({mission:false,message:'empty colllction',data:[]})
+  
+      }
+  
+    }
+
+  } catch (error) {
+
+    res.status(500).json({mission:false,message:error.message})
+    
+  }
+
+}
 
 module.exports = {
   createAUser,
@@ -262,5 +293,6 @@ module.exports = {
   conformOTP,
   updateVerification,
   getCategories,
-  getCollections
+  getCollections,
+  getProducts
 };
