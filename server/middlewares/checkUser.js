@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY || "secret";
 
-const authMiddleware = (req, res, next) => {
+module.exports.authMiddleware = (req, res, next) => {
   
   // Get token from Authorization header
   const token = req.cookies.userToken
@@ -25,5 +25,4 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
 

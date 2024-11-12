@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Edit2, Trash2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useGetCollectionsMutation, useUpdateCollectionMutation } from "../../../../services/adminApi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useGetCollectionsMutation, useUpdateCollectionMutation } from "../../../../services/Admin/adminApi";
 import Recents from "../../../parts/Main/Recents";
+import DeletePopup from "../../../parts/popups/DeletePopup";
+import { ToastContainer, toast } from "react-toastify";
 
 // Constants
 const INITIAL_TOGGLE_STATE = Array(11).fill(false).reduce((acc, _, idx) => {
@@ -12,6 +14,37 @@ const INITIAL_TOGGLE_STATE = Array(11).fill(false).reduce((acc, _, idx) => {
 
 const Collections = () => {
   const navigate = useNavigate();
+  const location = useLocation()
+  const [popup, showPopup] = useState(false);
+  const [deleteData, setDeleteData] = useState(null)
+  
+
+    // Show toast notification
+    const showToast = (message, type = "success") => {
+      if (type === "success") {
+        toast.success(message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error(message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    };
+
+
   
   // API Mutations
   const [fetchCollections, { data: collectionsData }] = useGetCollectionsMutation();
@@ -41,6 +74,12 @@ const Collections = () => {
     loadCollections();
   }, []);
 
+  useEffect(()=>{  
+    if(location?.state?.message){
+      showToast(location?.state?.message,location?.state?.status)  
+    }
+  },[location.state])
+
   useEffect(() => {
     if (collectionsData?.data) {
       const newToggleStates = collectionsData.data.reduce((acc, cat) => {
@@ -61,6 +100,11 @@ const Collections = () => {
       fetchCollections().unwrap();
     }
   }, [updateData]);
+
+  const handleDelete = (uniqeID, updateBool, action) => {
+    setDeleteData({ uniqeID, updateBool, action });
+    showPopup(true);
+  };
 
   // UI Components
   const SearchBar = () => (
@@ -108,6 +152,14 @@ const Collections = () => {
 
   return (
     <>
+    <ToastContainer position="bottom-left" />
+    {popup && (
+        <DeletePopup
+          updater={updateCollection} 
+          deleteData={deleteData} 
+          showPopup={showPopup} 
+        />
+      )}
       <div className="container w-[75%] h-full pt-[56px] my-8 relative">
         <div className="w-full h-full bg-[radial-gradient(circle_at_10%_10%,_rgb(222,255,247)_0%,rgba(255,0,0,0)_100%);] rounded-tl-[65px] flex justify-center">
           <div>
@@ -166,7 +218,7 @@ const Collections = () => {
                         <i className="ri-pencil-line" />
                       </button>
                       <button
-                        onClick={() => handleCollectionUpdate(item._id, !toggleStates[item._id], "delete")}
+                        onClick={() => handleDelete(item._id, !toggleStates[item._id], "delete")}
                         className="text-[30px] text-[#F0491B] ml-6 hover:opacity-75 transition-opacity"
                       >
                         <i className="ri-delete-bin-line" />

@@ -13,7 +13,8 @@ const collectionSchema = new mongoose.Schema({
     products: {
         type: Array,
         default:[],
-        required: true
+        required: true,
+        ref: 'Product'
     },
     isListed:{
         type: Boolean

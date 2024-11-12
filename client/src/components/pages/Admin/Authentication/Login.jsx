@@ -6,8 +6,9 @@ import profileImage from "../../../../assets/images/pro.png";
 
 import { IoAdd } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
-import { useSignInMutation } from "../../../../services/adminApi";
+import { useSignInMutation } from "../../../../services/Admin/adminApi";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Login() {
   // Initialize hooks
@@ -26,18 +27,16 @@ export default function Login() {
     try {
       const userData = await signIn(form).unwrap();
       if (userData) {
-        navigate('/admin/home');
+        navigate("/admin/home");
       }
     } catch (err) {
-      console.error('Failed to sign in:', err);
+      console.error("Failed to sign in:", err);
     }
   };
 
   return (
-
     <div className="w-full h-full">
       <div className="flex w-full h-full">
-
         {/* Left panel with background image */}
         <div className="bg-gray-100 flex-[2] rounded-l-[555px] order-2 relative">
           <img
@@ -50,16 +49,20 @@ export default function Login() {
         {/* Right panel with form */}
         <div className="flex-[3] relative order-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-5 w-full max-w-[50%] mx-auto">
-
             {/* App logo */}
-            <img className="w-[80%] brightness-0 opacity-60" src={grocerLogo} alt="App Logo" />
+            <img
+              className="w-[80%] brightness-0 opacity-60"
+              src={grocerLogo}
+              alt="App Logo"
+            />
 
             {/* Welcome message */}
-            <p className="text-[18px] opacity-35 translate-y-[-10px]">Welcome Back, Admin! Login to continue</p>
+            <p className="text-[18px] opacity-35 translate-y-[-10px]">
+              Welcome Back, Admin! Login to continue
+            </p>
 
             {/* Input Fields */}
             <div className="flex flex-col gap-5 w-full max-w-[80%]">
-              
               {/* Email input */}
               <div className="flex items-center bg-[linear-gradient(45deg,#f5efef,#f5efef)] py-2 px-5 gap-5 rounded-full">
                 <i className="ri-at-line text-[28px] opacity-20"></i>
@@ -71,7 +74,7 @@ export default function Login() {
                   onChange={handleInputChange}
                 />
               </div>
-              
+
               {/* Password input */}
               <div className="flex items-center bg-[linear-gradient(45deg,#f5efef,#f5efef)] py-2 px-5 gap-5 rounded-full">
                 <i className="ri-key-line text-[28px] opacity-20"></i>
@@ -83,14 +86,13 @@ export default function Login() {
                   onChange={handleInputChange}
                 />
               </div>
-
             </div>
 
-            {/* Show Password toggle (placeholder for functionality) */}
+            {/* Show Password toggle (placeholder for functionality)
             <div className="flex items-center gap-5 max-w-[70%] w-full py-3">
               <div className="w-4 h-4 bg-black rounded-full opacity-25"></div>
               <p className="opacity-45">Show password</p>
-            </div>
+            </div> */}
 
             {/* Sign-in button */}
             <button
@@ -101,13 +103,26 @@ export default function Login() {
             </button>
 
             {/* Error and success messages */}
-            {error && <p className="text-red-500">Error: {error.data?.message || error.error}</p>}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0, height: 0, margin: 0 }}
+                  animate={{ opacity: 1, scale: 1, height: "auto", margin: 0, }}
+                  exit={{ opacity: 0, scale: 0, height: 0, margin: 0 }}
+                  transition={{ duration: 0.2 }} >
+                  <div className=" mb-4 mx-16 px-10 rounded-3xl mt-8 bg-[linear-gradient(45deg,#ffffff,#f5efef)] border-[2px] border-gray-300 py-5">
+                    <p className="text-[18px] text-red-500 font-medium">
+                      {error.data?.message || error.error}
+                    </p>
+                  </div>
+                </motion.div> )}
+            </AnimatePresence>
+
             {data && <p>Signed in successfully!</p>}
 
           </div>
         </div>
       </div>
     </div>
-    
   );
 }

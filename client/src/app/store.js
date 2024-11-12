@@ -1,7 +1,7 @@
 // src/app/store.js
 import { configureStore } from '@reduxjs/toolkit';
-import { adminApiSlice } from '../services/adminApi';
-import { userApiSlice } from '../services/userApi';
+import { adminApiSlice } from '../services/Admin/adminApi';
+import { userApiSlice } from '../services/User/userApi';
 
 export const store = configureStore({
   reducer: {

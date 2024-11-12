@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Edit2, Trash2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   useGetCategoriesMutation,
   useUpdateCategoryMutation,
-} from "../../../../services/adminApi";
+} from "../../../../services/Admin/adminApi";
 import Recents from "../../../parts/Main/Recents";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
+import DeletePopup from "../../../parts/popups/DeletePopup";
+import { ToastContainer, toast } from "react-toastify";
 
 // Constants
 const SORT_OPTIONS = {
@@ -27,8 +29,11 @@ const Categories = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState(SORT_OPTIONS.NAME);
   const [orderBy, setOrderBy] = useState(ORDER_OPTIONS.ASCENDING);
+  const [popup, showPopup] = useState(false);
+  const [deleteData, setDeleteData] = useState(null)
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   // API mutations
   const [getCategories, { isLoading, error, data: categoryData }] =
@@ -56,6 +61,31 @@ const Categories = () => {
       setToggleStates(newToggleStates);
     }
   }, [categoryData]);
+
+      // Show toast notification
+      const showToast = (message, type = "success") => {
+        if (type === "success") {
+          toast.success(message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          toast.error(message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      };
 
   // Handle category updates
   useEffect(() => {
@@ -91,6 +121,18 @@ const Categories = () => {
       console.error("Failed to update category:", err);
     }
   };
+
+  const handleDelete = (uniqeID, updateBool, action) => {
+    setDeleteData({ uniqeID, updateBool, action });
+    showPopup(true);
+  };
+
+  useEffect(()=>{  
+    console.log(location?.state?.message);
+    if(location?.state?.message){
+      showToast(location?.state?.message,location?.state?.status)  
+    }
+  },[location.state])
 
   const navigateToManage = (item) => {
     navigate("/admin/Category/manage", { state: { item } });
@@ -189,6 +231,15 @@ const Categories = () => {
 
   return (
     <>
+        {/* Delete Confirmation Popup */}
+      <ToastContainer position="bottom-left" />
+          {popup && (
+        <DeletePopup
+          updater={updateCategory} 
+          deleteData={deleteData} 
+          showPopup={showPopup} 
+        />
+      )}
       <div className="container w-[75%] h-full pt-[56px] my-8 relative">
         <div className="w-full h-full bg-[radial-gradient(circle_at_0%_1%,_rgb(182_233_175)_0%,_rgb(173,216,230,50%)_30%,_rgba(255,0,0,0)_100%)] rounded-tl-[65px] flex justify-center">
           <div>
@@ -248,7 +299,7 @@ const Categories = () => {
                           className="inline-block cursor-pointer text-[#F0491B]"
                           size={24}
                           onClick={() =>
-                            handleCategoryUpdate(
+                            handleDelete(
                               item._id,
                               !toggleStates[item._id],
                               "delete"

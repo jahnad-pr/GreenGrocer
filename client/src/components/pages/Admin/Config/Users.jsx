@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import pic from "../../../../assets/images/pico.jpeg";
 import Recents from "../../../parts/Main/Recents";
 import { useNavigate } from "react-router-dom";
-import { useGetCustomersMutation, useUpdateUserAccessMutation } from "../../../../services/adminApi";
+import { useGetCustomersMutation, useUpdateUserAccessMutation } from "../../../../services/Admin/adminApi";
 
 const UserTable = () => {
 

@@ -10,7 +10,7 @@ import {
   useGetCollectionsMutation,
   useUploadImagesMutation,
   useUpsertProductsMutation,
-} from "../../../../services/adminApi";
+} from "../../../../services/Admin/adminApi";
 import ImagePicker from "../../../parts/popups/ImgaePicker";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -24,17 +24,18 @@ const ProductManage = () => {
   const [action, setAction] = useState("add");
   const [popup, showPopup] = useState(false);
   const [images, setImageUrls] = useState(false);
-  const [Urls, setUrls] = useState({});
+  const [urls, setUrl] = useState({});
+  const [isChanged, setChaged] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
     productCollection: "",
     description: "",
-    regularPrice: "",
-    salePrice: "",
+    regularPrice: 0,
+    salePrice: 0,
     stock: "",
-    freshness: "",
-    harvestedTime: "",
+    freshness: "fresh",
+    harvestedTime:new Date().toISOString().slice(0, 16),
     from: "",
   });
 
@@ -42,8 +43,9 @@ const ProductManage = () => {
 
   // Set formData if updating an existing product
   useEffect(() => {
-    if (location.state.product) {
-      setFormData({ ...location.state.product });
+    if (location.state.product&&location.state.product.name) {
+      setFormData( location.state.product );
+      setImageUrls([[location.state.product.pics.one],[location.state.product.pics.two],[location.state.product.pics.three] ])
       setAction("update");
     }
   }, [location]);
@@ -57,23 +59,68 @@ const ProductManage = () => {
   // Update formData when an input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    if(name==='regularPrice'||name==='salePrice'){
+      setFormData((prevData) => ({ ...prevData, [name]: Number(value) }));
+    }else{
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
+
+
+  const isValidCategoryName = (name) => {
+    // Ensure only letters and spaces, and a minimum of 4 characters
+    const minCharacters = name?.trim().length >= 4;
+    const noNumbersOrSymbols = /^[A-Za-z\s]+$/.test(name);
+    return noNumbersOrSymbols && minCharacters;
+  };
+
+  const isInvalidDescription = (name) => {
+    // Ensure only letters and spaces, and a minimum of 4 characters
+    const minCharacters = name?.trim().length >= 4;
+    // const noNumbersOrSymbols = /^[A-Za-z\s]+$/.test(name);
+    return minCharacters;
+  };
+
+  const isInvalidOrganization = (name) => {
+    // Ensure only letters and spaces, and a minimum of 4 characters
+    const minCharacters = name?.trim().length >= 4;
+    // const noNumbersOrSymbols = /^[A-Za-z\s]+$/.test(name);
+    return minCharacters;
   };
 
   // Validation function for product data
   const validateFormData = (data) => {
-    const errors = "";
 
-    if (!data.name) return "Product name is required.";
+    if(!isValidCategoryName(data.name.trim())){
+      return "Product name must contain at least 4 letters and no numbers or symbols."
+    } else  if (!data.name.trim()){
+      return "Product name is required."
+    }
+      
     if (!data.category) return "Category is required.";
     if (!data.productCollection) return "Collection is required.";
-    if (!data.description) return "Description is required.";
+
+    if(!isInvalidDescription(data.description.trim())){
+      return "Description must contain atleast three words."
+    } else  if (!data.description.trim()) return "Description is required.";
+
     if (!data.regularPrice || data.regularPrice <= 0)
       return "Enter a valid regular price.";
-    if (data.salePrice && data.salePrice >= data.regularPrice)
+
+    if (!data.salePrice || data.salePrice <= 0)
+      return "Enter a valid sale price.";
+
+    if (data.salePrice > data.regularPrice){
+      // console.log(data.salePrice,'>',data.regularPrice);
       return "Sale price should be less than regular price.";
-    if (!data.stock || data.stock <= 0) return "Enter a valid stock quantity.";
-    if (!data.from) errors.from = "Source location is required.";
+    }      
+
+    // if (!data.stock || data.stock <= 0) return "Enter a valid stock quantity.";
+
+    if(!isInvalidOrganization(data.from.trim())){
+      return "Organization must contain atleast 4 letters and no numbers or symbols."
+    } else  if (!data.from.trim()) return "Source location is required.";
+    
     if (!images || images.length < 3) return "Please select 3 images.";
     return "";
   };
@@ -103,11 +150,22 @@ const ProductManage = () => {
     }
   };
 
-  useEffect(() => {
-    if (error?.data?.message) {
-      showToast(error.data.message, "error");
+  // useEffect(() => {
+  //   if (error?.data?.message) {
+  //     showToast(error.data.message, "error");
+  //   }
+  // }, [error]);
+
+  useEffect(()=>{  
+
+    if(collData?.data[0]&&!formData.productCollection){
+      setFormData((prevData)=>({ ...prevData, productCollection:collData?.data[0]._id }))
     }
-  }, [error]);
+    if(catData?.data[0]&&!formData.category){
+      setFormData((prevData)=>({ ...prevData, category:catData?.data[0]._id }))
+    }
+    },[catData,collData])
+
 
   useEffect(() => {
     if (error?.data?.message) {
@@ -116,10 +174,9 @@ const ProductManage = () => {
   }, [error]);
   
   useEffect(() => {
-    console.log(data);
-    
     if (data?.message) {
-      showToast(data.message, "success");
+      navigator('/admin/Products',{ state:{ message:data.message,status:'success' } })
+      // navigator('/admin/Products',{ state:{message:'Collection created successfully',status:'success'} });
     }
   }, [data]);
 
@@ -151,13 +208,42 @@ const ProductManage = () => {
             headers: { "Content-Type": "multipart/form-data" },
           }
         );
-        setUrls((prevData) => ({ ...prevData, [key]: data?.url }));
+        setUrl((prevData)=>({ ...prevData,[key]:data?.url  }));
+        
       } catch (error) {
         console.error("Upload error:", error);
         showToast("Image upload failed", "error");
       }
     }
   }
+
+  useEffect(()=>{ Object.values(urls).length>=3?actuallUpload():'' },[urls])
+
+  function areObjectsEqual(obj1, obj2) {
+  // Check if both objects have the same number of keys
+  if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+    return false;
+  }
+  
+
+  // Check if values for the same keys are equal
+  for (let key in obj1) {
+    if (obj1.hasOwnProperty(key)) {
+      // If the key doesn't exist in obj2, return false
+      if (!obj2.hasOwnProperty(key)) {
+        return false;
+      }
+
+      // If values are not the same, return false
+      if (obj1[key] !== obj2[key]) {
+        return false;
+      }
+    }
+  }
+
+  // If all checks pass, the objects are equal
+  return true;
+}
 
   function checkObjectValues(obj) {
     const isEmpty = Object.values(obj).every(
@@ -174,23 +260,54 @@ const ProductManage = () => {
     return isEmpty ? false : true;
   }
 
-  const handleFormSubmit = async () => {
-    if (checkObjectValues(formData)) {
-      const errors = validateFormData(formData);
+  const actuallUpload = async()=>{
 
-      if (!errors === "") {
-        showToast(errors, "error");
-        return;
+    let upsertData = {}
+
+    if(!formData?.pics || setImageUrls[0]){
+
+    upsertData = { ...formData, pics:urls };
+
+    }else{
+
+    upsertData = { ...formData };
+    }
+    console.log(images);
+
+    if(action==='update'&&areObjectsEqual(upsertData,location.state.product)&&!isChanged){
+      return showToast('Nothing Changed','error')
+    }
+
+    
+
+    try {
+
+      await upsertProducts({ formData: upsertData, action });
+
+
+    } catch (error) {
+      console.error("Product update error:", error);
+
+    }
+  }
+
+  const handleFormSubmit = async () => {
+
+    if (checkObjectValues(formData)) {
+      
+      const errors = validateFormData(formData);
+      
+      if (errors) {
+        return showToast(errors, "error");
       }
-      await Promise.all(
-        Object.values(images).map((img, idx) => uploadImages(img, idx))
-      );
-      const upsertData = { ...formData, pics: Urls };
-      try {
-        await upsertProducts({ formData: upsertData, action });
-      } catch (error) {
-        console.error("Product update error:", error);
-      }
+
+        if(!formData?.pics || setImageUrls[0]){
+          await Promise.all( Object.values(images).map((img, idx) => uploadImages(img, idx)) );
+        }else{
+          actuallUpload()
+        }
+      
+
     } else {
       showToast("please fill the fields", "error");
     }
@@ -201,8 +318,9 @@ const ProductManage = () => {
       <ToastContainer position="bottom-left" />
       {popup && (
         <ImagePicker
+        setChaged={setChaged}
           maxImages={3}
-          images={images}
+          imageses={images}
           setImageUrls={setImageUrls}
           showPopup={showPopup}
         />
@@ -286,7 +404,7 @@ const ProductManage = () => {
                       <select
                         className="w-52 py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                         name="category"
-                        value={""}
+                        value={formData.category}
                         onChange={handleChange}
                       >
                         {catData?.data?.map(
@@ -306,12 +424,13 @@ const ProductManage = () => {
                       </label>
                       <select
                         className="w-52 py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
-                        name="productCollection"
-                        value={""}
+                        name="collection"
+                        value={formData.productCollection}
                         onChange={handleChange}
                       >
                         {collData?.data?.map(
                           (option) =>
+                            option.category === formData.category &&
                             option.isListed && (
                               <option key={option._id} value={option._id}>
                                 {option.name}
@@ -385,6 +504,10 @@ const ProductManage = () => {
                     onChange={handleChange}
                     placeholder="Enter stock quantity"
                   />
+                  { formData?.stock&&
+                    <p>{formData?.stock/(formData?.stock>=1000?1000:1)}{formData?.stock>=1000?'KG':'gram'}</p>
+                    
+                  }
                 </span>
 
                 {/* Freshness */}
@@ -395,7 +518,7 @@ const ProductManage = () => {
                   <select
                     className="w-[250px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                     name="freshness"
-                    value={""}
+                    value={FormData.freshness}
                     onChange={handleChange}
                   >
                     <option value="Fresh">Fresh</option>
@@ -404,6 +527,8 @@ const ProductManage = () => {
                 </span>
 
                 {/* Harvested Time */}
+                {   formData.freshness === 'Harvested' &&
+
                 <span className="flex flex-col gap-1">
                   <label className="font-bold opacity-55 w-full max-w-[420px] ml-2">
                     Harvested Time
@@ -412,10 +537,11 @@ const ProductManage = () => {
                     className="w-[250px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                     type="datetime-local"
                     name="harvestedTime"
-                    value={""}
+                    value={new Date(formData.harvestedTime).toISOString().slice(0, 16)}
                     onChange={handleChange}
                   />
                 </span>
+                }
 
                 {/* From */}
                 <span className="flex flex-col gap-1">

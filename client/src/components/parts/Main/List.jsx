@@ -3,7 +3,7 @@ import Product from '../Cards/Product'
 
 export default function List({listData}) {
 
-  useEffect(()=>{ console.log(listData.data) },[listData.data])
+  // useEffect(()=>{ console.log(listData.data) },[listData.data])
 
   return (
     <div className='w-full auto'>
@@ -12,7 +12,6 @@ export default function List({listData}) {
             <div className='flex my-10 mt-20 items-center justify-center'>
             <h1 className={`text-[30px] ${listData.ml?'ml-40':''} font-semibold`}>{''}</h1>
             <span className='flex-1'></span>
-            <p className='px-8 py-2 bg-green-900 text-white tex-[20px] rounded-l-full'>View all</p>
             </div>
 
             <div className={`flex w-full h-auto gap-10 overflow-x-scroll flex-wrap`}>

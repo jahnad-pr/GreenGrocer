@@ -13,6 +13,7 @@ const transporter = nodemailer.createTransport({
 
 let otpStore = {};
 
+
 // Function to generate a 6-digit OTP
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000);
@@ -32,13 +33,13 @@ exports.sendOTP = async (mail) => {
     text: `Your OTP is ${otp}`,
     html: html(otp)// HTML body
   };
-  // Store OTP with a timestamp and an expiration time of 5 minutes
-  otpStore["mshapesacc@gmail.com"] = { otp, expiresAt: Date.now() + 1 * 60 * 1000 };
+  // Store OTP with a timestamp and an expiration time of 3 minutes
+  otpStore["mshapesacc@gmail.com"] = { otp, expiresAt: Date.now() + 3 * 60 * 1000 };
 
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log("OTP:", otp)
-    return { success: true, message: "OTP sent successfully", messageId: info.messageId };
+    return { success: true, message: "OTP sent successfully, verify within 3 minutes", messageId: info.messageId };
     
   } catch (error) {
     console.log("Error occurred:", error.message);

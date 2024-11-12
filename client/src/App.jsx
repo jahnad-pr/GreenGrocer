@@ -1,6 +1,6 @@
 // Bismillah
-import React from "react"
-import {Routes, Route, useLocation } from "react-router-dom"
+import React, { useEffect } from "react"
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom"
 import Login from './components/pages/Admin/Authentication/Login'
 import Header from './components/parts/Main/Header'
 import AdminNav from './components/parts/Main/AdminNav'
@@ -12,7 +12,7 @@ import Home from './components/pages/User/main/Home'
 import Categories from './components/pages/Admin/Config/Categories'
 import CategoryManage from './components/pages/Admin/Config/CategoryManage'
 import Navigator from './components/parts/Main/Navigator'
-import ProtectedRoute from "./components/pages/User/Authentication/ProtectedUser"
+import UserProtecter from "./components/pages/User/Authentication/UserProtecter"
 import SignDetails from "./components/pages/User/Authentication/signDetails"
 import Collections from "./components/pages/Admin/Config/Collections"
 import CollectionManage from "./components/pages/Admin/Config/CollectionManage"
@@ -21,43 +21,60 @@ import Products from "./components/pages/User/main/Products"
 import ProductManage from "./components/pages/Admin/Config/PrductManage"
 import Productes from "./components/pages/Admin/Config/Product"
 import ProductPage from './components/pages/User/main/Subs/ProductPage'
+import AdminProtucter from "./components/pages/Admin/Authentication/AdminProtucter"
+import ResetPassword from "./components/pages/User/Profile/ResetPassword"
+import Logout from "./components/pages/User/Profile/Logout"
+import ProductReview from "./components/pages/User/main/Subs/ProductReview"
+import ProductsAll from "./components/pages/User/main/Subs/ProductsAll"
 
 
 
 
 export default function App() {
 
+  
   const location = useLocation()
+  const navigator = useNavigate()
+  
+  useEffect(()=>{
+    if(location.pathname==='/'||location.pathname==='/user'){
+      navigator('/user/home')
+    }
+  },[location])
 
   return (
     <>
+
       <div className="w-screen h-screen flex overflow-hidden">
-        { location.pathname.startsWith('/user/') &&  <Navigator />  }
-        { location.pathname.startsWith('/admin/') &&  <Header />  }
-        { location.pathname.startsWith('/admin/') &&  <AdminNav />  }
-      <Routes>
+        {location.pathname.startsWith('/user/') && <UserProtecter><Navigator /></UserProtecter>}
+        {location.pathname.startsWith('/admin/') && <Header />}
+        {location.pathname.startsWith('/admin/') && <AdminNav />}
 
-        <Route path="/auth/admin/login" element={<Login />} />
-        <Route path="/admin/home" element={<DashHome />} />
-        <Route path="/admin/Customers" element={<Users />} />
-        <Route path="/admin/Customers/manage" element={<UserManage />} />
-        <Route path="/admin/Category" element={<Categories />} />
-        <Route path="/admin/Category/manage" element={<CategoryManage />} />
-        <Route path="/admin/Collection" element={<Collections />} />
-        <Route path="/admin/Collection/manage" element={<CollectionManage />} />
-        <Route path="/admin/Products" element={<Productes />} />
-        <Route path="/admin/Products/manage" element={<ProductManage />} />
+          <Routes>
+            <Route path="/auth/admin/login" element={<AdminProtucter><Login /></AdminProtucter>} />
+            <Route path="/admin/home" element={<AdminProtucter><DashHome /></AdminProtucter>} />
+            <Route path="/admin/Customers" element={<AdminProtucter><Users /></AdminProtucter>} />
+            <Route path="/admin/Customers/manage" element={<AdminProtucter><UserManage /></AdminProtucter>} />
+            <Route path="/admin/Category" element={<AdminProtucter><Categories /></AdminProtucter>} />
+            <Route path="/admin/Category/manage" element={<AdminProtucter><CategoryManage /></AdminProtucter>} />
+            <Route path="/admin/Collection" element={<AdminProtucter><Collections /></AdminProtucter>} />
+            <Route path="/admin/Collection/manage" element={<AdminProtucter><CollectionManage /></AdminProtucter>} />
+            <Route path="/admin/Products" element={<AdminProtucter><Productes /></AdminProtucter>} />
+            <Route path="/admin/Products/manage" element={<AdminProtucter><ProductManage /></AdminProtucter>} />
+          </Routes>
 
+        <Routes>
+          <Route path="/auth/user/signup" element={ <UserProtecter><Signup /></UserProtecter> } />
+          <Route path="/user/home" element={ <UserProtecter><Home /></UserProtecter> } />
+          <Route path="/user/products" element={ <UserProtecter><Products /></UserProtecter> } />
+          <Route path="/user/productpage" element={ <UserProtecter><ProductPage /></UserProtecter> } />
+          <Route path="/user/collection/:name/products" element={ <UserProtecter><ProductsAll /></UserProtecter> } />
+          <Route path="/user/productpage/:id/reviews" element={ <UserProtecter><ProductReview /></UserProtecter> } />
+          <Route path="/user/profile/:id/logout" element={ <UserProtecter><Logout /></UserProtecter> } />
+        </Routes>
 
-        <Route path="/auth/user/signup" element={<ProtectedRoute sign={true} ><Signup /></ProtectedRoute>} />
-        <Route path="/user/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/user/sign" element={<ProtectedRoute><SignDetails /></ProtectedRoute>} />
-        <Route path="/user/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
-        <Route path="/user/productpage" element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
-
-
-      </Routes>
       </div>
+
     </>
   );
 }

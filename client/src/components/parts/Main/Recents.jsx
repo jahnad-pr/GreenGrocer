@@ -44,7 +44,7 @@ export default function Recents() {
 
       {location.pathname.startsWith("/admin/Products") && (
         <div
-          onClick={() => navigate("/admin/Products/manage", { state: { name: "" } }) }
+          onClick={() => navigate("/admin/Products/manage", { state: { name: false } }) }
           className=" bg-[linear-gradient(to_left,#e2fff8,#e7f4f7)] my-6 flex  gap-5 items-center justify-center rounded-full" >
           <i className="ri-layout-2-line text-[35px]"></i>
           <p className="text-[20px] font-medium">Add Products</p>

@@ -46,7 +46,8 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
   );
 }
 
-const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses }) => {
+const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses,setChaged }) => {
+  
   const [images, setImages] = useState(Array(maxImages).fill(null));
   const [activeIndex, setActiveIndex] = useState(null);
   const [currentImage, setCurrentImage] = useState(null);
@@ -63,7 +64,8 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses }) => {
   const imagerPopup = useRef(null);
 
   useEffect(() => {
-
+    console.log(imageses);
+    
     if (imageses) {
       setInit({ 1: false, 2: false, 3: false });
       setImages(imageses);
@@ -145,39 +147,35 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses }) => {
 
   async function getCroppedImg(image, crop) {
     const canvas = document.createElement("canvas");
-    const scaleX = imageSize.width / image.width;
-    const scaleY = imageSize.height / image.height;
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
     canvas.width = crop.width;
     canvas.height = crop.height;
     const ctx = canvas.getContext("2d");
 
+    // Draw the cropped area of the image onto the canvas
     ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      crop.width,
-      crop.height
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width,
+        crop.height
     );
 
-    return new Promise((resolve) => {
-      canvas.toBlob(
-        (blob) => {
-          resolve(URL.createObjectURL(blob));
-        },
-        "image/jpeg",
-        1
-      );
-    });
-  }
+    // Return the base64 data URL
+    return canvas.toDataURL("image/jpeg", 1); // Adjust quality if needed (0 to 1)
+}
+
 
   const closeWindow = () => {
     if(images[2]){
       setImageUrls(images);
       showPopup(false);
+      setChaged(true)
     }else{
       setImageUrls();
       showPopup(false);
@@ -186,6 +184,7 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses }) => {
     setTimeout(() => {
       imagerPopup.current.style.display = "none";
       showPopup(false);
+      setChaged(true)
       setActiveIndex(null);
       setCurrentImage(null);
       setShowCropper(false);
@@ -318,7 +317,26 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses }) => {
   const finishSelector = () => {
     setImageUrls(images);
     showPopup(false);
+    setChaged(true)
   };
+
+  async function loadImage(src) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // Set cross-origin
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+    });
+
+    
+  }
+    // Usage
+loadImage(images[0])
+.then(img => getCroppedImg(img, crop))
+.then(croppedImg => console.log(croppedImg))
+.catch(error => console.error(error));
+
 
   return (
     <div
@@ -331,6 +349,7 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses }) => {
         onClick={closeWindow}
         className="text-white fixed right-10 top-10 opacity-40 md:text-[30px] text-[30px] cursor-pointer hover:opacity-100"
       />
+
 
       <div className="flex gap-4 mb-6">
         {images.map((image, index) => (

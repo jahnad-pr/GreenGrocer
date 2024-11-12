@@ -2,297 +2,284 @@ const User = require("../models/Auth/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { sendOTP, verifyOTP } = require("../config/sendOTP");
-const Collection = require('../models/other/collectionModel')
-const Category = require('../models/other/categoryModels')
-const Product = require('../models/other/productModel')
 
 
 const SECRET_KEY = process.env.SECRET_KEY || "secret";
 
 // Create a new user
-const createAUser = async (req, res) => {
-  const { email, password, username } = req.body;
-
-  // Hash the password
+module.exports.createAUser = async (req, res) => {
+  const { email, password, username, place, gender, phone } = req.body;
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-
 
   const newUser = new User({
     email,
     password: hashedPassword,
     username,
+    place,
+    gender,
+    phone,
     createdAt: Date.now(),
     isVerified: false,
-    isListed: false,
+    isListed: true,
   });
 
   try {
-    // creating new user/save
     const newUserData = await newUser.save();
-
-    res.status(200).json("ashwanth");
+    res.status(200).json('ahte');
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// login user
-const loginUser = async (req, res) => {
+
+// if user exits 
+module.exports.isUerExist = async(req, res)=>{
+
+  const { email } = req.body;
+  try {
+    
+      const userData = await User.findOne({email})
+    
+      if(userData){
+    
+        return res.status(500).json('This Email already taken')
+    
+      }else{
+    
+        return res.status(200).json({forWord:true})
+    
+      }
+    
+  } catch (error) {
+    return res.status(500).json(error)
+  }
+
   
 
+}
+
+// Login user
+module.exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  
   try {
     const user = await User.findOne({ email });
-    
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Wrong Password or email" });
     }
- 
-    // Verify password
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Wrong Password or email" });
     }
 
-    // Create a JWT token
-    const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "1h" });
-
-    // Set the token as an HTTP-only cookie
+    const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "9h" });
     res.cookie("userToken", token, { httpOnly: true, maxAge: 3600000 });
 
-    // Send a success response
     res.json({
       message: "Login successful",
-      user: { id: user._id, email: user.email, name: user.name }, // Include other user details if needed
+      user: { id: user._id, email: user.email, name: user.name },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create or log with google
-const googleLog = async (req, res) => {
-  const { email, password, username } = req.body;
+// Google login or signup
+module.exports.googleLog = async (req, res) => {
+  const { email, password, username, phone, place ,gender  } = req.body;
 
   try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email:`${email}.gmail` });
+
+    const verifying = req.body?.gender || existingUser?.gender
 
     if (existingUser) {
-      // Return a success message if the user exists
-      // Create a JWT token
-      const token = jwt.sign({ id: existingUser._id }, SECRET_KEY, {
-        expiresIn: "1h",
-      });
 
-      // Set the token as an HTTP-only cookie
-      res.cookie("userToken", token, { httpOnly: true, maxAge: 3600000 });
+      const updatData = {...req.body,isVerified:verifying?true:false,email:`${email}.gmail`}
 
-      return res.status(200).json("ashwanth");
+      const update = await User.updateOne({email:`${email}.gmail`},{$set:updatData})
+
+      if(verifying){
+
+        const token = jwt.sign({ id: existingUser._id }, SECRET_KEY, {
+          expiresIn: "1h",
+        });
+  
+        res.cookie("userToken", token, { httpOnly: true, maxAge: 3600000 });
+      }
+
+
+      if(update.modifiedCount>0){
+
+  
+        return res.status(200).json({data:{...existingUser,isVerified:verifying?true:false},isNew:false});
+
+      }else{
+
+        return res.status(200).json({data:existingUser,isNew:false});
+
+      }
+      
+
     } else {
+
       const newUser = await User.create({
-        email,
+        email:`${email}.gmail`,
+        googleMail:email,
         password,
         username,
+        phone,
+        place,
+        gender,
         createdAt: Date.now(),
-        isVerified: false,
-        isListed: false,
+        isListed: true,
       });
 
-      const token = jwt.sign({ id: newUser._id }, SECRET_KEY, {
-        expiresIn: "1h",
-      });
-
-      res.cookie("userToken", token, { httpOnly: true, maxAge: 3600000 });
+      return res.status(200).json({data:newUser,isNew:true});
     }
 
-    // Return a success message after creating a new user
-    res.status(200).json("ashwanth");
   } catch (error) {
-    // Return a descriptive error message
     res.status(400).json({ message: error.message });
   }
 };
 
-
-// check user exist
-const getUserData = async (req, res) => {
+// Get user data
+module.exports.getUserData = async (req, res) => {
+  
   if (req.user) {
+
     const { id } = req.user;
 
     try {
       const user = await User.find({ _id: id });
 
-      if (!user) {
+      if (!user || user.length <= 0) {
+
+        res.clearCookie('userToken')
         return res.status(404).json({ message: "User not found" });
+
       }
-      if (user.length <= 0)
-        return res.status(404).json({ message: "User not found" });
 
-      if(user[0].isVrified){
+      if (user[0].isListed) {
 
-        res.status(201).json({verified:true,user});
+        res.status(201).json({ verified: true, user });
 
-      }else{
+      } else {
 
-        res.status(201).json({verified:false,user})
+        res.clearCookie('userToken')
+        res.status(201).json({ verified: false, user });
+
       }
 
     } catch (error) {
+
       res.status(400).json({ message: error.message });
+
     }
   }
 };
 
-// getOTP
-const getOTP = async (req, res) => {
+// Get OTP
+module.exports.getOTP = async (req, res) => {
   const { mail } = req.body;
   const message = await sendOTP(mail);
-  if (message) {
-    res.status(201).json(message.message);
-  } else {
-    res.status(400).json(message.message);
-  }
+  res.status(message ? 201 : 400).json(message.message);
 };
 
-// conformOTP
-const conformOTP = async (req, res) => {
+// Confirm OTP
+module.exports.conformOTP = async (req, res) => {
   const { mail, otp } = req.body;
   const { success, message } = verifyOTP(mail, otp);
 
-  if (success) {
-    res.status(201).json(message);
-  } else {
-    res.status(400).json(message);
+  res.status(success ? 201 : 400).json(message);
+};
+
+// Update user verification
+module.exports.updateVerification = async (req, res) => {
+  const { phone, gender, place, uniqueId } = req.body;
+
+  try {
+    const updatedData = await User.updateOne({ _id: uniqueId }, { phone, gender, place, isVerified: true });
+    res.status(200).json({ message: "User updated successfully", updatedData });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred while updating user", error: error.message });
   }
 };
 
 
-const updateVerification = async (req, res) => {
+module.exports.logoutUser = async(req,res)=>{
 
-  const { phone, gender, place, uniqueId } = req.body;  
-
-  try {
-    const updatedData = await User.updateOne({ _id: uniqueId }, { phone, gender, place, isVrified:true });
-    
-    console.log(updatedData);
-    
-    // Send a success response back to the client
-    res.status(200).json({
-      message: "User updated successfully",
-      updatedData
-    });
-
-  } catch (error) {
-    console.error("Error updating user:", error);
-    
-    // Send an error response
-    res.status(500).json({
-      message: "An error occurred while updating user",
-      error: error.message
-    });
-  }
-};
-
-
-// get Categories
-const getCategories = async (req,res)=>{
+  const { id } = req.body
 
   try {
 
-      const categories = await Category.find({})
-      
-      if(categories.length<=0){
-
-          res.status(500).json({mission:false,message:'empty categories',data:[]})
-
-      }else{
-
-          res.status(200).json({mission:true,message:'successfull',data:categories})
-      }
-      
-  } catch (error) {
-      return res.status(500).json({mission:false,message: error.messgae }) 
-  }
-
-}
-
-const getCollections = async(req,res)=>{
-
-  const id = req.params.id
-
-  
-  
-  try {
-    
     if(id){
-      
-      const categoriesNames = await Collection.find({ category: id })
-  
-      if(categoriesNames){
-  
-        res.status(201).json({mission:true,message:'successfull',data:categoriesNames})
-  
-      }else{
-  
-        res.status(500).json({mission:false,message:'empty colllction',data:[]})
-  
-      }
-  
+
+      res.clearCookie('userToken')
+
+      res.status(200).json({forWord:true})
+
+    }else{
+      res.status(401).json('Somethng went wrong')
     }
 
+    
   } catch (error) {
-
-    res.status(500).json({mission:false,message:error.message})
-    
-  }
-}
-
-
-const getProducts = async(req,res)=>{
-
-  const id = req.params.id
-
-  
-  
-  try {
-    
-    if(id){
-      
-      const products = await Product.find({ category: id })
-  
-      if(products){
-  
-        res.status(201).json({mission:true,message:'successfull',data:products})
-  
-      }else{
-  
-        res.status(500).json({mission:false,message:'empty colllction',data:[]})
-  
-      }
-  
-    }
-
-  } catch (error) {
-
-    res.status(500).json({mission:false,message:error.message})
-    
+    res.status(500).json(error.message)
   }
 
 }
 
-module.exports = {
-  createAUser,
-  loginUser,
-  googleLog,
-  getUserData,
-  getOTP,
-  conformOTP,
-  updateVerification,
-  getCategories,
-  getCollections,
-  getProducts
-};
+// const removeCokkies =(res)=>{
+
+
+
+// }
+
+// // Get categories
+// module.exports.getCategories = async (req, res) => {
+//   try {
+//     const categories = await Category.find({});
+//     res.status(categories.length > 0 ? 200 : 500).json({
+//       mission: categories.length > 0,
+//       message: categories.length > 0 ? 'successful' : 'empty categories',
+//       data: categories,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ mission: false, message: error.message });
+//   }
+// };
+
+// // Get collections
+// module.exports.getCollections = async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     const categoriesNames = id ? await Collection.find({ category: id }) : null;
+//     res.status(categoriesNames ? 201 : 500).json({
+//       mission: Boolean(categoriesNames),
+//       message: categoriesNames ? 'successful' : 'empty collection',
+//       data: categoriesNames || [],
+//     });
+//   } catch (error) {
+//     res.status(500).json({ mission: false, message: error.message });
+//   }
+// };
+
+// // Get products
+// module.exports.getProducts = async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     const products = id ? await Product.find({ category: id }) : null;
+//     res.status(products ? 201 : 500).json({
+//       mission: Boolean(products),
+//       message: products ? 'successful' : 'empty collection',
+//       data: products || [],
+//     });
+//   } catch (error) {
+//     res.status(500).json({ mission: false, message: error.message });
+//   }
+// };
