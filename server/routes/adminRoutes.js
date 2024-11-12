@@ -1,5 +1,5 @@
 const express = require('express');
-const { getCustomers, getAdmins, updateUserAccess,getAdmin } = require('../controllers/adminControllers');
+const { getCustomers, getAdmins, updateUserAccess,getAdmin,logoutAdmin } = require('../controllers/adminControllers');
 const { upsertProducts,getProducts,updateProduct } = require('../controllers/config/ProductController')
 const { upsertCollection,getCollections,updateCollection } = require('../controllers/config/collectionController')
 const { upsertCategory, getCategories, updateCategory, } = require('../controllers/config/categoryController')
@@ -14,25 +14,26 @@ router.post('/login',getAdmins);
 
 
 
-router.get('/getCustomers',getCustomers);
-router.get('/getCategories',getCategories);
-router.get('/getCollections',getCollections);
-router.get('/getProducts',getProducts);
+router.get('/getCustomers',adminAuthMiddleware,getCustomers);
+router.get('/getCategories',adminAuthMiddleware,getCategories);
+router.get('/getCollections',adminAuthMiddleware,getCollections);
+router.get('/getProducts',adminAuthMiddleware,getProducts);
 router.get('/getAdmin',adminAuthMiddleware,getAdmin);
 
 
-router.put('/upsertCategory',upsertCategory);
-router.put('/upsertCollection',upsertCollection);
-router.put('/upsertProducts',upsertProducts);
+router.put('/upsertCategory',adminAuthMiddleware,upsertCategory);
+router.put('/upsertCollection',adminAuthMiddleware,upsertCollection);
+router.put('/upsertProducts',adminAuthMiddleware,upsertProducts);
 
-router.patch('/updateUserAccess',updateUserAccess);
-router.patch('/updateCategoryAccess',updateCategory);
-router.patch('/updateCollection',updateCollection);
-router.patch('/updateProduct',updateProduct);
+router.patch('/updateUserAccess',adminAuthMiddleware,updateUserAccess);
+router.patch('/updateCategoryAccess',adminAuthMiddleware,updateCategory);
+router.patch('/updateCollection',adminAuthMiddleware,updateCollection);
+router.patch('/updateProduct',adminAuthMiddleware,updateProduct);
 
 
 
-router.post('/uploadImages',upload.single('file'),uploadImages);
+router.post('/uploadImages',adminAuthMiddleware,upload.single('file'),uploadImages);
+router.post('/logoutAdmin',adminAuthMiddleware,upload.single('file'),logoutAdmin);
 
 
 

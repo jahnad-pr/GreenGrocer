@@ -31,6 +31,7 @@ const Categories = () => {
   const [orderBy, setOrderBy] = useState(ORDER_OPTIONS.ASCENDING);
   const [popup, showPopup] = useState(false);
   const [deleteData, setDeleteData] = useState(null)
+  const [categories,setCategories] = useState([])
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,8 +60,15 @@ const Categories = () => {
         {}
       );
       setToggleStates(newToggleStates);
+      setCategories(categoryData?.data)
     }
   }, [categoryData]);
+
+  useEffect(()=>{
+    if(updateResponse?.message){
+      showToast(updateResponse?.message,'success')
+    }
+  },[updateResponse])
 
       // Show toast notification
       const showToast = (message, type = "success") => {
@@ -96,7 +104,9 @@ const Categories = () => {
           [updateResponse.uniqeID]: !prev[updateResponse.uniqeID],
         }));
       } else if (updateResponse.action === "delete") {
-        fetchCategories();
+        // fetchCategories();
+        const updatedArray = categories.filter(product => product._id !== deleteData.uniqeID);
+        setCategories(updatedArray)
       }
     }
   }, [updateResponse]);
@@ -275,7 +285,7 @@ const Categories = () => {
                       <p>&nbsp;</p>
                     </td>
                   </tr>
-                  {categoryData?.data?.map((item, index) => (
+                  {categories?.map((item, index) => (
                     <tr key={item._id} className="border-t">
                       <td className="px-4 py-3 text-gray-900 text-[20px] font-bold">
                         {index + 1}

@@ -33,6 +33,7 @@ const productSchema = new mongoose.Schema({
     productCollection:{
         type: mongoose.Schema.Types.ObjectId,
         // required: true
+        ref: 'Collection'
     },
     description:{
         type: String,

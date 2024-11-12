@@ -19,7 +19,7 @@ module.exports.upsertProducts = async(req,res)=>{
 
             
             
-            const insertData = { ...formData,isListed,updatedAt,createdAt }
+            const insertData = { ...formData,isListed,updatedAt,createdAt,productCollection:formData?.productCollection?._id }
             // console.log(insertData);
 
             const newProduct = await Product.create( insertData )
@@ -69,9 +69,8 @@ module.exports.getProducts = async(req,res)=>{
 
     try {
 
-        const products = await Product.find({})
+        const products = await Product.find({}).populate('category','name' ).populate('productCollection','name' )
 
-        // console.log(products);
         
         
         if(products.length<=0){
@@ -98,13 +97,14 @@ module.exports.getProducts = async(req,res)=>{
 
 module.exports.getCAtegoryProducts = async(req,res)=>{
 
+    
+    
     const id = req.params.id
     
-
+    
     try {
-
+        
         const products = await Product.find({  category:id }).populate('category','name' )
-
         
         if(products.length<=0){
 

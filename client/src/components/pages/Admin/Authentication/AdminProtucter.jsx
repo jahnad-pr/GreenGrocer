@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetAdminMutation } from "../../../../services/Admin/adminApi";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -8,8 +8,15 @@ const AdminProtucter = ({ children }) => {
 
     // nav hook and rtk quary hook
     const [getAdmin, { isLoading, error, data }] = useGetAdminMutation()
+    const [admin,setAdmin] = useState({})
     const navigate = useNavigate()
     const location = useLocation()
+
+    useEffect(()=>{
+        if(data?.admin){
+            setAdmin(data?.admin)
+        }
+    },[data])
 
     // api call for cookies
     useEffect(()=>{ (async()=>{ await getAdmin().unwrap() })() },[])
@@ -22,7 +29,8 @@ const AdminProtucter = ({ children }) => {
     if(location.pathname==='/auth/admin/login'&&data){
         return navigate('/admin/home')
     }else{
-        return children
+        // return children
+        return React.cloneElement(children, { adminData:admin })
     }
 
 }

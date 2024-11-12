@@ -7,7 +7,7 @@ import { productEndpoints } from './productEndpoints';
 
 export const adminApiSlice = createApi({
   reducerPath: 'adminApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3333' }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_SERVER_URL }),
   endpoints: (builder) => ({
     ...authEndpoints(builder),
     ...customerEndpoints(builder),
@@ -32,4 +32,5 @@ export const {
   useGetProductsMutation,
   useUpdateProductMutation,
   useUploadImagesMutation,
+  useLogoutAdminMutation
 } = adminApiSlice;

@@ -5,6 +5,8 @@ import axios from "axios";
 // Component imports
 import ImagePicker from "../../../parts/popups/ImgaePicker";
 import { ToastContainer, toast } from "react-toastify";
+import emptyStateImage from "../../../../assets/images/noCAtegory.png";
+
 
 // API hooks
 import {
@@ -18,7 +20,7 @@ import placeholderImage from "../../../../assets/images/three_place.png";
 import ColorPick from "../../../parts/popups/ColorPickerPopup";
 
 // Constants
-const UPLOAD_ENDPOINT = "http://localhost:3333/admin/uploadImages";
+const UPLOAD_ENDPOINT = import.meta.env.VITE_IMAGE_UPLOAD_URL;
 const INITIAL_FORM_STATE = {
   name: "",
   category: "",
@@ -41,6 +43,7 @@ const CollectionManage = () => {
   const [colorIndex, setColorIndex] = useState(1);
   const [colors, setColors] = useState({primary:'#333333',secondary:'#555555'});
   const [popup, showPop] = useState(false);
+  const [isChanged, setChaged] = useState(false);
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
 
   // Router hooks
@@ -53,7 +56,7 @@ const CollectionManage = () => {
       setFormState(location.state.item);
       setColors({primary:location.state.item.colorPrimary,secondary:location.state.item.colorSecondary})
       setSelectedProductIds(location.state.item.products)
-      // setCollectionImage([location.state.item.pic])
+      setCollectionImage([location.state.item.pic])
 
     }
   }, [location]);
@@ -81,6 +84,8 @@ const CollectionManage = () => {
       navigate('/admin/Collection',{ state:{message:data?.message,status:'success'} });
     }
    },[data])
+
+
 
   // useEffect(()=>{  collectionImage.length>0&&(!formState.pic)?setFormState((prev)=>({...prev,pic:collectionImage[0]})):"" },[collectionImage])
 
@@ -231,27 +236,76 @@ const CollectionManage = () => {
     return brightness < 128;
   }
   
-  useEffect(()=>{},[collectionImage])
+  // useEffect(()=>{},[collectionImage])
+  function areObjectsEqual(obj1, obj2) {
+    // Check if both objects have the same number of keys
+    if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+      return false;
+    }
+  
+    // Check if values for the same keys are equal
+    for (let key in obj1) {
+      if (obj1.hasOwnProperty(key)) {
+        // If the key doesn't exist in obj2, return false
+        if (!obj2.hasOwnProperty(key)) {
+          return false;
+        }
+  
+        const val1 = obj1[key];
+        const val2 = obj2[key];
+  
+        // Check if both values are arrays
+        if (Array.isArray(val1) && Array.isArray(val2)) {
+          // If arrays have different lengths, return false
+          if (val1.length !== val2.length) {
+            return false;
+          }
+  
+          // Check if all elements in arrays are the same
+          for (let i = 0; i < val1.length; i++) {
+            if (val1[i] !== val2[i]) {
+              return false;
+            }
+          }
+        } 
+        // If only one of them is an array, return false
+        else if (Array.isArray(val1) || Array.isArray(val2)) {
+          return false;
+        } 
+        // If they are not arrays and not equal, return false
+        else if (val1 !== val2) {
+          return false;
+        }
+      }
+    }
+  
+    // If all checks pass, the objects are equal
+    return true;
+  }
+  
 
 
   const handleCollectionUpdate = async () => {
+
+
 
     const error = validateFormData(formState);
     if (!error) {
       try {
         let imageUrl = formState?.pic || ''
 
-        if(!formState?.pic || collectionImage[0]){
+        
+        if(!formState?.pic || collectionImage[0] && isChanged){
 
           imageUrl = await uploadImage(collectionImage?.[0]);
 
         }
 
         let collectionData = ''
-
+        
         if(!formState?.pic || collectionImage[0]){
-
-         collectionData = {
+          
+          collectionData = {
             ...formState,
             pic: imageUrl,
             products: [...new Set(selectedProductIds)],
@@ -267,10 +321,16 @@ const CollectionManage = () => {
             colorPrimary:colors.primary,
             colorSecondary:colors.secondary
 
+          }
         }
-      }
-
         
+        // console.log(areObjectsEqual(collectionData,location.state.item));
+        if(collectionData,location.state.item){
+
+          if(areObjectsEqual(collectionData,location.state.item)&&!isChanged){
+            return showToast('Nothing Changed','error')
+          }
+        }
 
         await upsertCollection(collectionData).unwrap();
       } catch (error) {
@@ -281,11 +341,13 @@ const CollectionManage = () => {
     }
   };
 
+
   return (
     <>
       <ToastContainer position="bottom-left" />
       {showImagePicker && (
         <ImagePicker
+        setChaged={setChaged}
           imageses={collectionImage}
           maxImages={1}
           setImageUrls={setCollectionImage}
@@ -419,7 +481,7 @@ const CollectionManage = () => {
                         <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
                           {productsData?.data?.map(
                             (product) =>
-                              product.isListed && product.category===formState.category && (
+                              product.isListed && product.category._id===formState.category && (
                                 <div
                                   key={product._id}
                                   onClick={() =>

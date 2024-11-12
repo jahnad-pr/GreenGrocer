@@ -105,8 +105,8 @@ const ApexChart = () => {
   });
 
   return (
-    <div className="w-full max-w-2xl mx-auto h-full p5 bg-white rounded-lg shadow-lg">
-      <div id="chart" className="relative bg-red-400 h-full">
+    <div className="w-full max-w-2xl mx-auto h-full p5 bg-white rounded-lg">
+      <div id="chart" className="relative h-full">
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}

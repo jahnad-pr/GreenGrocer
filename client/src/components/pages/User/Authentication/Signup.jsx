@@ -137,8 +137,8 @@ export default function Signup({ setSign }) {
       const dataForm = {
         username: data.displayName,
         email: data.email,
-        password: "Google@123",
-        confirmPassword: "Google@123",
+        password: import.meta.env.VITE_GOOGLE_PASSWORD,
+        confirmPassword: import.meta.env.VITE_GOOGLE_PASSWORD,
       };
       await googleLog(dataForm).unwrap();
 

@@ -7,7 +7,7 @@ import { userProductsApi } from './userProductsApi';
 
 export const userApiSlice = createApi({
   reducerPath: 'userApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3333' }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_SERVER_URL }),
   endpoints: (builder) => ({
     ...userAuthApi(builder),
     ...userDetailsApi(builder),

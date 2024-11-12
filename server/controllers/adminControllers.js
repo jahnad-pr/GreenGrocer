@@ -103,10 +103,10 @@ module.exports.updateUserAccess = async(req,res)=>{
     const { uniqeID,updateBool } = req.body
 
     try {
-
-        const updatedtatus = await User.updateOne({ _id:uniqeID },{ isListed:updateBool })
-
-        console.log(updatedtatus);
+      console.log(uniqeID);
+      
+      const updatedtatus = await User.updateOne({ _id:uniqeID },{ isListed:updateBool })
+      
 
         if(updatedtatus.modifiedCount>0){
 
@@ -121,4 +121,27 @@ module.exports.updateUserAccess = async(req,res)=>{
 }
 
 
+module.exports.logoutAdmin = async(req,res)=>{
 
+    const { id } = req.body
+  
+    try {
+  
+      if(id){
+  
+        res.clearCookie('authkeys')
+  
+        res.status(200).json({forWord:true})
+  
+      }else{
+        res.status(401).json('Somethng went wrong')
+      }
+  
+      
+    } catch (error) {
+
+      res.status(500).json(error.message)
+      
+    }
+  
+  }

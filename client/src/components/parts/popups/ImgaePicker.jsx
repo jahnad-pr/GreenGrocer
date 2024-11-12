@@ -64,8 +64,6 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses,setChage
   const imagerPopup = useRef(null);
 
   useEffect(() => {
-    console.log(imageses);
-    
     if (imageses) {
       setInit({ 1: false, 2: false, 3: false });
       setImages(imageses);
@@ -172,11 +170,16 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses,setChage
 
 
   const closeWindow = () => {
-    if(images[2]){
+    if(images[maxImages-1]){
       setImageUrls(images);
       showPopup(false);
       setChaged(true)
-    }else{
+    }else if(images[0]&&maxImages===1){
+      setImageUrls(images);
+      showPopup(false);
+      setChaged(true)
+    }
+    else{
       setImageUrls();
       showPopup(false);
     }
@@ -335,7 +338,7 @@ const ImagePicker = ({ setImageUrls, showPopup, maxImages = 1, imageses,setChage
 loadImage(images[0])
 .then(img => getCroppedImg(img, crop))
 .then(croppedImg => console.log(croppedImg))
-.catch(error => console.error(error));
+.catch(error => '');
 
 
   return (
@@ -472,13 +475,15 @@ loadImage(images[0])
                 <FaSync />
                 Update Image
               </button>
-              <button
+              {  Array.isArray(currentImage)?!currentImage[0].startsWith('http'):!currentImage.startsWith('http') &&
+                
+              <button  onClick={handleCropClick}
                 className="bg-blue-500 px-10 py-3 rounded-[30px] flex items-center gap-3 text-white hover:opacity-90 transition-opacity"
-                onClick={handleCropClick}
               >
                 <FaCrop />
                 Crop Image
               </button>
+              }
               <button
                 className="bg-red-500 px-10 py-3 rounded-[30px] flex items-center gap-3 text-white hover:opacity-90 transition-opacity"
                 onClick={deleteImage}

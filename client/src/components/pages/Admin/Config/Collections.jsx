@@ -5,6 +5,8 @@ import { useGetCollectionsMutation, useUpdateCollectionMutation } from "../../..
 import Recents from "../../../parts/Main/Recents";
 import DeletePopup from "../../../parts/popups/DeletePopup";
 import { ToastContainer, toast } from "react-toastify";
+import emptyStateImage from "../../../../assets/images/noCAtegory.png";
+
 
 // Constants
 const INITIAL_TOGGLE_STATE = Array(11).fill(false).reduce((acc, _, idx) => {
@@ -16,6 +18,7 @@ const Collections = () => {
   const navigate = useNavigate();
   const location = useLocation()
   const [popup, showPopup] = useState(false);
+  const [collectionData, setCollectionData] = useState([]);
   const [deleteData, setDeleteData] = useState(null)
   
 
@@ -62,6 +65,13 @@ const Collections = () => {
     }).unwrap();
   };
 
+
+  useEffect(()=>{
+    if(updateData?.message){
+      showToast(updateData?.message,'success')
+    }
+  },[updateData])
+
   const handleEditClick = (item) => {
     navigate("/admin/Collection/manage", { state: { item } });
   };
@@ -87,6 +97,7 @@ const Collections = () => {
         return acc;
       }, {});
       setToggleStates(newToggleStates);
+      setCollectionData(collectionsData?.data)
     }
   }, [collectionsData]);
 
@@ -97,7 +108,9 @@ const Collections = () => {
         [updateData.uniqeID]: !prev[updateData.uniqeID]
       }));
     } else if (updateData?.action === "delete") {
-      fetchCollections().unwrap();
+      // fetchCollections().unwrap();
+      const updatedArray = collectionData.filter(collection => collection._id !== deleteData.uniqeID);
+      setCollectionData(updatedArray)
     }
   }, [updateData]);
 
@@ -150,6 +163,27 @@ const Collections = () => {
     </div>
   );
 
+  const EmptyState = () => (
+    <div className="w-full h-[60vh] flex items-center justify-center flex-col text-center gap-5">
+      <img className="h-[70%]" src={emptyStateImage} alt="No categories" />
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[30px] font-bold">No Greens Collections</h1>
+        <p className="opacity-45">
+          You have the power to add the greens for people's good health. Add
+          some Collections of green
+        </p>
+        <p
+          onClick={() =>
+            navigate("/admin/Collection/manage", { state: { name: "" } })
+          }
+          className="font-bold opacity-100 text-blue-500 cursor-pointer"
+        >
+          Let's go
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <>
     <ToastContainer position="bottom-left" />
@@ -179,7 +213,9 @@ const Collections = () => {
             </div>
 
             {/* Collections Table */}
-            <table className="w-full border-collapse rounded-full mt-5">
+            { collectionData.length>0 ?
+
+      <table className="w-full border-collapse rounded-full mt-5">
               <thead>
                 <tr className="bg-[linear-gradient(to_right,#60C3A850,#C5D4ED40)] rounded-full text-[#00000070]">
                   <th className="px-4 py-3 text-left text-sm text-gray-600 rounded-l-full">No.</th>
@@ -191,11 +227,11 @@ const Collections = () => {
                 </tr>
               </thead>
               <tbody>
-                {collectionsData?.data?.map((item, index) => (
+                {collectionData?.map((item, index) => (
                   <tr key={item._id} className="border-t">
                     <td className="px-4 py-3 text-gray-900 text-[20px] font-bold">{index + 1}</td>
                     <td className="px-4 py-3 text-gray-900 text-[18px] font-medium">{item.name}</td>
-                    <td className="px-4 py-3 text-gray-600 text-[18px] font-medium">{item.category}</td>
+                    <td className="px-4 py-3 text-gray-600 text-[18px] font-medium">{item.category?.name}</td>
                     <td className="px-4 py-3">
                       <img 
                         src={item.pic} 
@@ -227,7 +263,8 @@ const Collections = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table>:<EmptyState />
+            }
 
             {/* Pagination */}
             <div className="flex justify-end mt-4 absolute bottom-20 left-1/2 translate-x-[-50%]">

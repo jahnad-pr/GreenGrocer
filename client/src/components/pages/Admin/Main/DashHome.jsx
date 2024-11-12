@@ -17,7 +17,7 @@ export default function DashHome() {
         <div className="h-full w-[100%] flex flex-wrap">
 
           {/* profile deatail and message */}
-          <div className="w-[50%] h-[35%] bg-red-300 flex ic justify-center px-40">
+          <div className="w-[50%] h-[35%]  flex ic justify-center px-40">
            
            <AngleCircle />
            Totle sales and stats
@@ -25,7 +25,7 @@ export default function DashHome() {
           </div>
 
           {/* profile pic section */}
-          <div className="w-[50%] h-[35%] bg-red-200">
+          <div className="w-[50%] h-[35%] ">
             <div className="aspect-square h-full  rounded-full inline-flex relative gap-10 items-center">
               <img className="h-full object-cover absolute" src={picr} alt="" />
               <img className="h-full" src={pic} alt="" />
@@ -41,15 +41,15 @@ export default function DashHome() {
           </div>
 
           {/* chart config container */}
-          <div className="w-1/2 h-[55%] pb-20 gap-5 flex  bg-red-100">
+          <div className="w-1/2 h-[55%] pb-20 gap-5 flex">
             <MainChart /> 
           </div>
 
           {/* other stats */}
-          <div className="w-1/2 h-[55%] bg-red-100 flex flex-col">
+          <div className="w-1/2 h-[55%] flex flex-col">
 
-          <div className="w-full h-60 bg-green-300 flex items-center">
-            <div className="inline-flex bg-red-600">
+          <div className="w-full h-60  flex items-center">
+            <div className="inline-flex ">
             <div className="w-28 h-28 bg-gray-400 rounded-full"></div>
             <div className="w-28 h-28 bg-gray-500 rounded-full relative translate-x-[-50%] translate-y-[50%]"></div>
             <div className="w-36 h-36 bg-gray-300 rounded-full relative translate-x-[-100%] translate-y-[-20%]"></div>
@@ -58,9 +58,9 @@ export default function DashHome() {
             order stats
           </div>
 
-          <div className="flex-1 bg-gray-200 flex">
-            <div className="h-full w-1/2 bg-green-400"></div>
-            <div className="h-full w-1/2 bg-green-500">
+          <div className="flex-1  flex">
+            <div className="h-full w-1/2 "></div>
+            <div className="h-full w-1/2 ">
             <LineChart />
             </div>
           </div>

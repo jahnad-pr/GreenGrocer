@@ -12,7 +12,7 @@ export default function Home({ userData }) {
   const navigator = useNavigate();
   const location = useLocation();
 
-  const text = "Framer Motion is a really cool tool".split(" ")
+  const text = "Fresh Veggies Delivered to You".split(" ")
 
   useEffect(() => {
     if (location?.state?.userData) {
@@ -32,7 +32,7 @@ export default function Home({ userData }) {
             </p>
             <h1 className="text-[70px] font-bold leading-none text-[#52AA57]">
               Fresh Fruits &<br />
-              <span className="text-[#3C6E51]">Veggies Delivered</span>
+              <span className="text-[#3C6E51]">
               {text.map((el, i) => (
                 <motion.span
                   initial={{ opacity: 0 }}
@@ -45,7 +45,7 @@ export default function Home({ userData }) {
                 >
                   {el}{" "}
                 </motion.span>
-              ))}
+              ))}</span>
             </h1>
             <p className="pr-60 opacity-45">
               Enjoy fresh, healthy fruits and vegetables delivered straight to

@@ -27,7 +27,8 @@ const collectionSchema = new mongoose.Schema({
     },
     category:{
         type: String,
-        required: true
+        required: true.valueOf,
+        ref:'Categorie'
     },
     description:{
         type: String,

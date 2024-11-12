@@ -14,4 +14,14 @@ export const authEndpoints = (builder) => ({
       credentials: 'include',
     }),
   }),
+
+   logoutAdmin: builder.mutation({
+      query: (id) => ({
+        url: 'admin/logoutAdmin',
+        method: 'POST',
+        body: {id},
+        credentials: 'include',
+      }),
+    }),
+
 });

@@ -40,7 +40,7 @@ module.exports.getCollections = async(req,res)=>{
 
     try {
 
-        const collection = await Collection.find({})
+        const collection = await Collection.find({}).populate('category','name')
         
         if(collection.length<=0){
             res.status(500).json({mission:false,message:'empty categories',data:[]})
@@ -77,7 +77,6 @@ module.exports.updateCollection = async(req,res)=>{
             
                 const result = await Collection.findByIdAndDelete(uniqeID)
 
-                console.log(result);
                 
                 return res.status(200).json({mission:true,message:'successfully deleted',uniqeID:uniqeID,action})
         }

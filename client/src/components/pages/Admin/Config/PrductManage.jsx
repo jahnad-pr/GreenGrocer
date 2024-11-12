@@ -5,6 +5,7 @@ import Recents from "../../../parts/Main/Recents";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 import {
   useGetCategoriesMutation,
   useGetCollectionsMutation,
@@ -31,8 +32,8 @@ const ProductManage = () => {
     category: "",
     productCollection: "",
     description: "",
-    regularPrice: 0,
-    salePrice: 0,
+    regularPrice: null,
+    salePrice: null,
     stock: "",
     freshness: "fresh",
     harvestedTime:new Date().toISOString().slice(0, 16),
@@ -57,7 +58,7 @@ const ProductManage = () => {
   }, []);
 
   // Update formData when an input changes
-  const handleChange = (e) => {
+  const handleChange = (e,pos=0) => {
     const { name, value } = e.target;
     if(name==='regularPrice'||name==='salePrice'){
       setFormData((prevData) => ({ ...prevData, [name]: Number(value) }));
@@ -65,6 +66,12 @@ const ProductManage = () => {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
   };
+
+  useEffect(()=>{
+    // console.log(data?.category);
+    
+    setFormData((prevData)=>({ ...prevData, productCollection:collData?.data?.filter((data)=> formData.category._id === data.category_id )  }))
+  },[formData.category])
 
 
   const isValidCategoryName = (name) => {
@@ -98,7 +105,7 @@ const ProductManage = () => {
     }
       
     if (!data.category) return "Category is required.";
-    if (!data.productCollection) return "Collection is required.";
+    // if (!data.productCollection) return "Collection is required.";
 
     if(!isInvalidDescription(data.description.trim())){
       return "Description must contain atleast three words."
@@ -202,7 +209,7 @@ const ProductManage = () => {
       formData.append("file", file);
       try {
         const { data } = await axios.post(
-          "http://localhost:3333/admin/uploadImages",
+          import.meta.env.VITE_IMAGE_UPLOAD_URL,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -220,30 +227,30 @@ const ProductManage = () => {
   useEffect(()=>{ Object.values(urls).length>=3?actuallUpload():'' },[urls])
 
   function areObjectsEqual(obj1, obj2) {
-  // Check if both objects have the same number of keys
-  if (Object.keys(obj1).length !== Object.keys(obj2).length) {
-    return false;
-  }
+    // Check if both objects have the same number of keys
+    if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+      return false;
+    }
+    
   
-
-  // Check if values for the same keys are equal
-  for (let key in obj1) {
-    if (obj1.hasOwnProperty(key)) {
-      // If the key doesn't exist in obj2, return false
-      if (!obj2.hasOwnProperty(key)) {
-        return false;
-      }
-
-      // If values are not the same, return false
-      if (obj1[key] !== obj2[key]) {
-        return false;
+    // Check if values for the same keys are equal
+    for (let key in obj1) {
+      if (obj1.hasOwnProperty(key)) {
+        // If the key doesn't exist in obj2, return false
+        if (!obj2.hasOwnProperty(key)) {
+          return false;
+        }
+  
+        // If values are not the same, return false
+        if (obj1[key] !== obj2[key]) {
+          return false;
+        }
       }
     }
+  
+    // If all checks pass, the objects are equal
+    return true;
   }
-
-  // If all checks pass, the objects are equal
-  return true;
-}
 
   function checkObjectValues(obj) {
     const isEmpty = Object.values(obj).every(
@@ -272,7 +279,6 @@ const ProductManage = () => {
 
     upsertData = { ...formData };
     }
-    console.log(images);
 
     if(action==='update'&&areObjectsEqual(upsertData,location.state.product)&&!isChanged){
       return showToast('Nothing Changed','error')
@@ -424,7 +430,7 @@ const ProductManage = () => {
                       </label>
                       <select
                         className="w-52 py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
-                        name="collection"
+                        name="productCollection"
                         value={formData.productCollection}
                         onChange={handleChange}
                       >

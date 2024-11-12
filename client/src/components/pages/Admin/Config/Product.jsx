@@ -4,6 +4,7 @@ import { useGetProductsMutation, useUpdateProductMutation } from "../../../../se
 import DeletePopup from "../../../parts/popups/DeletePopup";
 import Recents from "../../../parts/Main/Recents";
 import { ToastContainer, toast } from "react-toastify";
+import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import "react-toastify/dist/ReactToastify.css";
 
 const Products = () => {
@@ -18,6 +19,7 @@ const Products = () => {
   const [popup, showPopup] = useState(false);
   const [deleteData, setDeleteData] = useState(null);
   const [togglor, setToggler] = useState({});
+  const [productsData, setProductsData] = useState([]);
 
    // Show toast notification
    const showToast = (message, type = "success") => {
@@ -52,8 +54,15 @@ const Products = () => {
         [cat._id]: cat.isListed
       }), {});
       setToggler(toggleState);
+      setProductsData(data?.data)
     }
   }, [data]);
+
+  useEffect(()=>{
+    if(accessData?.message){
+      showToast(accessData?.message,'success')
+    }
+  },[accessData])
 
   useEffect(()=>{ 
     if(location?.state?.message){
@@ -77,7 +86,9 @@ const Products = () => {
         [accessData.uniqeID]: !prev[accessData.uniqeID]
       }));
     } else if (accessData?.action === "delete") {
-      getProducts().unwrap();
+      // getProducts().unwrap();
+      const updatedArray = productsData.filter(product => product._id !== deleteData.uniqeID);
+      setProductsData(updatedArray)
     }
   }, [accessData]);
 
@@ -91,6 +102,26 @@ const Products = () => {
     showPopup(true);
   };
 
+  const EmptyState = () => (
+    <div className="w-full h-[60vh] flex items-center justify-center flex-col text-center gap-5">
+      <img className="h-[70%]" src={emptyStateImage} alt="No categories" />
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[30px] font-bold">No Products</h1>
+        <p className="opacity-45">
+         No user data found create a Products to continue
+        </p>
+        <p
+          onClick={() =>
+            navigate("/admin/Products/manage", { state: { name: "" } })
+          }
+          className="font-bold opacity-100 text-blue-500 cursor-pointer"
+        >
+          Let's go
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <>
     <ToastContainer position="bottom-left" />
@@ -100,6 +131,7 @@ const Products = () => {
           updater={updateProduct} 
           deleteData={deleteData} 
           showPopup={showPopup} 
+          
         />
       )}
 
@@ -142,6 +174,9 @@ const Products = () => {
 
             {/* Products Table */}
             <div className="overflow-auto pb-96">
+
+              { productsData?.length>0 ?
+
               <table className="w-full border-collapse">
                 {/* Table Header */}
                 <thead className="sticky top-0 z-10">
@@ -160,8 +195,9 @@ const Products = () => {
                 <tr><th>&nbsp;</th></tr>
 
                 {/* Table Body */}
+                
                 <tbody>
-                  {data?.data?.map((product, index) => (
+                  {productsData?.map((product, index) => (
                     <tr key={product._id} className="hover:bg-gray-50">
                       <td className="px-3 py-2 font-bold text-gray-900 text-[20px]">{index + 1}</td>
                       <td className="px-3 py-2">
@@ -169,15 +205,15 @@ const Products = () => {
                         <div className="text-xs text-gray-500">{product.description}</div>
                       </td>
                       <td className="px-3 py-2">
-                        <div className="font-medium text-gray-900">{'product'}</div>
-                        <div className="text-xs text-gray-500">{product.subCategory}</div>
+                        <div className="font-medium text-gray-900">{product?.category?.name}</div>
+                        <div className="text-xs text-gray-500">{product?.productCollection?.name}</div>
                       </td>
                       <td className="px-3 py-2">
                         <div className="text-[14px] text-gray-500 line-through">₹{product.regularPrice}</div>
                         <div className="font-bold text-gray-600">₹{product.salePrice}</div>
                       </td>
                       <td className="px-3 py-2 text-sm text-gray-500">{product.from}</td>
-                      <td className="px-3 py-2 text-gray-900 font-bold">{product.stock}</td>
+                      <td className="px-3 py-2 text-gray-900 font-bold">{product.stock/1000} <span className="opacity-45">Kg</span></td>
                       <td className="px-3 py-2">
                         <img src={product?.pics?.one} alt={product.name} className="w-8 h-8 rounded-full object-cover" />
                       </td>
@@ -218,7 +254,8 @@ const Products = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table>:<EmptyState />
+              }
             </div>
 
             {/* Pagination */}

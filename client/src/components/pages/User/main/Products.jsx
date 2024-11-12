@@ -28,8 +28,8 @@ export default function Products() {
     })();
   }, []);
 
-  useEffect(()=>{ console.log(CollData);
-   },[CollData])
+  // useEffect(()=>{ console.log(proData);
+  //  },[proData])
 
   
 
@@ -46,9 +46,9 @@ export default function Products() {
 
 
   return (
-    <div className="w-[96%] h-full bg-gray-100 motion-preset-slide-right ">
+    <div className="w-[96%] h-full  motion-preset-slide-right ">
       <div className="w-full h-full bg-gray-200 px-40">
-        <div className="w-full h-full bg-gray-300 pt-16 overflow-y-scroll">
+        <div className="w-full h-full pt-16 overflow-y-scroll">
           {/* Main head */}
           <h1 className="text-[30px] font-bold">All Products and Servce</h1>
 
@@ -56,10 +56,10 @@ export default function Products() {
           <div className="flex text-[20px] my-10 font-[500] relative py-3">
             {catData?.data?.map((data,index) => {
               
-              return data.isListed && <p  onClick={()=>setPosition(index)} className="w-28">{data.name}</p>;
+              return data.isListed && <p  onClick={()=>(setPosition(index))} className="w-28">{data.name}</p>;
             })}
-            <p className="opacity-45">Service</p>
-            <div className={`w-16 h-1 duration-500 left-${28*cPosition} bg-black absolute bottom-0`}></div>
+            {/* <p className="opacity-45">Service</p> */}
+            <div style={{left:`${112*cPosition}px`}} className={`w-16 h-1 duration-500 bg-black absolute bottom-0`}></div>
           </div>
 
           {/* Banners */}
@@ -90,7 +90,7 @@ export default function Products() {
           <div className="w-full h-auto flex my-5 mt-8 gap-5  mb-80 relative flex-wrap">
             <p  onClick={()=>navigator(`/user/collection/${catData?.data[cPosition].name}/products`,{ state:{products:proData?.data,action:'gategory'} })} className='px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full'>View all</p>
             {proData?.data?.map((data, index) => {
-                if(data.isListed){
+                if(true){
 
                     return <Product key={index} type={'product'} data={data} pos={index} />;
                     

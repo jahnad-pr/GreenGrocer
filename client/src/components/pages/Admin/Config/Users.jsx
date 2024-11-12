@@ -3,6 +3,7 @@ import pic from "../../../../assets/images/pico.jpeg";
 import Recents from "../../../parts/Main/Recents";
 import { useNavigate } from "react-router-dom";
 import { useGetCustomersMutation, useUpdateUserAccessMutation } from "../../../../services/Admin/adminApi";
+import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 
 const UserTable = () => {
 
@@ -15,6 +16,8 @@ const UserTable = () => {
   const [updateUserAccess, { isLoading:accessLoading, error:accessError, data:accessData }] = useUpdateUserAccessMutation();
   
 
+  const navigate = useNavigate()
+
   // update user access
   const accessUpdater = async(uniqeID,updateBool)=>{
     await updateUserAccess({uniqeID,updateBool}).unwrap()
@@ -24,10 +27,12 @@ const UserTable = () => {
   // to prevent reload
   useEffect(()=>{
     if(data?.data){
-      data.data.map((user,index)=>{
-        setToggler({...togglor,[user._id]:user.isListed})
-      })
-    }
+        const toggleState = data.data.reduce((acc, cat) => ({
+          ...acc,
+          [cat._id]: cat.isListed
+        }), {});
+        setToggler(toggleState);
+      }
   },[data])
 
 
@@ -44,24 +49,27 @@ const UserTable = () => {
     (async()=>{ await getCustomers().unwrap() })()
   },[])
 
-  const users = [
-    {
-      id: "01",
-      name: "Devloper",
-      email: "Devloper@gmail.com",
-      number: "+91 8978453458",
-      access: true,
-      update: true,
-    },
-    {
-      id: "02",
-      name: "Shubham",
-      email: "shubham@gmail.com",
-      number: "+91 87453342312",
-      access: false,
-      update: true,
-    },
-  ];
+
+
+  const EmptyState = () => (
+    <div className="w-full h-[60vh] flex items-center justify-center flex-col text-center gap-5">
+      <img className="h-[70%]" src={emptyStateImage} alt="No categories" />
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[30px] font-bold">No Users</h1>
+        <p className="opacity-45">
+         No user data found create a user yurself to continue
+        </p>
+        <p
+          onClick={() =>
+            navigate("/auth/user/signup", { state: { name: "" } })
+          }
+          className="font-bold opacity-100 text-blue-500 cursor-pointer"
+        >
+          Let's go
+        </p>
+      </div>
+    </div>
+  );
 
 
   return (
@@ -118,6 +126,8 @@ const UserTable = () => {
 
 
             {/* table------------------------------ */}
+            { data?.data?.length>0 ?
+
             <table className="w-full border-collapse rounded-full mt-5">
               <thead className="py-10">
                 <tr className="bg-[linear-gradient(to_right,#fbdcc9,#fbf5f2)] rounded-full text-[#00000070]">
@@ -178,7 +188,8 @@ const UserTable = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table>:<EmptyState />
+            }
 
             
             {/* pagination nav */}

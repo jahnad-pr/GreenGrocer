@@ -1,11 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Bell } from 'lucide-react';
 import greenGrocerLogo from "../../../assets/Logos/main.png";
 import pic from "../../../assets/images/image 32.png";
+import { useLogoutAdminMutation } from '../../../services/Admin/adminApi';
+import { useNavigate } from 'react-router-dom';
+import DeletePopup from '../popups/DeletePopup';
 
-export default function Header() {
+export default function Header({adminData}) {
+
+  const [logoutUser,{ isLoading,error,data }] = useLogoutAdminMutation()
+  const [popup,showPopup] = useState(false)
+  const navigator = useNavigate()
+
+
+  useEffect(()=>{
+
+    if(data?.forWord){
+      navigator('/auth/admin/login')
+    }
+  },[data])
+
   return (
     <>
+       { popup &&
+    <DeletePopup updater={logoutUser} deleteData={{id:adminData[0]._id}} showPopup={showPopup} action={'logout'}isUser={true}   />
+   }
     <header className="w-full bg-white px-6 py-3 absolute z-10">
       <div className="flex items-center justify-between">
         {/* Logo Section */}
@@ -39,7 +58,7 @@ export default function Header() {
             <div className="w-16 h-16 rounded-full flex items-center justify-center">
               <div className="w-full h-full rounded-full overflow-hidden">
                 {/* Placeholder for profile image */}
-                <img src={pic} alt="" />
+                <img onClick={()=>showPopup(true)} src={pic} alt="" />
               </div>
             </div>
           </div>

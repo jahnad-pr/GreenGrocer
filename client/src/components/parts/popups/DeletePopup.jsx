@@ -22,7 +22,7 @@ export default function DeletePopup({showPopup,deleteData={},updater,action='del
 
 
   return (
-    <div className='w-screen  h-screen absolute left-0 top-0 bg-[#00000080]  z-10 grid place-items-center text-white'>
+    <div className='w-screen  h-screen absolute left-0 top-0 bg-[#00000080]  z-20 grid place-items-center text-white'>
         <div className="w-full max-w-[550px] h- py-8 bg-gray-900 flex items-center justify-center flex-col gap-5 rounded-3xl px-10">
             <h1 className='text-[30px] font-bold'>Are You sure to {action} ?</h1>
             <p className='opacity-45 translate-y-[-18px]' >Press confirm to {action}</p>

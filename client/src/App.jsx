@@ -47,8 +47,8 @@ export default function App() {
 
       <div className="w-screen h-screen flex overflow-hidden">
         {location.pathname.startsWith('/user/') && <UserProtecter><Navigator /></UserProtecter>}
-        {location.pathname.startsWith('/admin/') && <Header />}
-        {location.pathname.startsWith('/admin/') && <AdminNav />}
+        {location.pathname.startsWith('/admin/') && <AdminProtucter><Header /></AdminProtucter>}
+        {location.pathname.startsWith('/admin/') && <><AdminNav /></>}
 
           <Routes>
             <Route path="/auth/admin/login" element={<AdminProtucter><Login /></AdminProtucter>} />
