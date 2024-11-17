@@ -12,7 +12,7 @@ export default function Product({pos,data,type}) {
         <img className='max-w-[50%] aspect-square mix-blend-darken' src={data.pic||data?.pics?.one} alt="" />
         <h1 className='text-[23px] font-bold'>{data.name}</h1>
         <p className='opacity-30 mb-5' >{type}</p>
-        <button onClick={()=>type==='product'?(navigate('/user/productPage',{ state:data })):navigate(`/user/collection/${data.name}/products`,{ state:{products:data?.products,action:'collection'} })} className='px-16 py-3 bg-green-800 font-bold rounded-br-full rounded-tl-full text-white'>View</button>
+        <button onClick={()=>type==='product'?(navigate('/user/productPage',{ state:{ id:data._id } })):navigate(`/user/collection/${data.name}/products`,{ state:{products:data?.products,action:'collection'} })} className='px-16 py-3 bg-green-800 font-bold rounded-br-full rounded-tl-full text-white'>View</button>
     </div>
   )
 }

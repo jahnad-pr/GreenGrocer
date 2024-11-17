@@ -17,7 +17,7 @@ export default function UserProtecter({ children }) {
     })() },[location])
 
     useEffect(()=>{
-        if(location.pathname==='/auth/user/signup'){
+        if(location.pathname==='/user/signup'){
             if(data?.user.length>0){
                 navigater('/user/home',{ state:{ message:'',userData:data?.user } })
             }

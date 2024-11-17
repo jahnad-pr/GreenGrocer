@@ -49,6 +49,9 @@ const UserTable = () => {
     (async()=>{ await getCustomers().unwrap() })()
   },[])
 
+  console.log(data);
+  
+
 
 
   const EmptyState = () => (
@@ -61,7 +64,7 @@ const UserTable = () => {
         </p>
         <p
           onClick={() =>
-            navigate("/auth/user/signup", { state: { name: "" } })
+            navigate("/user/signup", { state: { name: "" } })
           }
           className="font-bold opacity-100 text-blue-500 cursor-pointer"
         >

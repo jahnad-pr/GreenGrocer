@@ -70,12 +70,15 @@ module.exports.loginUser = async (req, res) => {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
+
       return res.status(401).json({ message: "Wrong Password or email" });
+
     }
 
     const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "9h" });
-    res.cookie("userToken", token, { httpOnly: true, maxAge: 3600000 });
+    res.cookie("userToken", token, { httpOnly: true, maxAge: 9900000 });
 
     res.json({
       message: "Login successful",
@@ -232,54 +235,94 @@ module.exports.logoutUser = async(req,res)=>{
 
 }
 
-// const removeCokkies =(res)=>{
+
+
+// Create a new user
+module.exports.updateProfile = async (req, res) => {
+
+  const formData = req.body;
+  const { _id } = req.body;
+
+  try {
+
+    const updateStatus = await User.updateOne({ _id },{$set:formData})
+
+    if(updateStatus.modifiedCount){
+      
+      res.status(200).json('Updated successfully');
+
+    }else{
+      res.status(400).json('Nothing Updated');
+    }
+
+  } catch (error) {
+
+    res.status(400).json( error.message );
+  }
+};
+
+
+// check password match or not
+module.exports.matchPassword = async (req, res) => {
+
+  const { password,_id } = req.body;
+
+
+  
+  try {
+    
+    const UserData = await User.findOne({ _id },{ password:1,_id:0 })
+    
+    const isPasswordValid = await bcrypt.compare(password, UserData.password);
+
+    if(isPasswordValid){
+
+      res.status(200).json('Passowrd confirmed ,Reset your passowrd');
+
+    }else{
+
+      res.status(400).json('Password do not match');
+
+    }
+
+  } catch (error) {
+
+    res.status(400).json({ message: error.message });
+
+  }
+};
 
 
 
-// }
+// Reset password
+module.exports.resetPassword = async (req, res) => {
 
-// // Get categories
-// module.exports.getCategories = async (req, res) => {
-//   try {
-//     const categories = await Category.find({});
-//     res.status(categories.length > 0 ? 200 : 500).json({
-//       mission: categories.length > 0,
-//       message: categories.length > 0 ? 'successful' : 'empty categories',
-//       data: categories,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ mission: false, message: error.message });
-//   }
-// };
+  const { password,_id } = req.body;
 
-// // Get collections
-// module.exports.getCollections = async (req, res) => {
-//   const { id } = req.params;
+  
+  const UserData = await User.findOne({ _id },{ password:1,_id:0 })
+  const isPasswordSame = await bcrypt.compare(password, UserData.password);
+  
+  if(isPasswordSame){
+    return res.status(400).json('Enterd Password Is Same');
+  }
+  
+  try {
+    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-//   try {
-//     const categoriesNames = id ? await Collection.find({ category: id }) : null;
-//     res.status(categoriesNames ? 201 : 500).json({
-//       mission: Boolean(categoriesNames),
-//       message: categoriesNames ? 'successful' : 'empty collection',
-//       data: categoriesNames || [],
-//     });
-//   } catch (error) {
-//     res.status(500).json({ mission: false, message: error.message });
-//   }
-// };
+    const updateStatus = await User.updateOne({ _id },{$set:{ password:hashedPassword }})
 
-// // Get products
-// module.exports.getProducts = async (req, res) => {
-//   const { id } = req.params;
+    if(updateStatus.modifiedCount){
+      return res.status(200).json('Reset password successfully');
+    }
+    
+  } catch (error) {
 
-//   try {
-//     const products = id ? await Product.find({ category: id }) : null;
-//     res.status(products ? 201 : 500).json({
-//       mission: Boolean(products),
-//       message: products ? 'successful' : 'empty collection',
-//       data: products || [],
-//     });
-//   } catch (error) {
-//     res.status(500).json({ mission: false, message: error.message });
-//   }
-// };
+    return res.status(400).json(error.message);
+    
+  }
+  
+
+};

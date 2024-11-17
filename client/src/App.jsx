@@ -26,6 +26,15 @@ import ResetPassword from "./components/pages/User/Profile/ResetPassword"
 import Logout from "./components/pages/User/Profile/Logout"
 import ProductReview from "./components/pages/User/main/Subs/ProductReview"
 import ProductsAll from "./components/pages/User/main/Subs/ProductsAll"
+import ProductDetails from "./components/pages/User/main/Subs/ProductDetails"
+import Main from "./components/pages/User/Profile/Main"
+import Profiler from "./components/pages/User/Profile/Profiler"
+import Address from "./components/pages/User/Profile/Address"
+import ManageAddress from "./components/pages/User/Profile/ManageAdress"
+import OrderSummary from "./components/pages/User/main/Subs/OrderSummary"
+import OrderSuccess from "./components/pages/User/main/Subs/OrderSuccess"
+import OrderPayment from "./components/pages/User/main/Subs/OrderPayment"
+import OrderList from "./components/pages/User/Profile/OrderList"
 
 
 
@@ -46,7 +55,7 @@ export default function App() {
     <>
 
       <div className="w-screen h-screen flex overflow-hidden">
-        {location.pathname.startsWith('/user/') && <UserProtecter><Navigator /></UserProtecter>}
+        {location.pathname.startsWith('/user/') && !location.pathname.startsWith('/user/sign') && <UserProtecter><Navigator /></UserProtecter>}
         {location.pathname.startsWith('/admin/') && <AdminProtucter><Header /></AdminProtucter>}
         {location.pathname.startsWith('/admin/') && <><AdminNav /></>}
 
@@ -64,13 +73,24 @@ export default function App() {
           </Routes>
 
         <Routes>
-          <Route path="/auth/user/signup" element={ <UserProtecter><Signup /></UserProtecter> } />
+          <Route path="/user/signup" element={ <UserProtecter><Signup /></UserProtecter> } />
           <Route path="/user/home" element={ <UserProtecter><Home /></UserProtecter> } />
           <Route path="/user/products" element={ <UserProtecter><Products /></UserProtecter> } />
-          <Route path="/user/productpage" element={ <UserProtecter><ProductPage /></UserProtecter> } />
+          {/* <Route path="/user/product" element={ <UserProtecter><ProductDetails /></UserProtecter> } /> */}
+          <Route path="/user/productpage" element={ <UserProtecter><ProductDetails /></UserProtecter> } />
           <Route path="/user/collection/:name/products" element={ <UserProtecter><ProductsAll /></UserProtecter> } />
           <Route path="/user/productpage/:id/reviews" element={ <UserProtecter><ProductReview /></UserProtecter> } />
           <Route path="/user/profile/:id/logout" element={ <UserProtecter><Logout /></UserProtecter> } />
+          <Route path="/user/profile/:id" element={ <UserProtecter><Main /></UserProtecter> } />
+          <Route path="/user/profile/:id/manage" element={ <UserProtecter><Profiler /></UserProtecter> } />
+          <Route path="/user/profile/:id/resetPassword" element={ <UserProtecter><ResetPassword /></UserProtecter> } />
+          <Route path="/user/profile/:id/address" element={ <UserProtecter><Address /></UserProtecter> } />
+          <Route path="/user/profile/:id/manageAddress" element={ <UserProtecter><ManageAddress /></UserProtecter> } />
+          <Route path="/user/ordersummery" element={ <UserProtecter><OrderSummary /></UserProtecter> } />
+          <Route path="/user/payment" element={ <UserProtecter><OrderPayment /></UserProtecter> } />
+          <Route path="/user/success" element={ <UserProtecter><OrderSuccess /></UserProtecter> } />
+          <Route path="/user/OrderList" element={ <UserProtecter><OrderList /></UserProtecter> } />
+
         </Routes>
 
       </div>

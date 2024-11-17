@@ -14,6 +14,7 @@ export default function Navigator({userData}) {
         <i onClick={()=>navigator(-1)} className="ri-arrow-left-s-fill text-[35px]"></i>:
         <i className="ri-menu-line text-[30px]"></i>
         }
+
         <i className="ri-search-line text-[30px]"></i>
         <span className='h-14'></span>
         <i onClick={()=>navigator('/user/home')} className="ri-home-line text-[30px]"></i>
@@ -21,9 +22,10 @@ export default function Navigator({userData}) {
         <i onClick={()=>navigator('/user/products')} className="ri-shopping-bag-line text-[30px]"></i>
         <i className="ri-bookmark-line text-[30px]"></i>
         <span className='flex-1'></span>
-        { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}/logout`)} className="ri-user-line text-[30px]"></i>}
+        { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}`)} className="ri-user-line text-[30px]"></i>}
         <i className="ri-shopping-cart-line text-[30px]"></i>
         </div>
+        
     </div>
   )
 }

@@ -32,5 +32,13 @@ export const userProductsApi = (builder) => ({
       }),
     }),
 
+    getProductDetails: builder.mutation({
+      query: (id) => ({
+        url: `user/getProductDetails/${id}`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
+
   });
   

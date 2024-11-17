@@ -1,5 +1,6 @@
 const express = require('express');
 const { getCustomers, getAdmins, updateUserAccess,getAdmin,logoutAdmin } = require('../controllers/adminControllers');
+// const {  } = require('../controllers/userController')
 const { upsertProducts,getProducts,updateProduct } = require('../controllers/config/ProductController')
 const { upsertCollection,getCollections,updateCollection } = require('../controllers/config/collectionController')
 const { upsertCategory, getCategories, updateCategory, } = require('../controllers/config/categoryController')
@@ -30,10 +31,8 @@ router.patch('/updateCategoryAccess',adminAuthMiddleware,updateCategory);
 router.patch('/updateCollection',adminAuthMiddleware,updateCollection);
 router.patch('/updateProduct',adminAuthMiddleware,updateProduct);
 
-
-
 router.post('/uploadImages',adminAuthMiddleware,upload.single('file'),uploadImages);
-router.post('/logoutAdmin',adminAuthMiddleware,upload.single('file'),logoutAdmin);
+router.post('/logoutAdmin',adminAuthMiddleware,logoutAdmin);
 
 
 

@@ -4,6 +4,8 @@ import { userAuthApi } from './userAuthApi';
 import { userDetailsApi } from './userDetailsApi';
 import { userCategoriesApi } from './userCategoriesApi';
 import { userProductsApi } from './userProductsApi';
+import { AdressMangeApi } from './AddressMange';
+import { userOrderApi } from './OrderManage'
 
 export const userApiSlice = createApi({
   reducerPath: 'userApi',
@@ -13,6 +15,8 @@ export const userApiSlice = createApi({
     ...userDetailsApi(builder),
     ...userCategoriesApi(builder),
     ...userProductsApi(builder),
+    ...AdressMangeApi(builder),
+    ...userOrderApi(builder),
   }),
 });
 
@@ -20,15 +24,32 @@ export const {
   useSignUpMutation,
   useLoginMutation,
   useGoogleLogMutation,
+
   useGetUserMutation,
+  useIsUerExistMutation,
+
   useGetOTPMutation,
   useConformOTPMutation,
   useAddDetailsMutation,
+
   useGetCategoriesMutation,
-  useGetCollectionsMutation,
   useGetCAtegoryProductsMutation,
   useGetCAtegoryCollctiionsMutation,
+  
+  useGetCollectionsMutation, 
   useGetCollectionProductsMutation,
-  useIsUerExistMutation,
-  useLogoutUserMutation
+  
+  useMatchPasswordMutation,
+  useUpdateProfileMutation,
+  useResetPasswordMutation,
+  useLogoutUserMutation,
+
+  useUpsertAddressMutation,
+  useGetAdressesMutation,
+
+  useGetProductDetailsMutation,
+
+  usePlaceOrderMutation,
+  useGetOdersMutation
+
 } = userApiSlice;

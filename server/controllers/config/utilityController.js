@@ -23,9 +23,7 @@ const storage = multer.diskStorage({
 module.exports.upload = multer({ storage: storage });
 
 // Set up Multer to store images in a folder called 'uploads'
-module.exports.uploadImages = async (req,res)=>{
-
-    console.log(req.body);
+module.exports.uploadImages = async (req,res)=>{  
   
     if (!req.file) {
       return res.status(400).send('No file uploaded');

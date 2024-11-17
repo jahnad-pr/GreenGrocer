@@ -213,6 +213,7 @@ const ProductManage = () => {
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
           }
         );
         setUrl((prevData)=>({ ...prevData,[key]:data?.url  }));

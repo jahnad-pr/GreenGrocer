@@ -65,7 +65,7 @@ export default function Home({ userData }) {
             <button
               onClick={() =>
                 !userData
-                  ? navigator("/auth/user/signup")
+                  ? navigator("/user/signup")
                   : navigator("/user/Products")
               }
               className="bg-[#3a8049] self-start px-8 py-3 flex gap-5 rounded-full text-white items-center shadow-2xl"
