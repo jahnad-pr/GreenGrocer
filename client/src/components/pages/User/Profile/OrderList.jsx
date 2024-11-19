@@ -46,14 +46,16 @@ const OrderList = ({userData}) => {
 
   const getStatusColor = (status) => {
     switch (status.toUpperCase()) {
-      case "PROCESSING":
-        return "bg-[linear-gradient(45deg,#cecf9f70_30%,#ffffff20_70%)]";
-      case "ON THE WAY":
-        return "bg-yellow-50";
+      case "PROCESSED":
+        return "bg-[linear-gradient(45deg,#8aa4eb35_30%,#ffffff20_70%)]";
+        case "SHIPPED":
+        return "bg-[linear-gradient(45deg,#ebaf8a35_30%,#ffffff20_70%)]";
+      case "PENDING":
+        return "bg-[linear-gradient(45deg,#ebe88a35_30%,#ffffff20_70%)]";
       case "DELIVERED":
-        return "bg-green-50";
-      case "CANCELED":
-        return "bg-red-50";
+        return "bg-[linear-gradient(45deg,#99eb8a35_30%,#ffffff20_70%)]";
+      case "CANCELLED":
+        return "bg-[linear-gradient(45deg,#eb8ab935_30%,#ffffff20_70%)]";
       default:
         return "bg-gray-50";
     }
@@ -61,16 +63,16 @@ const OrderList = ({userData}) => {
 
   const getStatusTextColor = (status) => {
     switch (status.toUpperCase()) {
-      case "PROCESSING":
-        return "text-yellow-900";
-      case "ON THE WAY":
-        return "text-yellow-700";
+      case "PROCESSED":
+        return "text-blue-900";
+      case "SHIPPED":
+        return "text-orange-700";
       case "DELIVERED":
         return "text-green-700";
-      case "CANCELED":
+      case "CANCELLED":
         return "text-red-700";
       default:
-        return "text-gray-700";
+        return "text-yellow-900";
     }
   };
 
@@ -105,7 +107,7 @@ const OrderList = ({userData}) => {
           <div className="flex items-center gap-4 flex-wrap">
             {orders?.map((order, index) => (
 
-              <div
+              <div onClick={()=>navigate('/user/OrderDetails',{ state:order })}
                 key={index}
                 className={`p-4 py-8 w-[22%] hover:scale-[0.9] duration-500 hover:shadow-2xl shadow rounded-[45px] border-2 border-[#eeeeee4d] px-10 mb-4 ${getStatusColor(order.order_status)}`}
               >

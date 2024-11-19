@@ -60,9 +60,19 @@
   font-style: italic;
 }
 
+@font-face {
+  font-family: "mo";
+  src: url("./assets/Font/Sansation_Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 /* Apply the font to elements */
 body {
   font-family: "MyCustomFont", sans-serif;
+}
+.Sansation-font {
+  font-family: 'mo', sans-serif;
 }
 
 * {
@@ -108,11 +118,28 @@ body {
   background-size: 20px;
 }
 
+.custom-selectero {
+  appearance: none; /* Remove default arrow */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  /* Background color */
+  padding: 10px;
+  outline: 0;
+  border-radius: 444px;
+  padding-left: 20px;
+  padding-right: 40px;
+  background-image: url("../src/assets/images/dw.png"); /* Custom icon */
+  background-repeat: no-repeat;
+  background-position: right 10px center; /* Position the icon */
+  background-size: 20px;
+  /* backdrop-filter: brightness(1); */
+}
+
 .shadower {
   filter: blur(90px) brightness(0);
   transform: scale3d(1, 1, 2) rotate3d(1, 0, 0, 75deg);
   top: 55%;
-  opacity: 40%;
+  /* opacity: 40%; */
   animation: oscillateSacle 8s infinite;
 
   /* filter: drop-shadow(5px 250px 5px #222);

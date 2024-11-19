@@ -6,6 +6,7 @@ import { userCategoriesApi } from './userCategoriesApi';
 import { userProductsApi } from './userProductsApi';
 import { AdressMangeApi } from './AddressMange';
 import { userOrderApi } from './OrderManage'
+import { CartManage } from './CartMange'
 
 export const userApiSlice = createApi({
   reducerPath: 'userApi',
@@ -17,6 +18,7 @@ export const userApiSlice = createApi({
     ...userProductsApi(builder),
     ...AdressMangeApi(builder),
     ...userOrderApi(builder),
+    ...CartManage(builder),
   }),
 });
 
@@ -50,6 +52,12 @@ export const {
   useGetProductDetailsMutation,
 
   usePlaceOrderMutation,
-  useGetOdersMutation
+  useGetOdersMutation,
+  useUpdateOrderStatusMutation,
+  useCancelOrderMutation,
+
+  useAddtoCartMutation,
+  useCheckPorductInCartMutation,
+  useGetCartItemsMutation,
 
 } = userApiSlice;

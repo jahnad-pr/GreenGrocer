@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   delivery_address: {
-    type: String,
+    type: Object,
     required: true,
   },
   payment_method: {
@@ -66,8 +66,8 @@ const orderSchema = new mongoose.Schema({
   },
   order_status: {
     type: String,
-    enum: ["processing", "completed", "cancelled"], // Possible statuses
-    default: "processing",
+    enum: ["Pending","Processed", "Shipped" , "Delivered", "cancelled"], // Possible statuses
+    default: "Processed",
   },
   payment_status: {
     type: String,

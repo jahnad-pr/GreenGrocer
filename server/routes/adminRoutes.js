@@ -5,6 +5,7 @@ const { upsertProducts,getProducts,updateProduct } = require('../controllers/con
 const { upsertCollection,getCollections,updateCollection } = require('../controllers/config/collectionController')
 const { upsertCategory, getCategories, updateCategory, } = require('../controllers/config/categoryController')
 const { uploadImages,storage , upload } = require('../controllers/config/utilityController')
+const { updateOrderStatus,cancelOrder } = require('../controllers/config/orderController')
 const path = require('path');
 const { adminAuthMiddleware } = require('../middlewares/checkAdmin');
 
@@ -33,6 +34,8 @@ router.patch('/updateProduct',adminAuthMiddleware,updateProduct);
 
 router.post('/uploadImages',adminAuthMiddleware,upload.single('file'),uploadImages);
 router.post('/logoutAdmin',adminAuthMiddleware,logoutAdmin);
+router.post('/updateOrderStatus',adminAuthMiddleware,updateOrderStatus);
+router.post('/cancelOrder',adminAuthMiddleware,cancelOrder);
 
 
 

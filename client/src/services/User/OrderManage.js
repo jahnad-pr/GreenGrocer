@@ -18,6 +18,24 @@ export const userOrderApi = (builder) => ({
       }),
     }),
 
+    updateOrderStatus: builder.mutation({
+      query: (statusData) => ({
+        url: `admin/updateOrderStatus`,
+        method: 'POST',
+        body:statusData,
+        credentials: 'include',
+      }),
+    }),
+
+    cancelOrder: builder.mutation({
+      query: (cancelId) => ({
+        url: `admin/cancelOrder`,
+        method: 'POST',
+        body:{ cancelId },
+        credentials: 'include',
+      }),
+    }),
+
 
   });
   

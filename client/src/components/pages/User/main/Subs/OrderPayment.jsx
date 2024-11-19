@@ -46,6 +46,8 @@ const OrderPayment = ({userData}) => {
   } ,[data])
 
   useEffect(()=>{
+    console.log(location?.state?.order);
+    
     if(location?.state?.order){
       console.log(location.state.order);
       setCurrentData(location.state.order)
@@ -136,7 +138,7 @@ const OrderPayment = ({userData}) => {
      order_id:generateOrderId(),
      time:Date.now(),
      total_quantity:convertToGrams(currentData.qnt),
-     order_status:'processing',
+     order_status:'Processed',
      payment_status:'pending',
     }
 

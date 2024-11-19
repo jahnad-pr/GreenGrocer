@@ -4,6 +4,7 @@ const {createAUser,loginUser,googleLog, getUserData,
 const { getProducts,getCAtegoryProducts,getProductDetails } = require('../controllers/config/ProductController')
 const { upsertAddress,getAdresses } = require('../controllers/config/AdressController')
 const { getCategories } = require('../controllers/config/categoryController');
+const { addtoCart,checkPorductInCart,getCartItems } = require('../controllers/config/cartController');
 const { placeOrder,getOders } = require('../controllers/config/orderController');
 const { getCollections,getCAtegoryCollection } = require('../controllers/config/collectionController');
 const { authMiddleware } = require('../middlewares/checkUser');
@@ -30,6 +31,10 @@ router.get('/getAdresses/:id',getAdresses);
 
 router.post('/placeOrder',placeOrder);
 router.get('/getOders/:id',getOders);
+
+router.post('/addtoCart',addtoCart);
+router.get('/checkPorductInCart/:prductID',authMiddleware,checkPorductInCart);
+router.get('/getCartItems',authMiddleware,getCartItems);
 
 router.get('/getUser',authMiddleware,getUserData);
 router.get('/getCategories',getCategories);

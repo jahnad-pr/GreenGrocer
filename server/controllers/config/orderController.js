@@ -26,10 +26,19 @@ module.exports.placeOrder = async (req, res) => {
 
 module.exports.getOders = async (req, res) => {
 
-    const user = req.params.id
+    const user = req.params.id || null
 
     try {
-        const result = await Order.find({user}).populate('items.product','name from')
+        let result = []
+
+
+        
+        if(user!=='undefined'){
+            result = await Order.find({user}).populate('items.product','name from')
+        }else{
+            result = await Order.find({}).populate('items.product','name from').populate('user','username')
+        }
+        
 
         if(result){
             return res.status(200).json(result)
@@ -40,4 +49,55 @@ module.exports.getOders = async (req, res) => {
 
         return res.status(400).json(error.message)
     }
+}
+
+
+module.exports.updateOrderStatus = async (req, res) => {
+
+    const { id:_id, value:order_status } = req.body
+
+    try {
+
+        const result = await Order.updateOne({ _id },{ $set:{ order_status } })
+
+        if(result.modifiedCount>0){
+
+            return res.status(200).json('Successfully updated')
+
+        }else{
+
+            return res.status(400).json('Somting went wrong')
+        }
+        
+        
+    } catch (error) {
+
+        return res.status(400).json(error.message)
+    }
+    
+}
+
+module.exports.cancelOrder = async (req, res) => {
+
+    const { cancelId } = req.body
+
+    try {
+
+        const result = await Order.updateOne({ _id:cancelId },{ $set:{ order_status:'Cancelled' } })
+
+        if(result.modifiedCount>0){
+
+            return res.status(200).json('Successfully Cancelled')
+
+        }else{
+
+            return res.status(400).json('Somting went wrong')
+        }
+        
+        
+    } catch (error) {
+
+        return res.status(400).json(error.message)
+    }
+    
 }

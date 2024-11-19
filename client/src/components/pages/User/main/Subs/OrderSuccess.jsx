@@ -1,10 +1,12 @@
 import React from 'react'
 import coin from "../../../../../assets/images/con.png";
 import past from '../../../../../assets/images/ane.gif'
+import { useNavigate } from 'react-router-dom';
 
 
 export default function OrderSuccess() {
 
+  const navigator = useNavigate()
 
 
   return (
@@ -24,7 +26,7 @@ export default function OrderSuccess() {
               <p className='text-[24px] text-gray-400'><span className='font-bold text-yellow-700'>8</span> Coin added</p>
             </div>
             <div className="flex gap-3 mt-10">
-            <button className='text-[18px] px-6 py-2 bg-[linear-gradient(to_left,#179931,#00d34f)] rounded-xl text-white'>View Oders</button>
+            <button onClick={()=>navigator('/user/OrderList')} className='text-[18px] px-6 py-2 bg-[linear-gradient(to_left,#179931,#00d34f)] rounded-xl text-white'>View Oders</button>
             <button className='text-[18px] font-medium bg-[linear-gradient(to_left,#179931,#18b437)] p-[2px] rounded-xl'>
               <p className='text-[#179931] bg-white w-full h-full px-5 text-center flex items-center rounded-[10px] font-bold'>View Wallet</p></button>
 

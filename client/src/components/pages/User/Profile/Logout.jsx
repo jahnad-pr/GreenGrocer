@@ -27,7 +27,7 @@ export default function Logout() {
    return (
     <>
    { popup &&
-    <DeletePopup updater={logoutUser} deleteData={{id}} showPopup={showPopup} action={'logout'}isUser={true}   />
+    <DeletePopup updater={logoutUser} deleteData={{id}} showPopup={showPopup} action={'logout'} isUser={true}   />
    }
       <div className="w-[96%] h-full">
         <div className="w-full h-full px-96 flex flex-col items-center gap-5">

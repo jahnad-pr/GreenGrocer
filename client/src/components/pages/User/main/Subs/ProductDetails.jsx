@@ -3,26 +3,98 @@ import star from "../../../../../assets/images/star.png";
 import carbg from "../../../../../assets/images/carbg.jpeg";
 import { Scale } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import {
+    useAddtoCartMutation,
+    useCheckPorductInCartMutation,
     useGetCAtegoryProductsMutation,
     useGetProductDetailsMutation,
 } from "../../../../../services/User/userApi";
 import Product from "../../../../parts/Cards/Product";
+import { toast, ToastContainer } from "react-toastify";
 
-export default function ProductDetails() {
+export default function ProductDetails({userData}) {
     const [getProductDetails, { error, data }] = useGetProductDetailsMutation();
-    const [getCAtegoryProducts, { error: proError, data: proData }] =
-        useGetCAtegoryProductsMutation();
+    const [getCAtegoryProducts, { error: proError, data: proData }] = useGetCAtegoryProductsMutation();
+    const [addtoCart, { error: addError, data: addData }] = useAddtoCartMutation();
+    const [checkPorductInCart, { data: checkData }] = useCheckPorductInCartMutation();
 
     const [productsData, setProductsData] = useState([]);
     const [product, setProduct] = useState();
+    const [cartStatus, setCartStatus] = useState();
     const [qnt, showQnt] = useState(true);
     const [quantity, setQuantity] = useState('1Kg');
     const [cirrentImage, setCurrentImage] = useState();
-    const [options, setOptions] = useState(["100g", "250g", "500g", "1kg", "2kg", "5kg", "10kg", "25kg", "50kg", "75kg", "100kg", "custom",]);
+    const [options, setOptions] = useState(["100g", "250g", "500g", "1kg", "2Kg", "5Kg", "10Kg", "25Kg", "50Kg", "75Kg", "100Kg", "custom",]);
 
     const location = useLocation();
     const navigation = useNavigate();
+
+     // Custom content component for the toast
+  const ToastContent = ({ title, message }) => (
+    <div>
+      <strong>{title}</strong>
+      <div>{message}</div>
+    </div>
+  );
+
+      
+  // Show toast notification function
+  const showToast = (message, type = "success") => {
+    if (type === "success" && message) {
+      toast.success(
+        type && <ToastContent title={"SUCCESS"} message={message} />,
+        {
+          icon: <FaCheckCircle className="text-[20px]" />,
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          className: "custom-toast-success",
+          bodyClassName: "custom-toast-body-success",
+          progressClassName: "custom-progress-bar-success",
+        }
+      );
+    } else if (message) {
+      toast.error(<ToastContent title={"ERROR"} message={message} />, {
+        icon: <FaExclamationTriangle className="text-[20px]" />,
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: "custom-toast",
+        bodyClassName: "custom-toast-body",
+        progressClassName: "custom-progress-bar",
+      });
+    }
+  };
+
+  console.log(checkData);
+
+  useEffect((checkData)=>{
+    if(checkData){
+        setCartStatus(checkData) 
+    }
+    
+  },[checkData])
+
+    useEffect(()=>{
+        if(addData){
+
+            showToast(addData,'success')
+        }
+    },[addData])
+        useEffect(()=>{
+        if(addError?.data){
+            showToast(addError.data,'error')
+        }
+    },[addError])
 
     useEffect(() => {
         if (location.state.id) {
@@ -39,6 +111,7 @@ export default function ProductDetails() {
     useEffect(() => {
         if (data) {
             setProduct(data)
+            checkPorductInCart(data?._id)
         };
     }, [data]);
     useEffect(() => {
@@ -64,8 +137,18 @@ export default function ProductDetails() {
         }
     }, [product])
 
-    return (
-        <>
+    const addToCartItem = (id)=>{
+
+        const userId = userData._id
+        const cartData = {
+            quanatity:quantity,
+            product:id,
+        }
+        addtoCart({cartData,userId})
+    }
+
+    return (  
+      <>  <ToastContainer title="Error" position="bottom-left" />
             <div className={`w-[96%] h-full flex-1 bg-product`}>
                 <div className="bg-[#ceb6499c] mix-blend-screen absolute w-full h-full"></div>
                 <div className="w-full h-full px-40 py-12 backdrop-blur-3xl">
@@ -207,13 +290,18 @@ export default function ProductDetails() {
 
                         {/* product image container */}
                         <div className="w-[55%] h-full  flex flex-col relative">
-                            <i className="ri-shopping-cart-line absolute top-10 right-10 text-[25px] rounded-full p-5 py-3 "></i>
+
+                            <span onClick={()=>checkData?navigation('/user/Cart'):addToCartItem(product._id)} className=" absolute top-10 right-10 text-[25px] group duration-500 w-24 hover:w-48 rounded-full px-8 items-center gap-5  bg-red-600 flex">
+                            <i className="ri-shopping-cart-line duration-500 py-2"></i>
+                            <p  className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{!checkData?'Add to Cart':'Go to cart'}</p>
+                            </span>
                             <i className="ri-bookmark-line absolute top-28 right-10 text-[25px] rounded-full p-5 py-3 "></i>
                             <i className="ri-share-line absolute top-48 right-10 text-[25px] rounded-full p-5 py-3 "></i>
+
                             <span className="flex-1"></span>
                             <img className="px-60 oscillate" src={cirrentImage} alt="" />
                             <img
-                                className="px-60 shadower absolute"
+                                className="px-60 shadower opacity-40 absolute"
                                 src={cirrentImage}
                                 alt=""
                             />

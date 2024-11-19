@@ -35,6 +35,9 @@ import OrderSummary from "./components/pages/User/main/Subs/OrderSummary"
 import OrderSuccess from "./components/pages/User/main/Subs/OrderSuccess"
 import OrderPayment from "./components/pages/User/main/Subs/OrderPayment"
 import OrderList from "./components/pages/User/Profile/OrderList"
+import Orders from "./components/pages/Admin/Config/Orders"
+import OrderDetails from "./components/pages/User/Profile/OrderDetails"
+import Cart from "./components/pages/User/main/Cart"
 
 
 
@@ -70,6 +73,7 @@ export default function App() {
             <Route path="/admin/Collection/manage" element={<AdminProtucter><CollectionManage /></AdminProtucter>} />
             <Route path="/admin/Products" element={<AdminProtucter><Productes /></AdminProtucter>} />
             <Route path="/admin/Products/manage" element={<AdminProtucter><ProductManage /></AdminProtucter>} />
+            <Route path="/admin/Orders" element={<AdminProtucter><Orders /></AdminProtucter>} />
           </Routes>
 
         <Routes>
@@ -90,6 +94,8 @@ export default function App() {
           <Route path="/user/payment" element={ <UserProtecter><OrderPayment /></UserProtecter> } />
           <Route path="/user/success" element={ <UserProtecter><OrderSuccess /></UserProtecter> } />
           <Route path="/user/OrderList" element={ <UserProtecter><OrderList /></UserProtecter> } />
+          <Route path="/user/OrderDetails" element={ <UserProtecter><OrderDetails/></UserProtecter> } />
+          <Route path="/user/cart" element={ <UserProtecter><Cart/></UserProtecter> } />
 
         </Routes>
 

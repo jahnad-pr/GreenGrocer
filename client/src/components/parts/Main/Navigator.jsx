@@ -23,7 +23,7 @@ export default function Navigator({userData}) {
         <i className="ri-bookmark-line text-[30px]"></i>
         <span className='flex-1'></span>
         { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}`)} className="ri-user-line text-[30px]"></i>}
-        <i className="ri-shopping-cart-line text-[30px]"></i>
+        <i onClick={()=>navigator(`/user/Cart`)}  className="ri-shopping-cart-line text-[30px]"></i>
         </div>
         
     </div>
