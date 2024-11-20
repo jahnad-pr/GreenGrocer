@@ -12,8 +12,9 @@ import {
 } from "../../../../../services/User/userApi";
 import Product from "../../../../parts/Cards/Product";
 import { toast, ToastContainer } from "react-toastify";
+import ProductQuantityPopup from "../../../../parts/popups/ProductQuantityPopup";
 
-export default function ProductDetails({userData}) {
+export default function ProductDetails({ userData }) {
     const [getProductDetails, { error, data }] = useGetProductDetailsMutation();
     const [getCAtegoryProducts, { error: proError, data: proData }] = useGetCAtegoryProductsMutation();
     const [addtoCart, { error: addError, data: addData }] = useAddtoCartMutation();
@@ -22,79 +23,82 @@ export default function ProductDetails({userData}) {
     const [productsData, setProductsData] = useState([]);
     const [product, setProduct] = useState();
     const [cartStatus, setCartStatus] = useState();
+    const [popup, showPopup] = useState(false);
     const [qnt, showQnt] = useState(true);
+    const [gotoCart, setGoToCart] = useState(false);
     const [quantity, setQuantity] = useState('1Kg');
     const [cirrentImage, setCurrentImage] = useState();
-    const [options, setOptions] = useState(["100g", "250g", "500g", "1kg", "2Kg", "5Kg", "10Kg", "25Kg", "50Kg", "75Kg", "100Kg", "custom",]);
+    const [options, setOptions] = useState(["100g", "250g", "500g", "1Kg", "2Kg", "5Kg", "10Kg", "25Kg", "50Kg", "75Kg", "100Kg", "custom",]);
 
     const location = useLocation();
     const navigation = useNavigate();
 
-     // Custom content component for the toast
-  const ToastContent = ({ title, message }) => (
-    <div>
-      <strong>{title}</strong>
-      <div>{message}</div>
-    </div>
-  );
+    // Custom content component for the toast
+    const ToastContent = ({ title, message }) => (
+        <div>
+            <strong>{title}</strong>
+            <div>{message}</div>
+        </div>
+    );
 
-      
-  // Show toast notification function
-  const showToast = (message, type = "success") => {
-    if (type === "success" && message) {
-      toast.success(
-        type && <ToastContent title={"SUCCESS"} message={message} />,
-        {
-          icon: <FaCheckCircle className="text-[20px]" />,
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          className: "custom-toast-success",
-          bodyClassName: "custom-toast-body-success",
-          progressClassName: "custom-progress-bar-success",
+
+    // Show toast notification function
+    const showToast = (message, type = "success") => {
+        if (type === "success" && message) {
+            toast.success(
+                type && <ToastContent title={"SUCCESS"} message={message} />,
+                {
+                    icon: <FaCheckCircle className="text-[20px]" />,
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    className: "custom-toast-success",
+                    bodyClassName: "custom-toast-body-success",
+                    progressClassName: "custom-progress-bar-success",
+                }
+            );
+        } else if (message) {
+            toast.error(<ToastContent title={"ERROR"} message={message} />, {
+                icon: <FaExclamationTriangle className="text-[20px]" />,
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                className: "custom-toast",
+                bodyClassName: "custom-toast-body",
+                progressClassName: "custom-progress-bar",
+            });
         }
-      );
-    } else if (message) {
-      toast.error(<ToastContent title={"ERROR"} message={message} />, {
-        icon: <FaExclamationTriangle className="text-[20px]" />,
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-progress-bar",
-      });
-    }
-  };
+    };
 
-  console.log(checkData);
+    console.log(checkData);
 
-  useEffect((checkData)=>{
-    if(checkData){
-        setCartStatus(checkData) 
-    }
-    
-  },[checkData])
-
-    useEffect(()=>{
-        if(addData){
-
-            showToast(addData,'success')
+    useEffect((checkData) => {
+        if (checkData) {
+            setCartStatus(checkData)
         }
-    },[addData])
-        useEffect(()=>{
-        if(addError?.data){
-            showToast(addError.data,'error')
+
+    }, [checkData])
+
+    useEffect(() => {
+        if (addData) {
+            setGoToCart(true)
+            showToast(addData, 'success')
+
         }
-    },[addError])
+    }, [addData])
+    useEffect(() => {
+        if (addError?.data) {
+            showToast(addError.data, 'error')
+        }
+    }, [addError])
 
     useEffect(() => {
         if (location.state.id) {
@@ -120,35 +124,84 @@ export default function ProductDetails({userData}) {
         }
     }, [proData]);
 
-    useEffect(() => {
-        if (product?.stock) {
-            const stock = product?.stock
-            if (stock < 100) setOptions(prevOptions => prevOptions.filter(option => option !== "100g"))
-            if (stock < 250) setOptions(prevOptions => prevOptions.filter(option => option !== "250g"))
-            if (stock < 500) setOptions(prevOptions => prevOptions.filter(option => option !== "500g"))
-            if (stock < 1000) setOptions(prevOptions => prevOptions.filter(option => option !== "1kg"))
-            if (stock < 2000) setOptions(prevOptions => prevOptions.filter(option => option !== "2kg"))
-            if (stock < 5000) { setOptions(prevOptions => prevOptions.filter(option => option !== "5kg")) }
-            if (stock < 10000) setOptions(prevOptions => prevOptions.filter(option => option !== "10kg"))
-            if (stock < 25000) setOptions(prevOptions => prevOptions.filter(option => option !== "25kg"))
-            if (stock < 50000) setOptions(prevOptions => prevOptions.filter(option => option !== "50kg"))
-            if (stock < 75000) setOptions(prevOptions => prevOptions.filter(option => option !== "75kg"))
-            if (stock < 100000) setOptions(prevOptions => prevOptions.filter(option => option !== "100kg"))
+    useEffect(()=>{ 
+        if(popup){
+          setOptions(prevOptions => prevOptions.filter(option => option !== "custom"))
+          setOptions((prev)=>([...prev,"custom"]))
+          showPopup(false)
+        }else{
+        //   if(options.length===12){
+    
+        //     setSelectedOption(options[3])
+        //   }else{
+        //     setSelectedOption(options[options.length-2])
+        //   }
         }
-    }, [product])
+       },[options])
 
-    const addToCartItem = (id)=>{
+  function convertToGrams(value) {
+    // Check if the value is "custom"
+    if (value === "custom") {
+        console.error("Custom input detected. Please handle this case separately.");
+        return null;
+    }
+
+    // Extract the numeric part and the unit (g or kg)
+    const match = value.match(/^(\d+)(g|Kg)$/);
+    if (!match) {
+        console.error("Invalid value format. Expected formats: '100g', '1kg', etc.");
+        return null;
+    }
+
+    const amount = parseInt(match[1], 10); // Numeric part
+    const unit = match[2]; // Unit
+
+    // Convert to grams
+    return unit === "Kg" ? amount * 1000 : amount;
+}
+
+useEffect(() => {
+    if (product?.stock) {
+      const quantity = product.stock;
+      const thresholds = [
+        { value: 100, option: "100g" },
+        { value: 250, option: "250g" },
+        { value: 500, option: "500g" },
+        { value: 1000, option: "1Kg" },
+        { value: 2000, option: "2Kg" },
+        { value: 5000, option: "5Kg" },
+        { value: 10000, option: "10Kg" },
+        { value: 25000, option: "25Kg" },
+        { value: 50000, option: "50Kg" },
+        { value: 75000, option: "75Kg" },
+        { value: 100000, option: "100Kg" }
+      ];
+      
+      setOptions(prevOptions => {
+        return prevOptions.filter(option => {
+          if (option === "custom") return true;
+          const threshold = thresholds.find(t => t.option <= option);
+          return threshold ? quantity >= threshold.value : true;
+        });
+      });
+    }
+  }, [data])
+
+    const addToCartItem = (id) => {
 
         const userId = userData._id
         const cartData = {
-            quanatity:quantity,
-            product:id,
+            quantity: convertToGrams(quantity),
+            product: id,
         }
-        addtoCart({cartData,userId})
+        addtoCart({ cartData, userId })
     }
 
-    return (  
-      <>  <ToastContainer title="Error" position="bottom-left" />
+    return (
+        <> { popup &&
+            <ProductQuantityPopup stock={product?.stock} options={setOptions} showPopup={showPopup} />
+          }
+         <ToastContainer title="Error" position="bottom-left" />
             <div className={`w-[96%] h-full flex-1 bg-product`}>
                 <div className="bg-[#ceb6499c] mix-blend-screen absolute w-full h-full"></div>
                 <div className="w-full h-full px-40 py-12 backdrop-blur-3xl">
@@ -291,9 +344,9 @@ export default function ProductDetails({userData}) {
                         {/* product image container */}
                         <div className="w-[55%] h-full  flex flex-col relative">
 
-                            <span onClick={()=>checkData?navigation('/user/Cart'):addToCartItem(product._id)} className=" absolute top-10 right-10 text-[25px] group duration-500 w-24 hover:w-48 rounded-full px-8 items-center gap-5  bg-red-600 flex">
-                            <i className="ri-shopping-cart-line duration-500 py-2"></i>
-                            <p  className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{!checkData?'Add to Cart':'Go to cart'}</p>
+                            <span onClick={() => checkData||gotoCart ? navigation('/user/Cart') : addToCartItem(product._id)} className=" absolute top-10 right-10 text-[25px] group duration-500 w-24 hover:w-48 rounded-full px-8 items-center gap-5  hover:bg-[#ceb64950] flex">
+                                <i className="ri-shopping-cart-line duration-500 py-2"></i>
+                                <p className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{checkData|| gotoCart ? 'Go to Cart' : 'Add to cart'}</p>
                             </span>
                             <i className="ri-bookmark-line absolute top-28 right-10 text-[25px] rounded-full p-5 py-3 "></i>
                             <i className="ri-share-line absolute top-48 right-10 text-[25px] rounded-full p-5 py-3 "></i>
@@ -339,45 +392,49 @@ export default function ProductDetails({userData}) {
                                             <img src={product?.pics?.three} alt="" />
                                         </div>
                                         <span>
-                                            <h1 className="font-bold text-[24px]">$98,048</h1>
+                                            <h1 className="font-bold text-[24px]">₹ {product?.salePrice}</h1>
                                             <p>With inc tax</p>
                                         </span>
 
                                         <button
-                                            onClick={() => navigation("/user/ordersummery",{ state:{ items:[{...product}], qnt:quantity } })}
+                                            onClick={() => navigation("/user/ordersummery", { state: { items: [{ ...product }], qnt: quantity } })}
                                             className="p-5 bg-black rounded-full text-white px-10 ml-5"
                                         >
                                             Buy now
                                         </button>
                                     </span>
 
-                                    <span className="min-h-20 flex-1  flex items-center justify-center">
+                                    <span className="min-h-20 flex-1 gap-5  flex items-center justify-center">
                                         <p className="font-medium ml-4">Offer Price</p>
-                                        <span className="flex-1"></span>
+                                        <span className="flex-1 gap-2"></span>
                                         <span>
                                             <span className="flex ">
-                                                <p className="text-[20px] font-bold">{product?.salePrice}   </p>&nbsp;&nbsp;&nbsp;
+                                                <p className="text-[20px] font-bold">₹ {product?.salePrice}   </p>&nbsp;&nbsp;&nbsp;
                                                 <s>
-                                                    <p className="text-[20px]">{product?.regularPrice}</p>
+                                                    <p className="text-[16px] mt-2 opacity-45">₹ {product?.regularPrice}</p>
                                                 </s>
                                             </span>
                                             <span className="flex opacity-45">
-                                                <p>{product?.regularPrice}</p>
-                                                <>
-                                                    <p>/ 100g</p>
+                                                <p>₹ {product?.salePrice/10} </p>
+                                                <>&nbsp;
+                                                    <p> / 100g</p>
                                                 </>
                                             </span>
 
 
                                         </span>
-                                        <span className="flex-1"></span>
+
+                                            <span className="">
+                                                <p className="text-[20px] font-medium">{product?.stock/1000}<span className="opacity-45"> Kg left</span></p>
+                                            </span>
+
                                         <select
-                                            className="text-[20px] text-[#6C6C6C] font-medium bg-transparent focus:outline-none cursor-pointer custom-selecter"
+                                            className="text-[20px] text-[#6C6C6C] font-medium focus:outline-none cursor-pointer custom-selecter"
                                             defaultValue="1kg"
-                                            onChange={(e) => setQuantity(e.target.value)}
+                                            onChange={(e) => {e.target.value==='custom'?showPopup(true):setQuantity(e.target.value)}}
                                         >
                                             {options.map((option, index) => (
-                                                <option value={option}>
+                                                <option  value={option}>
                                                     {option}
                                                 </option>
                                             ))}

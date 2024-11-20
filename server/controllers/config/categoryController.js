@@ -16,7 +16,6 @@ module.exports.upsertCategory = async(req,res)=>{
 
     try {
         const result = await Category.updateOne( filter, { $set: { name,createdAt,updatedAt,isListed,items } }, { upsert: true, new: true })
-        console.log(result);
         
         return res.status(200).json({mission:true,message:'successfully updated'})
     } catch (error) {
@@ -40,7 +39,6 @@ module.exports.updateCategory = async(req,res)=>{
 
         }else if(action==='delete'){
                 const result = await Category.findByIdAndDelete(uniqeID)
-                console.log(result);
                 
                 return res.status(200).json({mission:true,message:'successfully deleted',uniqeID:uniqeID,action})
         }

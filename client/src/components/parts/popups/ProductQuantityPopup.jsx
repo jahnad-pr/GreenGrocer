@@ -16,21 +16,20 @@ const ProductQuantityPopup = ({ showPopup, options, stock }) => {
 
 
   const handleSubmit = () => {
-    if(unit==='kg'){
-        if(quantity<=stock/1000)options((prev)=>([...prev,`${quantity} Kg`]))
-            else{
-                setError('No stock available for that, we are puting maximum here')
-                // options((prev)=>([...prev,stock/1000]))
-                setQuantity(stock/1000)
-            }
-    }else{
-        if(quantity<=stock)options((prev)=>([...prev,`${quantity} gram`]))
-        else{
-            setError('No stock available for that, we are puting maximum here')
-            // options((prev)=>([...prev,stock]))
-            setQuantity(stock)
-        }
+    if(unit ==='kg'){
+      if(quantity > stock/100){
+        setError('Quantity must be less than or equal to stock')
+    } else{
+      options((prev)=>([...prev,`${stock/100} Kg`]))
     }
+  }
+  if(unit ==='gram'){
+    if(quantity > stock){
+      setError('Quantity must be less than or equal to stock')
+  }else{
+    options((prev)=>([...prev,`${stock} gram`]))
+  }
+}
   };
 
   return (

@@ -130,16 +130,16 @@ const OrderPayment = ({userData}) => {
       delivery_address:currentData.address,
       payment_method:selectedMethod,
       coupon:'',
-      items:{ product:currentData.items[0]._id,quantity:convertToGrams(currentData.qnt),totalPrice:12000,discount:0,pic:currentData.items[0].pics.one },
+      items:{ product:currentData.items[0]._id,quantity:currentData.qnt,totalPrice:12000,discount:0,pic:currentData.items[0].pics.one },
       price:{
         grandPrice:currentData.price,
         discountPrice:0
       },
-     order_id:generateOrderId(),
-     time:Date.now(),
-     total_quantity:convertToGrams(currentData.qnt),
-     order_status:'Processed',
-     payment_status:'pending',
+      order_id:generateOrderId(),
+      time:Date.now(),
+      total_quantity:currentData.qnt,
+      order_status:'Processed',
+      payment_status:'pending',
     }
 
     placeOrder(orderData).unwrap()

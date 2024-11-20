@@ -8,6 +8,8 @@ module.exports.addtoCart = async (req, res) => {
 
     const { cartData, userId } = req.body
 
+    
+
 
     try {
 
@@ -39,7 +41,6 @@ module.exports.checkPorductInCart = async (req, res) => {
 
     const prductID  = req.params.prductID
 
-    console.log(prductID);
 
 
     try {
@@ -55,7 +56,7 @@ module.exports.checkPorductInCart = async (req, res) => {
 
         if(result){
 
-            return res.status(200).json(result)
+            return res.status(200).json(result.items[0])
         }
             
         return res.status(400).json('Somthing went wrong')

@@ -3,7 +3,6 @@ const Collection = require('../../models/other/collectionModel')
 // uspert collection
 module.exports.upsertCollection = async(req,res)=>{
 
-    console.log(req.body);
     
 
     const { name,_id } = req.body

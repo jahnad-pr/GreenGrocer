@@ -7,7 +7,6 @@ module.exports.upsertProducts = async(req,res)=>{
     
     
     const { formData , id , action, Urls } = req.body
-    // console.log(req.body);
     
     try {
         
@@ -20,7 +19,6 @@ module.exports.upsertProducts = async(req,res)=>{
             
             
             const insertData = { ...formData,isListed,updatedAt,createdAt,productCollection:formData?.productCollection?._id }
-            // console.log(insertData);
 
             const newProduct = await Product.create( insertData )
             
@@ -143,7 +141,6 @@ module.exports.updateProduct = async(req,res)=>{
             
             const updatedtatus = await Product.updateOne({ _id:uniqeID },{ isListed:updateBool })
 
-            console.log(updatedtatus);
 
             if(updatedtatus.modifiedCount>0){
 
@@ -156,7 +153,6 @@ module.exports.updateProduct = async(req,res)=>{
             
                 const result = await Product.findByIdAndDelete(uniqeID)
 
-                console.log(result);
                 
                 return res.status(200).json({mission:true,message:'successfully deleted',uniqeID:uniqeID,action})
         }

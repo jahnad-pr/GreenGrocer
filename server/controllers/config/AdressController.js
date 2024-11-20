@@ -42,7 +42,6 @@ module.exports.getAdresses = async (req, res) => {
     const _id = req.params.id 
 
 
-    // console.log(_id);
     
 
     try {

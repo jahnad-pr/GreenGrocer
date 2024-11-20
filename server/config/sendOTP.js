@@ -48,19 +48,6 @@ exports.sendOTP = async (mail) => {
   }
   
 
-//   // Send the email
-//     const hi = await transporter.sendMail(mailOptions,(error, info) => {
-//     if (error) {
-//         return { success: false, message: info.messageId };
-//     }
-//     console.log("OTP: ", otp);
-//     return { success: true, message: "OTP verified successfully" };
-    
-//   });
-
-//   console.log(hi);
-  
-
 };
 
 

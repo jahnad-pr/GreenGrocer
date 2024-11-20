@@ -49,7 +49,6 @@ module.exports.getAdmin = async(req,res)=>{
     if (req.admin) {
 
         const { userId } = req.admin;
-        // console.log(id);
         
     
         try {
@@ -103,7 +102,6 @@ module.exports.updateUserAccess = async(req,res)=>{
     const { uniqeID,updateBool } = req.body
 
     try {
-      console.log(uniqeID);
       
       const updatedtatus = await User.updateOne({ _id:uniqeID },{ isListed:updateBool })
       
