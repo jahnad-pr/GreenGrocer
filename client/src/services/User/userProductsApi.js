@@ -40,5 +40,14 @@ export const userProductsApi = (builder) => ({
       }),
     }),
 
+    getAllProduct: builder.mutation({
+      query: () => ({
+        url: `user/getAllProduct`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
+
+
   });
   

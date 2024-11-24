@@ -169,11 +169,36 @@ module.exports.updateProduct = async(req,res)=>{
 
 
 module.exports.getProductDetails = async(req,res)=>{
-    
     const _id = req.params.id
     
     try {
             const productDetails = await Product.findOne({_id}).populate('category','name')
+
+
+            if(productDetails){
+
+                return res.status(200).json(productDetails)
+            }
+
+            return res.status(500).json('no product found') 
+
+    } catch (error) {
+
+        return res.status(500).json(error.message) 
+    }
+
+}
+
+
+module.exports.getAllProduct = async(req,res)=>{
+    
+    // const _id = req.params.id
+    
+    try {
+            const productDetails = await Product.find({}).populate('category','name')
+
+            // console.log(productDetails);
+            
 
 
             if(productDetails){

@@ -139,19 +139,20 @@ body {
   filter: blur(90px) brightness(0);
   transform: scale3d(1, 1, 2) rotate3d(1, 0, 0, 75deg);
   top: 55%;
-  /* opacity: 40%; */
   animation: oscillateSacle 8s infinite;
-
-  /* filter: drop-shadow(5px 250px 5px #222);
-    transform: scaleY(.5);
-    /* position: absolute; */
-  /* top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;  */
+}
+.shadowed {
+  filter: blur(45px) brightness(0);
+  transform: scale3d(1, 1, 2) rotate3d(1, 0, 0, 75deg);
+  top: 45%;
+  opacity: 25%;
+  animation: oscillateSacler 8s infinite ;
 }
 .oscillate {
   animation: oscillate 8s infinite;
+}
+.oscillater {
+  animation: oscillater 8s infinite;
 }
 
 @keyframes oscillateSacle {
@@ -166,6 +167,33 @@ body {
   100% {
     filter: blur(90px) brightness(0);
     transform: scale3d(1, 1, 2) rotate3d(1, 0, 0, 75deg);
+  }
+}
+
+@keyframes oscillateSacler {
+  0% {
+    filter: blur(45px) brightness(0);
+    transform: scale3d(1, 1, 2) rotate3d(1, 0, 0, 75deg) ;
+  }
+  80% {
+    filter: blur(30px) brightness(0);
+    transform: scale3d(1, .8, 2) rotate3d(1, 0, 0, 75deg) ;
+  }
+  100% {
+    filter: blur(45px) brightness(0);
+    transform: scale3d(1, 1, 2) rotate3d(1, 0, 0, 75deg) ;
+  }
+}
+
+@keyframes oscillater {
+  0% {
+    transform: translateY(30%) ;
+  }
+  90% {
+    transform: translateY(20%) ; /* Adjust this value as needed */
+  }
+  100% {
+    transform: translateY(30%) ;
   }
 }
 

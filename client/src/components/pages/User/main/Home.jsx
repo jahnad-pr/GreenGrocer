@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import greenGrocerLogo from "../../../../assets/Logos/main.png";
 import siginImg from "../../../../assets/images/leftPlate.png";
 import fru from "../../../../assets/images/fru.png";
@@ -7,12 +7,56 @@ import homi from "../../../../assets/images/homi.jpeg";
 import List from "../../../parts/Main/List";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import {
+  useGetCAtegoryCollctiionsMutation,
+  useGetCAtegoryProductsMutation,
+} from "../../../../services/User/userApi";
+import Product from "../../../parts/Cards/Product";
+import CollectionCard from "../../../parts/Cards/Collection";
 
 export default function Home({ userData }) {
+  const [
+    getCAtegoryProducts,
+    { sLoading: proLoading, error: proError, data: proData },
+  ] = useGetCAtegoryProductsMutation();
+  const [
+    getCAtegoryCollctiions,
+    { sLoading: colllLooading, error: collEroor, data: CollData },
+  ] = useGetCAtegoryCollctiionsMutation();
+
+  const [fruits, setFruits] = useState(null);
+  const [fruitColl, setFRuitColl] = useState(null);
+
   const navigator = useNavigate();
   const location = useLocation();
 
-  const text = "Fresh Veggies Delivered to You".split(" ")
+  useEffect(() => {
+    (async () => {
+      const fru = await getCAtegoryCollctiions("67330399f1253d47197eec6f");
+      setFRuitColl(fru?.data?.data);
+      await getCAtegoryCollctiions("6733066df1253d47197eec70");
+
+      const log = await getCAtegoryProducts("67330399f1253d47197eec6f");
+      setFruits(log?.data?.data);
+      await getCAtegoryProducts("6733066df1253d47197eec70");
+    })();
+  }, []);
+
+  // useEffect(()=>{
+  //   if(proData&&CollData){
+  //     let i = 0
+
+  //     while (i<7&&CollData?.data?.length>i&&proData?.data?.length>i) {
+  //       let products = proData?.data[i]
+  //       let collections = CollData?.data[i]
+  //       setVegData((prevData)=>[...prevData,products])
+  //       setVegData((prevData)=>[...prevData,collections])
+  //       i++
+  //     }
+  //   }
+  // },[proData,CollData])
+
+  const text = "Fresh Veggies Delivered to You".split(" ");
 
   useEffect(() => {
     if (location?.state?.userData) {
@@ -33,19 +77,20 @@ export default function Home({ userData }) {
             <h1 className="text-[40px] md:text-[70px] font-bold leading-none text-[#52AA57]">
               Fresh Fruits &<br />
               <span className="text-[#3C6E51]">
-              {text.map((el, i) => (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{
-                    duration: 0.75,
-                    delay: i / 10,
-                  }}
-                  key={i}
-                >
-                  {el}{" "}
-                </motion.span>
-              ))}</span>
+                {text.map((el, i) => (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                      duration: 0.75,
+                      delay: i / 10,
+                    }}
+                    key={i}
+                  >
+                    {el}{" "}
+                  </motion.span>
+                ))}
+              </span>
             </h1>
             <p className="pr-4 md:pr-60 opacity-45">
               Enjoy fresh, healthy fruits and vegetables delivered straight to
@@ -88,12 +133,52 @@ export default function Home({ userData }) {
 
         {/* Banners */}
         <div className="w-full h-40 md:h-60 bg-gray-700"></div>
-
-        {/* Fruit randoms collection/fruit */}
-        <div className="w-full h-auto">
-          <List listData={{ ml: false }} />
+        {/* fruit collection */}
+        <h1
+          onClick={() => console.log(fruits)}
+          className={`text-[30px] $'ml-40':''} font-semibold mt-20 pl-20`}
+        >
+          Fruits
+        </h1>
+        <div className="w-full h-auto flex my-5 mt-8 gap-5  mb-10 relative flex-wrap pl-20">
+          <p className="px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full">
+            View all
+          </p>
+          {fruits?.map((data, index) => {
+            if (data?.pics && fruitColl[index]) {
+              return (
+                <>
+                  <Product
+                    key={index}
+                    type={"product"}
+                    data={data}
+                    pos={index}
+                  />
+                  <CollectionCard
+                    key={index}
+                    type={"collection"}
+                    data={fruitColl[index]}
+                    pos={index}
+                  />
+                  
+                </>
+              );
+            } else if (data?.pics) {
+              return (
+                <Product key={index} type={"product"} data={data} pos={index} />
+              );
+            } else if (fruitColl[index]) {
+              return (
+                <CollectionCard
+                  key={index}
+                  type={"collection"}
+                  data={fruitColl[index]}
+                  pos={index}
+                />
+              );
+            }
+          })}
         </div>
-
         {/* Message of fruits with statistics */}
         <div className="w-full flex flex-col md:flex-row px-4 md:px-40 my-10 md:my-20 py-5 md:py-10">
           <div className="w-full md:w-[40%] grid place-items-center">
@@ -148,10 +233,61 @@ export default function Home({ userData }) {
           </div>
         </div>
 
-        {/* Veg randoms collection/Veg */}
-        <div className="w-full h-auto">
-          <List listData={{ ml: false }} />
-        </div>
+        {/* fruit collection */}
+        {CollData && (
+          <>
+            <h1
+              onClick={() => console.log(CollData?.data)}
+              className={`text-[30px] $'ml-40':''} font-semibold mt-20 pl-20`}
+            >
+              Fruits
+            </h1>
+            <div className="w-full h-auto flex my-5 mt-8 gap-5  mb-10 relative flex-wrap pl-20">
+              <p className="px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full">
+                View all
+              </p>
+              { }
+              {proData?.data?.map((data, index) => {
+                if (proData?.data && CollData?.data[index]) {
+                  return (
+                    <>
+                      <Product
+                        key={index}
+                        type={"product"}
+                        data={data}
+                        pos={index}
+                      />
+                      <CollectionCard
+                        key={index}
+                        type={"collection"}
+                        data={CollData?.data[index]}
+                        pos={index}
+                      />
+                    </>
+                  );
+                } else if (data?.pics) {
+                  return (
+                    <Product
+                      key={index}
+                      type={"product"}
+                      data={data}
+                      pos={index}
+                    />
+                  );
+                } else if (CollData?.data[index]) {
+                  return (
+                    <CollectionCard
+                      key={index}
+                      type={"collection"}
+                      data={CollData?.data[index]}
+                      pos={index}
+                    />
+                  )
+                }
+              })}
+            </div>
+          </>
+        )}
 
         {/* Message of veg with statistics */}
         <div className="w-full flex flex-col md:flex-row px-4 md:px-40 my-10 md:my-28 py-5 md:py-10">

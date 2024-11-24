@@ -126,6 +126,7 @@ const CollectionManage = () => {
     try {
       const { data } = await axios.post(UPLOAD_ENDPOINT, formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
       });
       return data?.url;
     } catch (error) {

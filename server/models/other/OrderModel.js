@@ -18,7 +18,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: "", // Optional, defaults to empty string
   },
-  items: {
+  items: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product", // Reference to the Item model
@@ -28,19 +28,19 @@ const orderSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
-    totalPrice: {
-      type: Number,
-      required: true,
-    },
-    discount: {
-      type: Number,
-      default: 0,
-    },
-    pic: {
-      type: String,
-      default: 0,
-    },
-  },
+    // totalPrice: {
+    //   type: Number,
+    //   required: true,
+    // },
+    // discount: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // pic: {
+    //   type: String,
+    //   default: 0,
+    // },
+  }],
   price: {
     grandPrice: {
       type: Number,

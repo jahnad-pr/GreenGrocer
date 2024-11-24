@@ -38,9 +38,7 @@ import OrderList from "./components/pages/User/Profile/OrderList"
 import Orders from "./components/pages/Admin/Config/Orders"
 import OrderDetails from "./components/pages/User/Profile/OrderDetails"
 import Cart from "./components/pages/User/main/Cart"
-
-
-
+import Search from "./components/pages/Search"
 
 export default function App() {
 
@@ -56,7 +54,6 @@ export default function App() {
 
   return (
     <>
-
       <div className="w-screen h-screen flex overflow-hidden">
         {location.pathname.startsWith('/user/') && !location.pathname.startsWith('/user/sign') && <UserProtecter><Navigator /></UserProtecter>}
         {location.pathname.startsWith('/admin/') && <AdminProtucter><Header /></AdminProtucter>}
@@ -80,7 +77,7 @@ export default function App() {
           <Route path="/user/signup" element={ <UserProtecter><Signup /></UserProtecter> } />
           <Route path="/user/home" element={ <UserProtecter><Home /></UserProtecter> } />
           <Route path="/user/products" element={ <UserProtecter><Products /></UserProtecter> } />
-          {/* <Route path="/user/product" element={ <UserProtecter><ProductDetails /></UserProtecter> } /> */}
+          <Route path="/user/search" element={ <UserProtecter><Search /></UserProtecter> } />
           <Route path="/user/productpage" element={ <UserProtecter><ProductDetails /></UserProtecter> } />
           <Route path="/user/collection/:name/products" element={ <UserProtecter><ProductsAll /></UserProtecter> } />
           <Route path="/user/productpage/:id/reviews" element={ <UserProtecter><ProductReview /></UserProtecter> } />

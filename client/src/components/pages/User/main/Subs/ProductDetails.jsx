@@ -24,6 +24,7 @@ export default function ProductDetails({ userData }) {
     const [product, setProduct] = useState();
     const [cartStatus, setCartStatus] = useState();
     const [popup, showPopup] = useState(false);
+  const [qnto, setQnt] = useState(null);
     const [qnt, showQnt] = useState(true);
     const [gotoCart, setGoToCart] = useState(false);
     const [quantity, setQuantity] = useState('1Kg');
@@ -78,7 +79,7 @@ export default function ProductDetails({ userData }) {
         }
     };
 
-    console.log(checkData);
+    // console.log(checkData);
 
     useEffect((checkData) => {
         if (checkData) {
@@ -180,12 +181,32 @@ useEffect(() => {
       setOptions(prevOptions => {
         return prevOptions.filter(option => {
           if (option === "custom") return true;
-          const threshold = thresholds.find(t => t.option <= option);
-          return threshold ? quantity >= threshold.value : true;
+          const threshold = thresholds.find(t => t.option === option);
+          return threshold ? threshold.value <= quantity : false;
         });
       });
     }
-  }, [data])
+  }, [product])
+
+  const addNewVlaue =(newValue)=>{
+    showPopup(false);
+    if (newValue) {
+      // Add to options and set as selected
+      setOptions(prev => [...prev, newValue]);
+      setQnt(newValue);
+      const gramsValue = convertToGrams(newValue);
+    
+    setQuantity(newValue)
+    }
+  }
+
+  function deconvertToGrams(value) {
+    if (value >= 1000) {
+      return `${value/1000}Kg`;
+    } else {
+      return `${value}g`;
+    }
+}
 
     const addToCartItem = (id) => {
 
@@ -199,7 +220,7 @@ useEffect(() => {
 
     return (
         <> { popup &&
-            <ProductQuantityPopup stock={product?.stock} options={setOptions} showPopup={showPopup} />
+            <ProductQuantityPopup stock={product?.stock} onClose={addNewVlaue} options={setOptions} showPopup={showPopup} />
           }
          <ToastContainer title="Error" position="bottom-left" />
             <div className={`w-[96%] h-full flex-1 bg-product`}>
@@ -397,7 +418,7 @@ useEffect(() => {
                                         </span>
 
                                         <button
-                                            onClick={() => navigation("/user/ordersummery", { state: { items: [{ ...product }], qnt: quantity } })}
+                                            onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:product,quantity:convertToGrams(quantity) }], qnt: quantity } })}
                                             className="p-5 bg-black rounded-full text-white px-10 ml-5"
                                         >
                                             Buy now
@@ -428,9 +449,9 @@ useEffect(() => {
                                                 <p className="text-[20px] font-medium">{product?.stock/1000}<span className="opacity-45"> Kg left</span></p>
                                             </span>
 
-                                        <select
+                                        <select value={qnto}
                                             className="text-[20px] text-[#6C6C6C] font-medium focus:outline-none cursor-pointer custom-selecter"
-                                            defaultValue="1kg"
+                                            defaultValue="1Kg"
                                             onChange={(e) => {e.target.value==='custom'?showPopup(true):setQuantity(e.target.value)}}
                                         >
                                             {options.map((option, index) => (

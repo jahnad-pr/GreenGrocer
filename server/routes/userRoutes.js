@@ -1,10 +1,10 @@
 const express = require('express');
 const {createAUser,loginUser,googleLog, getUserData, 
     getOTP, conformOTP, updateVerification, isUerExist, logoutUser, updateProfile, matchPassword,resetPassword } = require('../controllers/userController');
-const { getProducts,getCAtegoryProducts,getProductDetails } = require('../controllers/config/ProductController')
+const { getProducts,getCAtegoryProducts,getProductDetails,getAllProduct } = require('../controllers/config/ProductController')
 const { upsertAddress,getAdresses } = require('../controllers/config/AdressController')
 const { getCategories } = require('../controllers/config/categoryController');
-const { addtoCart,checkPorductInCart,getCartItems } = require('../controllers/config/cartController');
+const { addtoCart,checkPorductInCart,getCartItems,updateCartITem } = require('../controllers/config/cartController');
 const { placeOrder,getOders } = require('../controllers/config/orderController');
 const { getCollections,getCAtegoryCollection } = require('../controllers/config/collectionController');
 const { authMiddleware } = require('../middlewares/checkUser');
@@ -26,6 +26,7 @@ router.post('/updateProfile',updateProfile);
 router.post('/matchPassword',matchPassword);
 router.post('/resetPassword',resetPassword);
 
+
 router.post('/upsertAddress',upsertAddress);
 router.get('/getAdresses/:id',getAdresses);
 
@@ -35,6 +36,9 @@ router.get('/getOders/:id',getOders);
 router.post('/addtoCart',addtoCart);
 router.get('/checkPorductInCart/:prductID',authMiddleware,checkPorductInCart);
 router.get('/getCartItems',authMiddleware,getCartItems);
+router.post('/updateCartITem/:id',authMiddleware,updateCartITem);
+
+router.get('/getAllProduct',authMiddleware,getAllProduct);
 
 router.get('/getUser',authMiddleware,getUserData);
 router.get('/getCategories',getCategories);

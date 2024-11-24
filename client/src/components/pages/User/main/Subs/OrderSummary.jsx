@@ -4,7 +4,8 @@ import normal from '../../../../../assets/images/normal.png'
 import eco from '../../../../../assets/images/rco.png'
 import { useGetAdressesMutation } from "../../../../../services/User/userApi";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import HoverKing from "../../../../parts/buttons/HoverKing";
+import ProductDetailsPopup from "./ProductDetailsPopup";
 
 export default function OrderSummary({userData}) {
 
@@ -18,48 +19,81 @@ export default function OrderSummary({userData}) {
   const [cart, setCart] = useState([]);
   const [delivery, setDelivery] = useState('Fast Delivery');
   const [address, setAddress] = useState();
+  const [number, setNumber] = useState();
 
   const [summary, setSummary] = useState({
     items: 0,
-    discount: 31,
+    discount: 0,
     taxes: 5.3,
     deliveryFee: 40,
     coupon: 15,
   });
 
-  const grandTotal = summary.items - summary.discount + summary.taxes + summary.deliveryFee - summary.coupon;
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
 
-  useEffect(()=>{ if(location?.state?.items){
-    setItems(location?.state?.items)
-    const items = location?.state?.items
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setShowPopup(true);
+  };
 
-    items?.map((data,index)=>{  
-      setCart((prevData) => {
-        // Check if the item already exists in the cart
-        const isItemExists = prevData.some(
-          (item) => item.name === data.name && item.quantity === location?.state?.qnt
-        );
+  const closePopup = () => {
+    setShowPopup(false);
+    setSelectedProduct(null);
+  };
+
+  const handleNextProduct = () => {
+    const currentIndex = cart.findIndex(item => item.id === selectedProduct.id);
+    const nextIndex = (currentIndex + 1) % cart.length;
+    setSelectedProduct(cart[nextIndex]);
+  };
+
+  const handlePrevProduct = () => {
+    const currentIndex = cart.findIndex(item => item.id === selectedProduct.id);
+    const prevIndex = (currentIndex - 1 + cart.length) % cart.length;
+    setSelectedProduct(cart[prevIndex]);
+  };
+
+  const grandTotal = summary.items/2 - summary.discount/2 + (summary.taxes + summary.deliveryFee) - summary.coupon;
+
+  useEffect(() => {
+    console.log(location?.state?.items);
+    
+    if (location?.state?.items) {
+      setItems(location?.state?.items)
+      const items = location?.state?.items
+    
+      items?.map((data) => {  
+        setCart((prevData) => {
+          // Check if the item already exists in the cart
+          const isItemExists = prevData.some(
+            (item) => item.name === data.product.name && item.quantity === data.quantity
+          );
       
-        // If item doesn't exist, add it; otherwise, return the previous data
-        if (!isItemExists) {
-          setSummary((prevData)=>({...prevData,items:prevData.items+data.regularPrice }))
-          setSummary((prevData)=>({...prevData,discount:(data.regularPrice-data.salePrice) }))
-          return [
-            ...prevData,
-            {
-              id: prevData.length + 1, // Generate a unique ID
-              name: data.name,
-              quantity: location?.state?.qnt || "1 unit", // Provide default if undefined
-              price: data.salePrice,
-              imgSrc: data.pics.one,
-            },
-          ];
-        }
+          // If item doesn't exist, add it; otherwise, return the previous data
+          if (!isItemExists) {
+            setSummary((prevData) => ({ ...prevData, items: prevData.items + ((data.quantity/1000)*data.product?.regularPrice) }))
+            setSummary((prevData) => ({ ...prevData, discount: prevData.discount + ((data.quantity/1000)*(data.product.regularPrice - data.product.salePrice)) }))
+            
+            return [
+              ...prevData,
+              {
+                id: prevData.length + 1,
+                name: data.product.name,
+                quantity: data.quantity || "1 unit",
+                price: data.product.regularPrice,
+                imgSrc: data.product.pics.one,
+                regularPrice: data.product.regularPrice,
+                salePrice: data.product.salePrice
+              },
+            ];
+          }
       
-        return prevData; // Return the original data if the item already exists
-      });
-    })
-  } },[location?.state?.items])
+          return prevData;
+        });
+      })
+    }
+  }, [location?.state?.items])
 
   useEffect(()=>{ (async()=>{ if(userData){ await getAdresses(userData?._id) } })() },[userData])
 
@@ -70,12 +104,13 @@ export default function OrderSummary({userData}) {
   },[data])
 
   return (
+    <>
     <div className="w-[96%] h-full bg-product">
       <div className="bg-[#ffffffa4] mix-blend-screen absolute w-full h-full backdrop-blur-3xl"></div>
       <div className="w-full h-full px-40 py-10 flex gap-20 relative">
-        <span>
+        <span className="min-w-[50%]">
           {/* Head */}
-          <h1 className="text-[30px] font-bold my-8">Order Summary</h1>
+          <h1 onClick={()=>console.log(summary.discount)} className="text-[30px] font-bold my-8">Order Summary</h1>
 
           {/* order address */}
           <p className="text-[20px] opacity-40 font-medium">
@@ -83,7 +118,7 @@ export default function OrderSummary({userData}) {
           </p>
 
           {/* address seelcter */}
-          <div className="mt-4">
+          {  adressData?.length > 0 ? <div className="mt-4">
             <div className="mt-2">
               <select onChange={(e)=>setAddress(e.target.value)} className="px-5 min-w-[700px] p-2 border rounded custom-select">
 
@@ -97,7 +132,8 @@ export default function OrderSummary({userData}) {
                 }) }
               </select>
             </div>
-          </div>
+          </div>: <p onClick={()=>navigate('/user/profile/:12/address')} className="text-[18px] font-medium text-blue-500">Add your adress and coutinue</p>
+           }
           <div className="mt-4">
             <label className="block text-[20px] opacity-40 font-medium">
               Enter Your Mobile Number to get updates
@@ -106,7 +142,8 @@ export default function OrderSummary({userData}) {
               <span className="bg-[#f5efef] rounded-full p-3">+91</span>
               <input
                 type="text"
-                value={userData?.phone}
+                onChange={(e)=>setNumber(e.target.value)}
+                value={userData?.phone||''}
                 className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
                 placeholder="9078454323"
               />
@@ -118,13 +155,13 @@ export default function OrderSummary({userData}) {
         <h3 className="text-lg font-bold">Items in Cart and Their Pricing</h3>
         <div className="mt-4">
           {cart.map((item) => (
-            <div key={item.id} className="flex justify-between items-center mt-2">
+            <div key={item.id} className="flex justify-between items-center mt-2 cursor-pointer hover:bg-[#ffffff80] p-2 rounded-lg transition-all" onClick={() => handleProductClick(item)}>
               <div className="flex items-center space-x-2">
                 <img src={item.imgSrc} alt={item.name} className="w-8 h-8" />
                 <span>{item.name}</span>
-                <span className="text-gray-500">{item.quantity}</span>
+                <span className="text-gray-500 font-medium">{item.quantity>=1000?item.quantity/1000:item.quantity} {item.quantity>=1000?'Kg':'g'}</span>
               </div>
-              <span className="text-green-600 font-bold">₹{item.price}</span>
+              <span className="text-green-600 font-bold">₹{(item.quantity/1000)*item.price}</span>
             </div>
           ))}
         </div>
@@ -133,11 +170,11 @@ export default function OrderSummary({userData}) {
         <div className="mt-4 bg-[#ffffff60] p-4 rounded-[20px]">
           <div className="flex justify-between">
             <span>Items</span>
-            <span className="font-bold">₹{summary.items}</span>
+            <span className="font-bold">₹{summary.items/2}</span>
           </div>
           <div className="flex justify-between">
             <span>Discount</span>
-            <span className="font-bold">-₹{summary.discount}</span>
+            <span className="font-bold">-₹{summary.discount/2}</span>
           </div>
           <div className="flex justify-between">
             <span>Taxes</span>
@@ -223,7 +260,7 @@ export default function OrderSummary({userData}) {
 
               
             </div>
-            <div className="mt-8">
+            {/* <div className="mt-8">
               <h3 className="text-lg opacity-40 font-medium">Apply Coupon</h3>
               <div className="mt-2 flex items-center space-x-2">
                 <input
@@ -238,17 +275,28 @@ export default function OrderSummary({userData}) {
                   Cancel
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="mt-8 flex justify-end">
-          <button onClick={()=>navigate('/user/payment',{ state:{ 
-            order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt } } })}
-             className="px-16 absolute bottom-20 py-[15px] bg-[linear-gradient(to_left,#0bc175,#0f45ff)] text-[18px] rounded-full text-white font-medium mt-10 w-full max-w-[300px]">Continue</button>
-
+          {/* <button onClick={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt } } })
+          }
+             className="px-16 absolute bottom-20 py-[15px] bg-[linear-gradient(to_left,#0bc175,#0f45ff)] text-[18px] rounded-full text-white font-medium mt-10 w-full max-w-[300px]">Continue</button> */}
+            { adressData?.length > 0 && <HoverKing event={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt } } })} styles={'fixed bottom-28 right-64'} Icon={<i className="ri-apps-2-add-line text-[30px] text-[#5fb064]"></i>} ></HoverKing>}
           </div>
         </span>
       </div>
     </div>
+
+  
+    {showPopup && selectedProduct && (
+      <ProductDetailsPopup 
+        product={selectedProduct}
+        onClose={closePopup}
+        onNext={handleNextProduct}
+        onPrev={handlePrevProduct}
+      />
+    )}
+    </>
   );
 }

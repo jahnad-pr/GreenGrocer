@@ -1,104 +1,153 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const ProductQuantityPopup = ({ showPopup, options, stock }) => {
-  const [quantity, setQuantity] = useState(0);
-  const [unit, setUnit] = useState('kg');
+const ProductQuantityPopup = ({ onClose, options, stock ,setOptions,showPopup}) => {
+  const [quantity, setQuantity] = useState('');
+  const [unit, setUnit] = useState('gram');
   const [error, setError] = useState('');
 
-  const handleQuantityChange = (e) => {
-    setQuantity(e.target.value);
-  };
-
-  const handleUnitChange = (e) => {
-    setUnit(e.target.value);
-  };
-
-
-
   const handleSubmit = () => {
-    if(unit ==='kg'){
-      if(quantity > stock/100){
+    let newOption;
+    if(unit ==='Kg'){
+      if(quantity > stock/1000){
+        alert(stock/1000)
         setError('Quantity must be less than or equal to stock')
-    } else{
-      options((prev)=>([...prev,`${stock/100} Kg`]))
+        return;
+      } else {
+      if(quantity>=1){
+        newOption = `${quantity}Kg`;
+      }else{
+        newOption = `${quantity*1000}g`;
+      }
+
+      }
+      setOptions( prevData => [...prevData,newOption] )
     }
-  }
-  if(unit ==='gram'){
-    if(quantity > stock){
-      setError('Quantity must be less than or equal to stock')
-  }else{
-    options((prev)=>([...prev,`${stock} gram`]))
-  }
-}
+    if(unit ==='gram'){
+      if(quantity > stock){
+        setError('Quantity must be less than or equal to stock')
+        return;
+      } else {
+        if(quantity<1000){
+          newOption = `${quantity}g`;
+        }else{
+          newOption = `${quantity/1000}Kg`;
+        }
+      }
+    }
+    
+    if (newOption) {
+      onClose(newOption);
+    }
   };
 
   return (
-    <div className="fixed z-50 inset-0 overflow-y-auto">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 backdrop-blur-md bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div className="inline-block align-bottom bg-black text-white rounded-[35px] shadow-2xl py-8 px-8 text-left overflow-hidden pb-10 transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div>
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-              <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div className="mt-3 text-center sm:mt-5">
-              <h3 className="text-lg leading-6 font-medium text-gray-300" id="modal-title">Enter Product Quantity</h3>
-              <div className="mt-2">
-                <p className="text-sm text-gray-500">Please enter the quantity and select the unit.</p>
-                { error && <p className='text-red-500'>{error}</p> }
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      >
+        <motion.div
+          initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+          animate={{ opacity: 1, backdropFilter: "blur(16px)" }}
+          exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0 bg-[#000000]/30"
+          onClick={onClose}
+        />
+
+        <motion.div
+          initial={{ 
+            scale: 0.4,
+            opacity: 0,
+            y: -60
+          }}
+          animate={{ 
+            scale: 1,
+            opacity: 1,
+            y: 0
+          }}
+          exit={{ 
+            scale: 0.4,
+            opacity: 0,
+            y: 60
+          }}
+          transition={{ 
+            type: "spring",
+            damping: 15,
+            stiffness: 300,
+            duration: 0.6
+          }}
+          className="bg-transparent backdrop-blur-xl rounded-[30px] p-8 max-w-md w-full mx-4 relative shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white/50 z-50 before:absolute before:inset-0 before:rounded-[30px] before:bg-gradient-to-b before:from-white/60 before:to-white/30 before:-z-10"
+        >
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={()=>showPopup(false)}
+            className="absolute right-6 top-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/40 backdrop-blur-sm border border-white/50 hover:bg-white/50 transition-colors"
+          >
+            <i className="ri-close-line text-2xl text-gray-800"></i>
+          </motion.button>
+
+          <div className="space-y-6">
+            <motion.h2 
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-2xl font-bold text-gray-800"
+            >
+              Custom Quantity
+            </motion.h2>
+
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-4"
+            >
+              <div className="flex gap-4">
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="Enter quantity"
+                  className="flex-1 p-3 rounded-full bg-white/50 backdrop-blur-sm border border-white/50 outline-none focus:ring-2 focus:ring-green-500/50"
+                />
+                <select
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  className="p-3 custom-selecto rounded-xl bg-white/50 backdrop-blur-sm border border-white/50 outline-none focus:ring-2 focus:ring-green-500/50"
+                >
+                  <option value="gram">Gram</option>
+                  <option value="Kg">Kg</option>
+                </select>
               </div>
-            </div>
-          </div>
-          <div className="mt-5 sm:mt-6 space-y-4">
-            <div className="flex items-center gap-4 justify-center">
-              <label htmlFor="quantity" className="text-sm font-medium">
-                Quantity:
-              </label>
-              <input
-                id="quantity"
-                type="number"
-                value={quantity}
-                onChange={handleQuantityChange}
-                className="px-3 py-2 bg-[#ffffff30] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div className="flex items-center gap-4 justify-center">
-              <label htmlFor="unit" className="text-sm font-medium">
-                SElect the Unit:
-              </label>
-              <select
-                id="unit"
-                value={unit}
-                onChange={handleUnitChange}
-                className=" py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-full bg-[#ffffff30] px-10 custom-selecto"
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-red-500 text-sm"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleSubmit}
+                className="w-full p-3 rounded-full bg-[#2b4f3a] text-white font-medium hover:bg-green-600 transition-colors"
               >
-                <option className='text-black' value="kg">kg &nbsp;(Kilo Gram)</option>
-                <option className='text-black' value="gram">gram &nbsp;</option>
-              </select>
-            </div>
+                Add Custom Quantity
+              </motion.button>
+            </motion.div>
           </div>
-          <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-            <button
-              type="button"
-              className="w-full inline-flex justify-center rounded-full border border-transparent shadow-sm px-4 py-3 bg-[linear-gradient(to_left,#392ab8,#711978)] text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm"
-              onClick={handleSubmit}
-            >
-              Continue
-            </button>
-            <button
-              type="button"
-              className="mt-3 w-full inline-flex items-center justify-center rounded-full border-2 border-gray-500 shadow-sm px-4 py-2 text-base font-medium text-gray-200 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
-              onClick={()=>showPopup(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

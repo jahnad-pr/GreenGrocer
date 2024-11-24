@@ -7,11 +7,11 @@ const cartSchema = new mongoose.Schema({
         ref: "User"
     },
     items: [
-        {
-          product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-          quantity: Number,
-        },
-      ],
+      {
+        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        quantity: Number,
+      },
+    ],
 });
 
 module.exports = mongoose.model('Cart', cartSchema);

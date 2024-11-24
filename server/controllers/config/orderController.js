@@ -1,4 +1,5 @@
 const Order = require('../../models/other/OrderModel')
+const Cart = require('../../models/other/cartModel')
 
 
 
@@ -10,6 +11,7 @@ module.exports.placeOrder = async (req, res) => {
 
     try {
         const result = await Order.create(OrderData)
+        await Cart.updateOne({ user: OrderData.user }, { $set: { items: [] } })
 
         if(result){
             return res.status(200).json('Order succsffuly')
@@ -34,9 +36,9 @@ module.exports.getOders = async (req, res) => {
 
         
         if(user!=='undefined'){
-            result = await Order.find({user}).populate('items.product','name from')
+            result = await Order.find({user}).populate('items.product','name pics from salePrice description regularPrice').populate('items.product.category','name')
         }else{
-            result = await Order.find({}).populate('items.product','name from').populate('user','username')
+            result = await Order.find({}).populate('items.product','name pics from salePrice description regularPrice').populate('user','username')
         }
         
 

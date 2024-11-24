@@ -47,7 +47,7 @@ const OrderList = ({userData}) => {
   const getStatusColor = (status) => {
     switch (status.toUpperCase()) {
       case "PROCESSED":
-        return "bg-[linear-gradient(45deg,#8aa4eb35_30%,#ffffff20_70%)]";
+        return "bg-[linear-gradient(45deg,#c7ccd6_30%,#d3d3d1_70%)]";
         case "SHIPPED":
         return "bg-[linear-gradient(45deg,#ebaf8a35_30%,#ffffff20_70%)]";
       case "PENDING":
@@ -109,20 +109,28 @@ const OrderList = ({userData}) => {
 
               <div onClick={()=>navigate('/user/OrderDetails',{ state:order })}
                 key={index}
-                className={`p-4 py-8 w-[22%] hover:scale-[0.9] duration-500 hover:shadow-2xl shadow rounded-[45px] border-2 border-[#eeeeee4d] px-10 mb-4 ${getStatusColor(order.order_status)}`}
+                className={`p-4 py-8 w-[22%] duration-500 relative group shadow-2xl rounded-[20px] rounded-tl-[109px] border-2 border-[#eeeeee4d] px-10 mb-4 ${getStatusColor(order.order_status)}`}
               >
+                { order.items.length > 1 && <div className={`absolute w-full h-full -left-2 shadow rounded-tl-[109px] rounded-[30px] group-hover:scale-[1.05] duration-500 -z-10 -top-2 border-2 border-[#eeeeee4d] ${getStatusColor(order.order_status)}`}></div>}
+                { order.items.length > 2 && <div className={`absolute w-full h-full -left-4 shadow rounded-tl-[109px] rounded-[30px] group-hover:scale-[1.10] duration-500 -z-20 -top-4 border-2 border-[#eeeeee4d] ${getStatusColor(order.order_status)}`}></div>}
+
                 <div className="flex items-center gap-4">
 
                   <div className="flex-grow items-center justify-center flex flex-col">
-                  <img src={order.items.pic} alt="Order Item" className="w-[60%] object-cover rounded-[60px]" />
+                    { order.items.length > 1 &&
+                    <div className="w-16 items-center justify-center h-16 px-2 scale-50 opacity-0 group-hover:opacity-100 group-hover:scale-100 duration-500 text-center leading-none font-medium bg-[linear-gradient(45deg,#929291,#00000080)] text-white absolute flex flex-wrap left-0 top-0 rounded-full">
+                      <p>{order.items.length-1} More</p>
+                    </div>
+                    }
+                  <img src={order.items[0].product?.pics?.one} alt="Order Item" className="w-[60%] min-w-[60%] max-h-[60%] min-h-[60%] object-cover rounded-[60px]" />
                     <div className="flex justify-between items-start ">
                       <div className="w-full flex flex-col gap-1">
-                        <h1 className="font-bold text-[25px] text-center">{order.items.product.name}</h1>
+                        <h1 className="font-bold text-[25px] text-center">{order.items[0].product?.name}</h1>
                         <h3 className="font-medium opacity-60">
                           Item Quantity:{" "}
-                          <span className="text-gray-600">{order.items.quantity/1000}Kg</span>
+                          <span className="text-gray-600">{order.items[0].quantity/1000}Kg</span>
                         </h3>
-                        <p className="text-sm text-gray-600">Total Price: ₹{order.items.totalPrice}</p>
+                        <p className="text-sm text-gray-600">Total Price: ₹{order.price.grandPrice}</p>
                       </div>
                     </div>
 

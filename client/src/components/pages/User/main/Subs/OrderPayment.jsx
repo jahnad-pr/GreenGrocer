@@ -120,7 +120,8 @@ const OrderPayment = ({userData}) => {
 
 
 
-  useEffect(()=>{ setSelectedMethod(paymentMethods[0].id) },[paymentMethods])
+
+  useEffect(()=>{ setSelectedMethod(paymentMethods[0].id) },[])
 
   
   
@@ -130,14 +131,14 @@ const OrderPayment = ({userData}) => {
       delivery_address:currentData.address,
       payment_method:selectedMethod,
       coupon:'',
-      items:{ product:currentData.items[0]._id,quantity:currentData.qnt,totalPrice:12000,discount:0,pic:currentData.items[0].pics.one },
+      items:currentData.items,
       price:{
         grandPrice:currentData.price,
         discountPrice:0
       },
       order_id:generateOrderId(),
       time:Date.now(),
-      total_quantity:currentData.qnt,
+      total_quantity:currentData.items?.reduce( (acc,data) => acc+=data.quantity , 0),
       order_status:'Processed',
       payment_status:'pending',
     }
@@ -158,7 +159,7 @@ const OrderPayment = ({userData}) => {
         <h1 onClick={()=>console.log(selectedMethod)} className="text-[30px] font-bold my-16 mb-8">Payment Method</h1>
 
         <div className="bg-[#e1e5f0] px-16 py-8 rounded-lg inline-block">
-          <div className="text-3xl font-bold text-green-700 lemon-regular">867.3 ₹</div>
+          <div className="text-3xl font-bold text-green-700 lemon-regular">₹ {currentData.price}</div>
           <div className="text-gray-400 font-medium">Grand Total</div>
         </div>
       </div>

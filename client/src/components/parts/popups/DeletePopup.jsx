@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function DeletePopup({showPopup,deleteData={},updater,action='delete',isUser=false}) {
+export default function DeletePopup({showPopup,deleteData={},updater,action='delete',isUser=false,isCart,setDeleteData}) {
 
 
     const cancelHandler = ()=>{
@@ -14,9 +14,13 @@ export default function DeletePopup({showPopup,deleteData={},updater,action='del
             const action = deleteData. action
             await updater( {uniqeID, updateBool,  action} ).unwrap();
             showPopup(false)
-        }else if(isUser){
+        }else if(isUser&&!isCart){
             await updater(deleteData.id)
             showPopup(false)
+        }else{
+            await updater({id:deleteData.id})
+            showPopup(false)
+            setDeleteData(deleteData.id)
         }
     }
 

@@ -27,8 +27,16 @@ export const CartManage = (builder) => ({
       }),
     }),
 
+    updateCartITem: builder.mutation({
+      query: ({id,action='remove',seletor='1Kg'}) => ({
+        url: `user/updateCartITem/${id}`,
+        method: 'POST',
+        body:{id,action,seletor},
+        credentials: 'include',
+      }),
+    }),
+
    
 
 
   });
-  

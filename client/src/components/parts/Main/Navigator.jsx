@@ -15,15 +15,15 @@ export default function Navigator({userData}) {
         <i className="ri-menu-line text-[30px]"></i>
         }
 
-        <i className="ri-search-line text-[30px]"></i>
+        <i onClick={()=>navigator('/user/search')} className="ri-search-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
         <span className='h-14'></span>
-        <i onClick={()=>navigator('/user/home')} className="ri-home-line text-[30px]"></i>
-        <i className="ri-movie-line text-[30px]"></i>
-        <i onClick={()=>navigator('/user/products')} className="ri-shopping-bag-line text-[30px]"></i>
-        <i className="ri-bookmark-line text-[30px]"></i>
+        <i onClick={()=>navigator('/user/home')} className="ri-home-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
+        <i className="ri-movie-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
+        <i onClick={()=>navigator('/user/products')} className="ri-shopping-bag-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
+        <i className="ri-bookmark-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
         <span className='flex-1'></span>
-        { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}`)} className="ri-user-line text-[30px]"></i>}
-        <i onClick={()=>navigator(`/user/Cart`)}  className="ri-shopping-cart-line text-[30px]"></i>
+        { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}`)} className="ri-user-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>}
+        { userData && <i onClick={()=>navigator(`/user/Cart`)}  className="ri-shopping-cart-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>}
         </div>
         
     </div>

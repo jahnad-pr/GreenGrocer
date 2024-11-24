@@ -59,5 +59,8 @@ export const {
   useAddtoCartMutation,
   useCheckPorductInCartMutation,
   useGetCartItemsMutation,
+  useUpdateCartITemMutation,
+  
+  useGetAllProductMutation,
 
 } = userApiSlice;

@@ -8,6 +8,7 @@ import {
 } from "../../../../services/User/userApi";
 import Product from "../../../parts/Cards/Product";
 import { useNavigate } from "react-router-dom";
+import CollectionCard from "../../../parts/Cards/Collection";
 
 
 export default function Products() {
@@ -22,14 +23,17 @@ export default function Products() {
   const [ getCAtegoryCollctiions, { sLoading: colllLooading, error: collEroor, data: CollData }, ] = useGetCAtegoryCollctiionsMutation();
   const [ getCAtegoryProducts, { sLoading: proLoading, error: proError, data: proData }, ] = useGetCAtegoryProductsMutation();
 
+  const [productsData,setProductData] = useState([])
+
   useEffect(() => {
     (async () => {
       await getCategories().unwrap();
     })();
   }, []);
 
-  // useEffect(()=>{ console.log(proData);
-  //  },[proData])
+  useEffect(()=>{ 
+    setProductData(proData);
+   },[proData])
 
   
 
@@ -46,20 +50,22 @@ export default function Products() {
 
 
   return (
-    <div className="w-[96%] h-full  motion-preset-slide-right ">
-      <div className="w-full h-full bg-gray-200 px-40">
+    // motion-preset-slide-right
+    <div className="w-[96%] h-full   bg-product">
+    <div className="bg-[#494d4ad5] mix-blend-screen absolute w-full h-full"></div>
+      <div className="w-full h-full backdrop-blur-3xl pl-40">
         <div className="w-full h-full pt-16 overflow-y-scroll">
           {/* Main head */}
-          <h1 className="text-[30px] font-bold">All Products and Servce</h1>
+          <h1 className="text-[30px] font-bold">Shop</h1>
 
           {/* menu navigator */}
           <div className="flex text-[20px] my-10 font-[500] relative py-3">
             {catData?.data?.map((data,index) => {
               
-              return data.isListed && <p  onClick={()=>(setPosition(index))} className="w-28">{data.name}</p>;
+              return data.isListed && <p style={{opacity:cPosition===index?'100%':'40%'}}  onClick={()=>(setPosition(index))} className="w-28">{data.name}</p>;
             })}
             {/* <p className="opacity-45">Service</p> */}
-            <div style={{left:`${112*cPosition}px`}} className={`w-16 h-1 duration-500 bg-black absolute bottom-0`}></div>
+            <div style={{left:`${112*cPosition}px`}} className={`w-16 h-1 duration-500 bg-[#00000050] absolute bottom-0`}></div>
           </div>
 
           {/* Banners */}
@@ -71,12 +77,15 @@ export default function Products() {
           <h1 className={`text-[30px] $'ml-40':''} font-semibold mt-20`}>
             Collections
           </h1>
-          <div className="w-full h-auto flex my-5 mt-8 gap-5 relative">
-          <p onClick={()=>navigator(`/user/collection/${catData?.data[cPosition].name}/products`,{ state:{products:CollData?.data,action:'collectionw'} })} className='px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full'>View all</p>
+          <div className="w-full h-auto flex my-5 mt-12 gap-5 relative">
+          <div onClick={()=>navigator(`/user/collection/${catData?.data[cPosition].name}/products`,{ state:{products:CollData?.data,action:'collections',title:`Collections of ${catData?.data[cPosition].name}`} })} className='px-8 items-center justify-center group flex duration-500 absolute font-medium right-0 top-[-65px] py-2 bg-[linear-gradient(to_left,#52aa5799,#14532d)] hover:scale-125 text-white tex-[20px] gap-2 rounded-l-[10px] rounded-bl-[20px]'>
+            <p className="duration-500">VIEW ALL</p>
+        <i className="ri-arrow-right-line rounded-full overflow-hidden -translate-x-5 opacity-0 text-[25px] group-hover:translate-x-0 group-hover:opacity-100 duration-500"></i>
+            </div>
             {CollData?.data?.map((data, index) => {
                 if(data.isListed){
 
-                    return <Product key={index} type={'collection'} data={data} pos={index} />;
+                    return <CollectionCard key={index} type={'collection'} data={data} pos={index} />;
                     
                 }
             })}
@@ -88,8 +97,11 @@ export default function Products() {
             Products
           </h1>
           <div className="w-full h-auto flex my-5 mt-8 gap-5  mb-80 relative flex-wrap">
-            <p  onClick={()=>navigator(`/user/collection/${catData?.data[cPosition].name}/products`,{ state:{products:proData?.data,action:'gategory'} })} className='px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full'>View all</p>
-            {proData?.data?.map((data, index) => {
+          <div onClick={()=>navigator(`/user/collection/${catData?.data[cPosition].name}/products`,{ state:{products:CollData?.data,action:'collections',title:`Collections of ${catData?.data[cPosition].name}`} })} className='px-8 items-center justify-center group flex duration-500 absolute font-medium right-0 top-[-65px] py-2 bg-[linear-gradient(to_left,#52aa5799,#14532d)] hover:scale-125 text-white tex-[20px] gap-2 rounded-l-[10px] rounded-bl-[20px]'>
+            <p className="duration-500">VIEW ALL</p>
+        <i className="ri-arrow-right-line rounded-full overflow-hidden -translate-x-5 opacity-0 text-[25px] group-hover:translate-x-0 group-hover:opacity-100 duration-500"></i>
+            </div>
+            {productsData?.data?.map((data, index) => {
                 if(true){
 
                     return <Product key={index} type={'product'} data={data} pos={index} />;
@@ -98,33 +110,6 @@ export default function Products() {
             })}
           </div>
 
-
-
-
-          {/* fruits collection */}
-          {/* <div className="w-full h-auto">
-            <List
-              listData={{
-                title: "Fruit Collections",
-                wrap: true,
-                ml: false,
-                data: CollData?.data,
-              }}
-            />
-          </div> */}
-
-          {/* fruits
-          <div className="w-full h-auto my-40">
-            <List
-              listData={{
-                title: "Fruits",
-                wrap: true,
-                ml: false,
-                data: CollData?.data,
-              }}
-            />
-          </div>
-           */}
         </div>
       </div>
     </div>

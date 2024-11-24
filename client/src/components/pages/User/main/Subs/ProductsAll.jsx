@@ -3,6 +3,7 @@ import List from '../../../../parts/Main/List'
 import { useLocation, useParams } from 'react-router-dom';
 import Product from '../../../../parts/Cards/Product';
 import { useGetCollectionProductsMutation } from '../../../../../services/User/userApi';
+import CollectionCard from '../../../../parts/Cards/Collection';
 
 export default function ProductsAll() {
 
@@ -19,20 +20,26 @@ export default function ProductsAll() {
 
   
   return (
-    <div className='w-[96%] h-full bg-gray-100'>
-        <div className="w-full h-full bg-gray-200 px-40">
-            <div className="w-full h-full bg-gray-300 pt-0 overflow-y-scroll">
+    <div className='w-[96%] h-full bg-gray-100 bg-product'>
+      <div className="bg-[#ffffff20] mix-blend-scree absolute w-full h-full backdrop-blur-3xl"></div>
+        <div className="w-full h-full backdrop-blur-3xl px-40">
+            <div className="w-full h-fullpt- 0 overflow-y-scroll">
 
                 {/* fruit collection */}
-           <h1 className={`text-[30px] $'ml-40':''} font-semibold mt-20`}>
-            Products
+                <span className='flex'>
+           <h1 className={`text-[120px] mb-32 leading-none font-thin mt-20`}>
+            {location?.state?.title?.replace(' ','<br/>')}
           </h1>
+          {/* <span className='flex-1'></span> */}
+          <img className='max-h-[300px] object-cover mr-40 py-5 drop-shadow-2xl' src={location?.state?.img} alt="" />
+                </span>
           <div className="w-full h-auto flex my-5 mt-8 gap-5 flex-wrap">
             {productsData?.map((data, index) => {
-                if(true){
+                if(true&&location?.state?.action==='collections'){
+                  return <CollectionCard type={'product'} data={data} pos={index} />;
+                }else{
+                  return <Product type={'product'} data={data} pos={index} />;
 
-                    return <Product type={'product'} data={data} pos={index} />;
-                  
                 }
             })}
           </div>
