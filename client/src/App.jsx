@@ -38,7 +38,7 @@ import OrderList from "./components/pages/User/Profile/OrderList"
 import Orders from "./components/pages/Admin/Config/Orders"
 import OrderDetails from "./components/pages/User/Profile/OrderDetails"
 import Cart from "./components/pages/User/main/Cart"
-import Search from "./components/pages/Search"
+import Search from "./components/pages/User/main/Search"
 
 export default function App() {
 

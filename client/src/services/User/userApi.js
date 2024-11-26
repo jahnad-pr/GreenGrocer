@@ -48,6 +48,7 @@ export const {
 
   useUpsertAddressMutation,
   useGetAdressesMutation,
+  useDeleteAddressMutation,
 
   useGetProductDetailsMutation,
 

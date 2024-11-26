@@ -4,7 +4,7 @@ const Address = require('../../models/other/AddressModel')
 
 
 module.exports.upsertAddress = async (req, res) => {
-    const { _id, user, ...otherData } = req.body;
+    const { uniqueID, user, ...otherData } = req.body;
 
     // Set default values if they are not provided in the request body
     const upserData = {
@@ -16,7 +16,7 @@ module.exports.upsertAddress = async (req, res) => {
     };
 
 
-    const filter = _id || `${user}${Date.now()}` ; // Use _id if it exists, otherwise use the `user` to identify records
+    const filter = uniqueID || `${user}${Date.now()}` ; // Use _id if it exists, otherwise use the `user` to identify records
 
 
     try {
@@ -64,3 +64,32 @@ module.exports.getAdresses = async (req, res) => {
     }
 }
 
+
+
+
+module.exports.deleteAddress = async (req, res) => {
+
+    const _id = req.params.id 
+    const user = req.user.id
+
+
+    console.log(_id);
+    try {
+        const result = await Address.findByIdAndDelete({user,_id})
+
+
+        if(result){
+
+            return res.status(200).json("Successfully deleted")
+
+        }else{
+
+            return res.status(400).json('NO addresses')
+
+        }
+
+    } catch (error) {
+
+        return res.status(400).json(error.message);
+    }
+}

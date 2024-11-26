@@ -36,9 +36,9 @@ module.exports.getOders = async (req, res) => {
 
         
         if(user!=='undefined'){
-            result = await Order.find({user}).populate('items.product','name pics from salePrice description regularPrice').populate('items.product.category','name')
+            result = await Order.find({user}).populate('items.product').populate('items.product.category','name')
         }else{
-            result = await Order.find({}).populate('items.product','name pics from salePrice description regularPrice').populate('user','username')
+            result = await Order.find({}).populate('items.product').populate('user','username')
         }
         
 

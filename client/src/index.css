@@ -128,11 +128,27 @@ body {
   border-radius: 444px;
   padding-left: 20px;
   padding-right: 40px;
-  background-image: url("../src/assets/images/dw.png"); /* Custom icon */
+  background-image: url("../src/assets/images/dw.png");
   background-repeat: no-repeat;
   background-position: right 10px center; /* Position the icon */
   background-size: 20px;
   /* backdrop-filter: brightness(1); */
+}
+.custom-selecteror{
+  appearance: none; /* Remove default arrow */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  /* Background color */
+  padding: 10px;
+  outline: 0;
+  border-radius: 444px;
+  padding-left: 30px;
+  padding-right: 30px;
+  margin-left: auto;
+  /* background-image: url("../src/assets/images/dw.png"); */
+  background-repeat: no-repeat;
+  /* background-position: right 10px center; */
+  background-size: 0px;
 }
 
 .shadower {
@@ -219,7 +235,7 @@ body {
   border-radius: 444px;
   padding-left: 20px;
   padding-right: 40px;
-  background-image: url("../src/assets/images/arrow-down-double-line.svg"); /* Custom icon */
+  background-image: url("../src/assets/images/arrow-down-double-line.svg");
   background-repeat: no-repeat;
   background-position: right 10px center; /* Position the icon */
   background-size: 20px;

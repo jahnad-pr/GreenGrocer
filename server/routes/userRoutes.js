@@ -2,7 +2,7 @@ const express = require('express');
 const {createAUser,loginUser,googleLog, getUserData, 
     getOTP, conformOTP, updateVerification, isUerExist, logoutUser, updateProfile, matchPassword,resetPassword } = require('../controllers/userController');
 const { getProducts,getCAtegoryProducts,getProductDetails,getAllProduct } = require('../controllers/config/ProductController')
-const { upsertAddress,getAdresses } = require('../controllers/config/AdressController')
+const { upsertAddress,getAdresses,deleteAddress } = require('../controllers/config/AdressController')
 const { getCategories } = require('../controllers/config/categoryController');
 const { addtoCart,checkPorductInCart,getCartItems,updateCartITem } = require('../controllers/config/cartController');
 const { placeOrder,getOders } = require('../controllers/config/orderController');
@@ -29,6 +29,7 @@ router.post('/resetPassword',resetPassword);
 
 router.post('/upsertAddress',upsertAddress);
 router.get('/getAdresses/:id',getAdresses);
+router.delete('/deleteAddress/:id',authMiddleware,deleteAddress);
 
 router.post('/placeOrder',placeOrder);
 router.get('/getOders/:id',getOders);

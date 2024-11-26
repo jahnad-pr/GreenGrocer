@@ -300,10 +300,10 @@ const Orders = () => {
                         </td>
                         <td className="px-3 py-2">
                           <div className="font-medium text-gray-900 text-[18px]">
-                            {order.items.product.name}
+                            {order.items.product?.name}
                           </div>
                           <div className="font-medium text-gray-500 text-[15px]">
-                            {order.items.product.from}
+                            {order.items.product?.from}
                           </div>
                           <div className="text-[16px] text-gray-500">
                             {order.total_quantity / 1000} kilo gram
@@ -316,7 +316,7 @@ const Orders = () => {
                           </div>
 
                           <div className="font-bold text-gray-600">
-                            {order.price.grandPrice}
+                           ₹{order.price.grandPrice}
                           </div>
 
                           <div className="text-gray-600">
@@ -325,9 +325,9 @@ const Orders = () => {
                         </td>
                         <td className="px-3 py-2">
                           <img
-                            src={order?.items?.pic}
+                            src={order?.items[0]?.product.pics?.one}
                             alt={order.name}
-                            className="w-12 h-12 rounded-full object-cover"
+                            className="w-12 h-12 object-cover"
                           />
                         </td>
                         <td className="Sansation-font">
@@ -352,7 +352,7 @@ const Orders = () => {
                             {/*  */}
 
                             <select
-                              className={`px-3 py-2 bg-transparent rounded-full text-white custom-selectero ${order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?'opacity-100':'opacity-65'}`}
+                              className={`px-3 py-2 bg-transparent rounded-full text-white ${order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?'opacity-100 custom-selectero':'opacity-65 custom-selecteror'}`}
                               name=""
                               disabled={order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?false:true}
                               value={order.order_status}

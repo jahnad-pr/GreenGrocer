@@ -1,125 +1,408 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import apple from '../../../../assets/images/aplle.png'
 import { useLocation } from 'react-router-dom'
 import { current } from '@reduxjs/toolkit'
+import { AnimatedTooltip } from '../main/ui/AnimatedTooltip'
+import { Timeline } from "../main/ui/Timeline"
+import { motion } from 'framer-motion'
+import HoverKing from '../../../parts/buttons/HoverKing'
+import DeletePopup from '../../../parts/popups/DeletePopup'
+import { useCancelOrderMutation } from '../../../../services/User/userApi'
+
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@";
+const NUMBER_CHARS = "0123456789";
+const CYCLES_PER_LETTER = 2;
+const SHUFFLE_TIME = 50;
+
+const TextScramble = ({ text }) => {
+    const [scrambledText, setScrambledText] = useState(text);
+    const intervalRef = useRef(null);
+    
+    useEffect(() => {
+        let pos = 0;
+        
+        intervalRef.current = setInterval(() => {
+            const scrambled = text.split("")
+                .map((char, index) => {
+                    if (pos / CYCLES_PER_LETTER > index) {
+                        return char;
+                    }
+                    if (char === ' ') return ' ';
+                    const randomCharIndex = Math.floor(Math.random() * CHARS.length);
+                    const randomChar = CHARS[randomCharIndex];
+                    return randomChar;
+                })
+                .join("");
+            
+            setScrambledText(scrambled);
+            pos++;
+            
+            if (pos >= text.length * CYCLES_PER_LETTER) {
+                clearInterval(intervalRef.current);
+                setScrambledText(text);
+            }
+        }, SHUFFLE_TIME);
+        
+        return () => clearInterval(intervalRef.current);
+    }, [text]);
+    
+    return (
+        <span style={{ fontFamily: 'SF Pro Display, -apple-system, sans-serif' }}>
+            {scrambledText}
+        </span>
+    );
+};
+
+const NumberScramble = ({ number }) => {
+    const [scrambledText, setScrambledText] = useState(number.toString());
+    const intervalRef = useRef(null);
+    
+    useEffect(() => {
+        let pos = 0;
+        const text = number.toString();
+        
+        intervalRef.current = setInterval(() => {
+            const scrambled = text.split("")
+                .map((char, index) => {
+                    if (pos / CYCLES_PER_LETTER > index) {
+                        return char;
+                    }
+                    if (char === '.' || char === ',') return char;
+                    const randomCharIndex = Math.floor(Math.random() * NUMBER_CHARS.length);
+                    const randomChar = NUMBER_CHARS[randomCharIndex];
+                    return randomChar;
+                })
+                .join("");
+            
+            setScrambledText(scrambled);
+            pos++;
+            
+            if (pos >= text.length * CYCLES_PER_LETTER) {
+                clearInterval(intervalRef.current);
+                setScrambledText(text);
+            }
+        }, SHUFFLE_TIME);
+        
+        return () => clearInterval(intervalRef.current);
+    }, [number]);
+    
+    return (
+        <span style={{ fontFamily: 'SF Pro Display, -apple-system, sans-serif' }}>
+            {scrambledText}
+        </span>
+    );
+};
+
+const formatDate = (dateString) => {
+    try {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Invalid Date';
+        
+        return new Intl.DateTimeFormat('en-US', { 
+            day: 'numeric', 
+            month: 'short', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }).format(date);
+    } catch (error) {
+        console.error('Date formatting error:', error);
+        return 'Invalid Date';
+    }
+};
 
 export default function OrderDetails() {
+    const [cancelOrder, { data: cancelData }] = useCancelOrderMutation();
+    const [currentPosition, setCurrentPosition] = useState(1)
+    const [deleteData, setDeleteData] = useState(null);
+    const [limit, setLimit] = useState(0)
+    const [crrentOrder, setCreentOrder] = useState([])
+    const [orderStatus, setOrderStatus] = useState('')
+    const [popup, showPopup] = useState(false);
 
-    const [currentPosition,setCurrentPosition] = useState(1)
-    const [limit,setLimit] = useState(0)
-    const [crrentOrder,setCreentOrder] = useState([])
 
     const location = useLocation()
 
-    useEffect(()=>{ 
-        if(location.state){
-            console.log(location.state);
-            
+    useEffect(() => {
+        if (location.state) {
             setCreentOrder(location.state)
+            setOrderStatus(location.state?.order_status)
             setLimit(location.state?.items?.length)
-            // setCurrentPosition(location.state?.items?.length)
         }
-    },[location])
+    }, [location])
 
-  return (
-    <div className='w-[94%] hull bg-product'>
-      <div className="bg-[#5a52319c] mix-blend-screen absolute w-full h-full"></div>
-        <div className="w-full h-full backdrop-blur-3xl">
-            
-            {/* details container */}
-            <div className="w-full mx-auto pt-16 px-20 h-[70%] bg-[#00000040] flex">
+    useEffect(()=>{
+        if(cancelData){
+            setOrderStatus('Cancelled')
+        }
+    },[cancelData])
 
-                {/* product details and other product navigator */}
-                <div className="w-[20%] bg-red-500 flex flex-col gap-1">
-                    {  crrentOrder.items&&
-                        <>
-                        <p onClick={()=>console.log(crrentOrder?.items[currentPosition-1]?.product?.salePrice)} className='text-[45px] leading-none'>{crrentOrder?.items[currentPosition-1]?.product?.name}</p>
-                        {/* <p onClick={()=>console.log(crrentOrder?.items[currentPosition-1]?.product?.salePrice)} className='text-[45px] leading-none'>{crrentOrder?.items[currentPosition-1]?.product?.category?.name}</p> */}
-                        <p onClick={()=>console.log(crrentOrder?.items[currentPosition-1]?.product?.salePrice)} className='text-[25px] leading-none'>{crrentOrder?.items[currentPosition-1]?.product?.description}</p>
-                        <p className='text-[20px] opacity-45'>{crrentOrder?.items[currentPosition-1]?.quantity/(crrentOrder?.items[currentPosition-1]?.quantity>=1000?1000:1)}{crrentOrder?.items[currentPosition-1]?.quantity>=1000?'Kg':'g'}</p>
-                        <p className='opacity-65'>Product from : {crrentOrder?.items[currentPosition-1]?.product?.from}</p>
-                        </>
+    // cancel Order
+    const handleCancel = (id, index) => {
+        setDeleteData({ id, index });
+        showPopup(true);
+      };
 
+
+
+    return (
+        <>
+        {popup && (
+        <DeletePopup
+          updater={cancelOrder}
+          deleteData={deleteData}
+          showPopup={showPopup}
+          action="Cancel order"
+          isUser={true}
+        />
+      )}
+        <motion.div 
+            initial={{ opacity: 1, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className='w-[94%] hull bg-product'
+        >
+            <motion.div 
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="bg-[#5a52319c] mix-blend-screen backdrop-blur-3xl absolute w-full h-full"
+            />
+            <div className="w-full h-full backdrop-blur-3xl">
+                <motion.div 
+                    initial={{ y: 0, opacity: 1 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="w-full mx-auto pt-16 px-20 h-[70%] p-5  flex"
+                >
+                    <motion.div 
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
+                        className="w-[20%] flex flex-col p-5 gap-1"
+                    >
+                        {crrentOrder.items &&
+                            <>
+                                <motion.p 
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.5, duration: 0.5 }}
+                                    onClick={() => console.log(crrentOrder?.items[currentPosition - 1]?.product?.salePrice)} 
+                                    className='text-[45px] leading-none'
+                                >
+                                    <TextScramble text={crrentOrder?.items[currentPosition - 1]?.product?.name || ''} />
+                                </motion.p>
+                                <motion.p 
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: .5 }}
+                                    transition={{ delay: 0.6, duration: 0.5 }}
+                                    className='text-[25px] leading-none opacity-0'
+                                >
+                                    <TextScramble text={crrentOrder?.items[currentPosition - 1]?.product?.description || ''} />
+                                </motion.p>
+                                <motion.p 
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.7, duration: 0.5 }}
+                                    className='opacity-65'
+                                >
+                                    Product from : {crrentOrder?.items[currentPosition - 1]?.product?.from}
+                                </motion.p>
+                                <motion.p 
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.8, duration: 0.5 }}
+                                    className='text-[20px] opacity-45'
+                                >
+                                    {crrentOrder?.items[currentPosition - 1]?.quantity / (crrentOrder?.items[currentPosition - 1]?.quantity >= 1000 ? 1000 : 1)}
+                                    {crrentOrder?.items[currentPosition - 1]?.quantity >= 1000 ? 'Kg' : 'g'}
+                                </motion.p>
+                            </>
+                        }
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.9, duration: 0.5 }}
+                            className="flex w-full flex-wrap mt-8"
+                        >
+                            {crrentOrder?.items && <AnimatedTooltip setCurrentPosition={setCurrentPosition} items={crrentOrder?.items} />}
+                        </motion.div>
+                    </motion.div>
+
+                    <motion.div 
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 0.5 }}
+                        className="w-[60%] flex items-center flex-col"
+                    >
+                        <div style={{ transform: `translateX(-${100 * (currentPosition - 1)}%)` }} className={`w-full flex-1 flex items-center duration-1000`}>
+                            {crrentOrder.items?.map((data, index) => (
+                                <span key={index} className='min-w-[100%] flex justify-center'>
+                                    <img 
+                                    layoutId='id'
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                                        style={{ transform: `translateY(-${Math.abs((currentPosition - (index + 1)) * 100)}px)` }} 
+                                        className={`w-60 h-60 duration-500 object-cover`} 
+                                        src={data.product.pics.one} 
+                                        alt="" 
+                                    />
+                                    <img 
+                                        initial={{ opacity: 1 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                                        className={`px-60 shadower ${currentPosition == index + 1 ? 'opacity-40' : 'opacity-0'} duration-500 absolute`} 
+                                        src={data.product.pics.one} 
+                                        alt="" 
+                                    />
+                                </span>
+                            ))}
+                        </div>
+                        
+                        {crrentOrder.items?.length > 1 &&
+                            <div className="w-24 h-12 bg-gray-200 text-[30px] flex items-center justify-center rounded-full z-10">
+                                <i style={{ opacity: currentPosition === 1 ? 0.2 : 1 }} onClick={() => setCurrentPosition(currentPosition > 1 ? currentPosition - 1 : currentPosition)} className="ri-arrow-left-s-fill duration-500"></i>
+                                <i style={{ opacity: currentPosition === limit ? 0.5 : 1 }} onClick={() => setCurrentPosition(currentPosition < limit ? currentPosition + 1 : currentPosition)} className="ri-arrow-right-s-fill duration-500"></i>
+                            </div>
+                        }
+                    </motion.div>
+
+
+                    {crrentOrder.items &&
+                        <motion.div 
+                            initial={{ x: 20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.6, duration: 0.5 }}
+                            className="w-[20%]  flex flex-col gap-1 relative"
+                        >
+                            <span className='items-end gap-6'>
+                                <motion.s 
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.7, duration: 0.5 }}
+                                >
+                                    <p className='text-[30px] leading-none opacity-45'>
+                                        ₹ <NumberScramble number={(crrentOrder?.items[currentPosition - 1]?.quantity / 1000) * crrentOrder?.items[currentPosition - 1]?.product?.regularPrice} />
+                                    </p>
+                                </motion.s>
+                                <motion.p 
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.8, duration: 0.5 }}
+                                    className='text-[50px] leading-none font-bold'
+                                >
+                                    ₹ <NumberScramble number={(crrentOrder?.items[currentPosition - 1]?.quantity / 1000) * crrentOrder?.items[currentPosition - 1]?.product?.salePrice} />
+                                </motion.p>
+
+
+                            </span>
+                                <span className='h-'></span>
+
+                                <p className='text-[25px] mt-5 '>{crrentOrder?.items[currentPosition - 1]?.product?.freshness}</p>
+                                {  crrentOrder?.items[currentPosition - 1]?.product?.freshness==='Harvested' &&
+                                <>
+                                <p className='opacity-45'>Harvested on:</p>
+                                <p className=''>{formatDate(crrentOrder?.items[currentPosition - 1]?.product?.harvestedTime)}</p>
+                                </>
+                                
+                                }
+                                { crrentOrder?.items[currentPosition - 1]?.product?.freshness==='fresh' &&
+                                    <p className='leading-none opacity-45 mt-2'>Once the customer confirms their order, the wood is cut specifically for that piece. This approach minimizes waste and ensures fresh, custom-prepared material for every order.</p>
+                                    
+                                }
+
+                                <p className='text-[25px] mt-5 '>Address</p>
+                                <span className='opacity-65 leading-tight'>
+
+                                <p>{crrentOrder?.delivery_address?.locationType} {crrentOrder?.delivery_address?.exactAddress}</p>
+                                <p>{crrentOrder?.delivery_address?.streetAddress}</p>
+                                <p>{crrentOrder?.delivery_address?.city.toUpperCase()}, {'KERALA'}, {crrentOrder?.delivery_address?.pincode}</p>
+                                </span>
+                            { orderStatus!=='Cancelled' && orderStatus!=='Delivered' && orderStatus!=='Shipped' &&  
+                            <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[red] rounded-full"></i>} >Cancell order</HoverKing>}
+
+                                { orderStatus === 'Shipped' && 
+                                <div className='flex flex-col gap-2'>
+                                    <h1 className='text-[25px] mt-5'>Delivery Alert</h1>
+                                    <p className='opacity-45 leading-tight'>
+                                        Your order is out for delivery. Make sure to check your email for updates on your order status. If you have any concerns or questions, please feel free to reach out to us.
+                                    </p>
+                                </div>
+                                }
+                                { orderStatus !== 'Shipped' && orderStatus !== 'Delivered' &&
+                                <div className='flex flex-col gap-2'>
+                                    <h1 className='text-[25px] mt-5'>Delivery Alert</h1>
+                                    <p className='opacity-45 leading-tight'>
+                                        Your order is yet to be shipped. Make sure to check your email for updates on your order status. If you have any concerns or questions, please feel free to reach out to us.
+                                    </p>
+                                </div>
+                                }
+                            <span className='flex-1'></span>
+                            
+
+                        </motion.div>
                     }
-                </div>
+                </motion.div>  
 
-                {/* prodcut show container and alll details */}
-                <div className="w-[60%] flex items-center flex-col">
-                {/* <p>ORDER SATAUS : PROCESSING</p>
-                <p>Ship to Shalu</p> */}
 
-                {/* product container */}
-                <div style={{transform:`translateX(-${100*(currentPosition-1)}%)`}}  className={`w-full flex-1 flex items-center duration-1000`}>
-                    {  
-                        crrentOrder.items?.map( (data,index)  => {
-                            return (
-                                <span className='min-w-[100%] flex justify-center'> 
-                                <img style={{transform:`translateY(-${Math.abs((currentPosition-(index+1))*100)}px)`}} className={`w-60 h-60 duration-500 object-cover`} src={data.product.pics.one} alt="" />
-                                <img className={`px-60 shadower ${currentPosition==index+1?'opacity-40':'opacity-0'} duration-500 absolute`} src={apple} alt="" />
-                    </span>
-                            )
-                        } )
-                    }
-                    
-                    {/* <span className='min-w-[100%] flex justify-center'>
-                        <img className={`px-60 shadower ${currentPosition==2?'opacity-40':'opacity-0'} duration-500 absolute`} src={apple} alt="" />
-                        <img style={{transform:`translateY(-${Math.abs((currentPosition-2)*100)}px)`}} className={`w-60 h-60 duration-500`} src={apple} alt="" /> 
-                    </span>
-                    <span className='min-w-[100%] flex justify-center'>
-                        <img className={`px-60 shadower ${currentPosition==3?'opacity-40':'opacity-0'} duration-500 absolute`} src={apple} alt="" />
-                        <img style={{transform:`translateY(-${Math.abs((currentPosition-3)*100)}px)`}} className={`w-60 h-60 duration-500`} src={apple} alt="" /> 
-                    </span> */}
-
-                
-                </div>
-                { crrentOrder.items?.length>1 &&
-                <div className="w-24 h-12 bg-gray-200 text-[30px] flex items-center justify-center rounded-full z-10">
-                <i onClick={()=>setCurrentPosition(currentPosition>1?currentPosition-1:currentPosition)} className="ri-arrow-left-s-fill"></i>
-                <i onClick={()=>setCurrentPosition(currentPosition<limit?currentPosition+1:currentPosition)} className="ri-arrow-right-s-fill"></i>
-                </div>
-
-                }
-
-                </div>
-
-                {/* Amount Details */}
-                {
-                    crrentOrder.items&&
-                    <>
-                <div className="w-[20%] bg-green-500 flex flex-col gap-1">
-                    <span className='flex items-end gap-6'>
-                    <s><p className='text-[30px] leading-none opacity-45'>₹ {(crrentOrder?.items[currentPosition-1]?.quantity/1000)*crrentOrder?.items[currentPosition-1]?.product?.regularPrice}</p></s>
-                    <p className='text-[45px] leading-none'>₹ {(crrentOrder?.items[currentPosition-1]?.quantity/1000)*crrentOrder?.items[currentPosition-1]?.product?.salePrice}</p>
-
-                    </span>
-                    {/* <p className='text-[15px] opacity-45'>PAYMENT STATUS: PENDING</p>
-                    <p className='opacity-65 text-[22px] leading-none'>UPI</p> */}
-                </div>
-                    </>
-                }
-
+                <motion.div 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
+                    className="w-full h-[30%] p-12 bg-[#792e2e00]"
+                >
+                    <div className="w-full h-full flex p-10 justify-center items-center">
+                        <motion.span 
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.8, duration: 0.5 }}
+                            className='min-w-[300px]'
+                        >
+                            <p className='opacity-50'>Order payment Method & Date</p>
+                            <span className='text-[20px] font-bold'>
+                                {crrentOrder?.payment_method} : 
+                                <span className='opacity-75'>
+                                <br></br>
+                                    {formatDate(crrentOrder?.time)}
+                                </span>
+                            </span>
+                            <p className='opacity-50'>Delivery ship to customer : </p>
+                            <span className='text-[20px] font-bold'>
+                                {crrentOrder?.delivery_address?.FirstName} {crrentOrder?.delivery_address?.LastName}
+                            </span>
+                        </motion.span>
+                        <span className='w-20'></span>
+                        <motion.span 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.9, duration: 0.5 }}
+                            className='flex items-center justify-center'
+                        >
+                            <div className="flex flex-row items-center overflow-scroll justify-center mb-8 w-full">
+                                <div className="w-full overflow-scroll mt-8 flex items-center justify-center">
+                                    <Timeline currentStatus={orderStatus} />
+                                </div>
+                            </div>
+                        </motion.span>
+                        <span className='w-20'></span>
+                        <motion.span 
+                            initial={{ x: 20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 1, duration: 0.5 }}
+                            className='min-w-[300px] flex items-center justify-center flex-col'
+                        >
+                            <p className='opacity-45'>TOTAL PAYMENT:</p>
+                            <span className='text-[45px] leading-none font-bold'>
+                                ₹ <NumberScramble number={parseFloat(crrentOrder?.price?.grandPrice).toFixed(2)} />
+                            </span>
+                        </motion.span>
+                    </div>
+                </motion.div>
             </div>
-
-            {/* order navigator */}
-            <div className="w-full h-[30%] p-12 bg-[#792e2e25]">
-                <div className="ww-full h-full bg-red-300 flex p-10 items-center">
-                    <span>
-                    {/* <p>Order status: {crrentOrder?.order_status}</p> */}
-                    <p>Order payment Method: <span className='text-[20px]'>{crrentOrder?.payment_method}</span></p>
-                    <p>Ship to: <span className='text-[20px]'>{crrentOrder?.delivery_address?.FirstName} {crrentOrder?.delivery_address?.LastName}</span></p>
-                    {/* <p>Date: {crrentOrder?.time}</p> */}
-                    <p>Order Date: <span className='text-[20px]'>{new Date(crrentOrder?.time).getDate()}th {new Date(crrentOrder?.time).getMonth()} {new Date(crrentOrder?.time).getFullYear()}</span></p>
-
-                    </span>
-                    <span className='flex-1'>
-
-                    </span>
-                    <p>Totel: <span className='text-[45px] leading-none font-bold'>₹ {crrentOrder?.price?.grandPrice}</span></p>
-                    
-                </div>
-            </div>
-
-        </div>
-    </div>
-  )
+        </motion.div>
+        </>
+    )
 }

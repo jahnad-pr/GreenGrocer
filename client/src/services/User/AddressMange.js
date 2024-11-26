@@ -14,6 +14,13 @@ export const AdressMangeApi = (builder) => ({
         method: 'GET',
         credentials: 'include', }),
     }),
+
+    deleteAddress: builder.mutation({
+      query: (id) => ({
+        url: `user/deleteAddress/${id}`,
+        method: 'DELETE',
+        credentials: 'include', }),
+    }),
   
    
 

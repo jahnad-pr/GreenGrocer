@@ -279,10 +279,24 @@ export default function OrderSummary({userData}) {
           </div>
 
           <div className="mt-8 flex justify-end">
-          {/* <button onClick={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt } } })
-          }
-             className="px-16 absolute bottom-20 py-[15px] bg-[linear-gradient(to_left,#0bc175,#0f45ff)] text-[18px] rounded-full text-white font-medium mt-10 w-full max-w-[300px]">Continue</button> */}
-            { adressData?.length > 0 && <HoverKing event={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt } } })} styles={'fixed bottom-28 right-64'} Icon={<i className="ri-apps-2-add-line text-[30px] text-[#5fb064]"></i>} ></HoverKing>}
+            { adressData?.length > 0 ? (
+              <HoverKing 
+                event={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt } } })} 
+                styles={'fixed bottom-28 border-0 right-64 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
+                Icon={<i className="ri-arrow-right-line text-[30px] rounded-full text-white"></i>}
+              >
+                Checkout
+              </HoverKing>
+            ) : (
+              <HoverKing 
+                event={()=>navigate('/user/profile/:id/address')} 
+                // event={()=>navigate('/user/profile/:id/address', { state: { items: location?.state?.items } })} 
+                styles={'fixed bottom-28 border-0 right-64 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
+                Icon={<i className="ri-arrow-left-line text-[30px] rounded-full text-white"></i>}
+              >
+                Add address
+              </HoverKing>
+            )}
           </div>
         </span>
       </div>

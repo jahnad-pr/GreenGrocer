@@ -329,8 +329,8 @@ useEffect(() => {
                                                                 Apple, {relatedProduct.category.name}
                                                             </p>
                                                             <img
-                                                                className="w-36"
-                                                                src={relatedProduct?.pic?.one}
+                                                                className="w-28 aspect-square object-cover mx-auto p-2"
+                                                                src={relatedProduct?.pics?.one}
                                                                 alt=""
                                                             />
                                                         </div>

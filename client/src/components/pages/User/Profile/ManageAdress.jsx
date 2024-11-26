@@ -82,38 +82,42 @@ export default function ManageAddress({ userData }) {
     </div>
   );
 
-  // Toast Notification
-  const showToast = useCallback(
-    (message, type = "success") => {
-      const options = {
+ const showToast = (message, type = "success") => {
+  if (type === "success" && message) {
+    toast.success(
+      type && <ToastContent title={"SUCCESS"} message={message} />,
+      {
+        icon: <FaCheckCircle className="text-[20px]" />,
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-      };
-
-      if (type === "success") {
-        toast.success(<ToastContent title="Success" message={message} />, {
-          ...options,
-          icon: <FaCheckCircle className="text-[20px]" />,
-        });
-      } else {
-        toast.error(<ToastContent title="Error" message={message} />, {
-          ...options,
-          icon: <FaExclamationTriangle className="text-[20px]" />,
-        });
+        progress: undefined,
+        className: "custom-toast-success",
+        bodyClassName: "custom-toast-body-success",
+        progressClassName: "custom-progress-bar-success",
       }
-    },
-    []
-  );
+    );
+  } else if (message) {
+    toast.error(<ToastContent title={"ERROR"} message={message} />, {
+      icon: <FaExclamationTriangle className="text-[20px]" />,
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      className: "custom-toast",
+      bodyClassName: "custom-toast-body",
+      progressClassName: "custom-progress-bar",
+    });
+  }
+};
 
   const validateFormData = (formData) => {
-    // if (!formData.user.trim()) {
-    //   return "User is required.";
-    // }
-  
     if (!formData.FirstName.trim()) {
       return "First name is required.";
     }
@@ -122,9 +126,9 @@ export default function ManageAddress({ userData }) {
       return "Last name is required.";
     }
   
-    if (!formData.phone.trim()) {
+    if (!formData.phone) {
       return "Phone number is required.";
-    } else if (!/^\d{10}$/.test(formData.phone)) {
+    } else if (!/^\d{10}$/.test(formData.phone.toString())) {
       return "Phone number must be 10 digits.";
     }
   
@@ -140,9 +144,9 @@ export default function ManageAddress({ userData }) {
       return "State is required.";
     }
   
-    if (!formData.pincode.trim()) {
+    if (!formData.pincode) {
       return "Pincode is required.";
-    } else if (!/^\d{6}$/.test(formData.pincode)) {
+    } else if (!/^\d{6}$/.test(formData.pincode.toString())) {
       return "Pincode must be 6 digits.";
     }
   
@@ -153,11 +157,6 @@ export default function ManageAddress({ userData }) {
     if (!formData.exactAddress.trim()) {
       return " Exact address is required.";
     }
-
-  
-    // if (!formData.location.trim()) {
-    //   return "Location is required.";
-    // }
   
     return ""; // No errors
   };
@@ -182,7 +181,7 @@ export default function ManageAddress({ userData }) {
 
   // Handle success and errors
   useEffect(() => {
-    if (data) navigate(-1);
+    if (data) navigate('/user/profile/12/address',{ state: data,replace:true });
   }, [data]);
 
   useEffect(() => {
@@ -319,8 +318,8 @@ export default function ManageAddress({ userData }) {
                 </div>
                 <HoverKing
                   event={updateProfileSubmit}
-                  styles="absolute bottom-24 left-[64%] -translate-x-1/2"
-                  Icon={<i className="ri-apps-2-add-line text-[30px] text-[#5fb064]"></i>}
+                  styles="absolute bottom-24 left-[64%] -translate-x-1/2 rounded-full"
+                  Icon={<i className="ri-apps-2-add-line text-[30px] rounded-full"></i>}
                 >
                   Submit
                 </HoverKing>

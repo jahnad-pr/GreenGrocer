@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useGetOdersMutation } from "../../../../services/User/userApi";
+import { useDeleteAddressMutation, useGetOdersMutation } from "../../../../services/User/userApi";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import { useNavigate } from "react-router-dom";
 
