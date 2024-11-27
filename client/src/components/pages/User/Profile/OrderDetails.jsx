@@ -322,7 +322,7 @@ export default function OrderDetails() {
                                 <p>{crrentOrder?.delivery_address?.city.toUpperCase()}, {'KERALA'}, {crrentOrder?.delivery_address?.pincode}</p>
                                 </span>
                             { orderStatus!=='Cancelled' && orderStatus!=='Delivered' && orderStatus!=='Shipped' &&  
-                            <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[red] rounded-full"></i>} >Cancell order</HoverKing>}
+                            <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[white] rounded-full"></i>} >Cancell order</HoverKing>}
 
                                 { orderStatus === 'Shipped' && 
                                 <div className='flex flex-col gap-2'>

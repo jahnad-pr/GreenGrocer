@@ -19,31 +19,6 @@ const OrderList = ({userData}) => {
   useEffect(()=>{ if(data){ setOrders(data) } },[data])
 
 
-  // const orders = [
-  //   {
-  //     _id: "6738e0cf21628226c9c2197a",
-  //     user: "6735f552de1d4e4d47b291da",
-  //     delivery_address: "67379181a3d54649ac86edf2",
-  //     payment_method: "UPI",
-  //     coupon: "",
-  //     items: {
-  //       _id: "673846705ad661e210aacef6",
-  //       quantity: 1000,
-  //       totalPrice: 12000,
-  //       discount: 0,
-  //     },
-  //     price: {
-  //       grandPrice: 153.3,
-  //       discountPrice: 0,
-  //     },
-  //     order_id: "1731780815152-6PIG9U",
-  //     time: "2024-11-16T18:13:35.152Z",
-  //     total_quantity: 1000,
-  //     order_status: "processing",
-  //     payment_status: "pending",
-  //   },
-  // ];
-
   const getStatusColor = (status) => {
     switch (status.toUpperCase()) {
       case "PROCESSED":
@@ -126,7 +101,7 @@ const OrderList = ({userData}) => {
                     <div className="flex justify-between items-start ">
                       <div className="w-full flex flex-col gap-1">
                         <h1 className="font-bold text-[25px] text-center">{order.items[0].product?.name}</h1>
-                        <h3 className="font-medium opacity-60">
+                        <h3 className="font-medium text-[18px] opacity-60">
                           Item Quantity:{" "}
                           <span className="text-gray-600">{order.items[0].quantity/1000}Kg</span>
                         </h3>

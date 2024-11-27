@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import { useUpdateProfileMutation } from "../../../../services/User/userApi";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import { FaExclamationTriangle,FaCheckCircle } from "react-icons/fa";
+import { FaExclamationTriangle,FaCheckCircle,FaSave } from "react-icons/fa";
+import HoverKing from "../../../parts/buttons/HoverKing";
 
 export default function Profiler({ userData }) {
 
@@ -64,6 +65,7 @@ const showToast = ( message, type = "success") => {
 
   // the states
   const [formData, setForm] = useState({ username: "", phone: "", email: "", place: "", gender: "" });
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // adding user data into a state when it update
   useEffect(() => {
@@ -79,6 +81,7 @@ const showToast = ( message, type = "success") => {
   // update data
   const updateProfileSumbmit = async()=>{
     await updateProfile(formData)
+    setIsEditMode(false); // Disable edit mode after update
   }
 
   return (  userData &&
@@ -88,7 +91,17 @@ const showToast = ( message, type = "success") => {
         <div className="w-full h-full flex flex-col items-center gap-5 backdrop-blur-3xl">
           <span className="w-full h-full px-64 bg-[#ffffff59]">
             {/* Head */}
-            <h1 className="text-[30px] font-bold my-16 mb-5">Profile</h1>
+            <div className="flex justify-between items-center my-16 mb-5">
+              <h1 className="text-[30px] font-bold">Profile</h1>
+              {!isEditMode && (
+                <button
+                  onClick={() => setIsEditMode(true)}
+                  className="px-6 py-2 bg-[linear-gradient(45deg,#3c6e51,#53aa58)] text-white rounded-full"
+                >
+                  Edit Profile
+                </button>
+              )}
+            </div>
             <div className="flex w-[80%] items-center justify-center mx-auto ml-60 mb-3">
               {/* profile deatail and message */}
               <div className=" h-[full] flex justify-center flex-col px-20"
@@ -124,12 +137,13 @@ const showToast = ( message, type = "success") => {
                   User Name
                 </label>
                 <input
-                  className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px] "
+                  className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px] "
                   type="text"
                   placeholder="shalu"
                   name="username"
                   onChange={inputHandler}
                   value={formData?.username}
+                  disabled={!isEditMode}
                 />
               </div>
               {/* tag name and phone */}
@@ -142,11 +156,12 @@ const showToast = ( message, type = "success") => {
                     &nbsp;&nbsp;Tag Name
                   </label>
                   <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
+                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
                     type="text"
                     name=""
                     onChange={inputHandler}
                     placeholder="@shalu"
+                    disabled={!isEditMode}
                   />
                 </span>
                 {/* phone */}
@@ -159,12 +174,13 @@ const showToast = ( message, type = "success") => {
                   </label>
 
                   <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
+                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
                     value={formData?.phone}
                     name="phone"
                     onChange={inputHandler}
                     type="text"
                     placeholder="+918978XXXXXX"
+                    disabled={!isEditMode}
                   />
                 </span>
               </div>
@@ -177,12 +193,13 @@ const showToast = ( message, type = "success") => {
                   Email
                 </label>
                 <input
-                  className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
+                  className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
                   value={formData?.email.replace(/\.gmail$/, "")}
                   type="text"
                   name="email"
                   onChange={inputHandler}
                   placeholder="shalu@gmail.com"
+                  disabled={!isEditMode}
                 />
               </div>
 
@@ -196,12 +213,13 @@ const showToast = ( message, type = "success") => {
                     &nbsp;&nbsp;Place
                   </label>
                   <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
+                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
                     type="text"
                     onChange={inputHandler}
                     name="place"
                     value={formData?.place}
                     placeholder="Techno"
+                    disabled={!isEditMode}
                   />
                 </span>
                 {/* Gender */}
@@ -217,7 +235,7 @@ const showToast = ( message, type = "success") => {
                     className="w-52 py-3 px-5 rounded-full text-[18px] custom-select"
                     name="gender"
                     onChange={inputHandler}
-                    id=""
+                    disabled={!isEditMode}
                   >
                     <option value="Female">Female</option>
                     <option value="Male">Male</option>
@@ -225,9 +243,23 @@ const showToast = ( message, type = "success") => {
                 </span>
               </div>
 
-              <button onClick={()=>updateProfileSumbmit()} className="px-0 py-[15px] bg-[linear-gradient(45deg,#3c6e51,#53aa58)] text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[300px]">
-                Update profile
-              </button>
+              {isEditMode && (
+                <div className="flex gap-4 justify-center">
+                  <button 
+                    onClick={() => setIsEditMode(false)} 
+                    className="px-5 py-[15px] bg-gray-400 text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[140px]"
+                  >
+                    Cancel
+                  </button>
+                  <HoverKing
+                    event={updateProfileSumbmit}
+                    Icon={<FaSave className="text-[20px]" />}
+                    styles="w-[140px] rounded-full mt-5 absolute"
+                  >
+                    Save
+                  </HoverKing>
+                </div>
+              )}
             </div>
           </span>
         </div>

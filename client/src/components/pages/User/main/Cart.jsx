@@ -85,7 +85,7 @@ const showToast = (message, type = "success") => {
     <>
     <ToastContainer title="Error" position="bottom-left" />
     <div className="w-[96%] h-full bg-product">
-      <div className="bg-[#201c1c20] mix-blend-scree absolute w-full h-full backdrop-blur-3xl"></div>
+      <div className="bg-[#ffffff20] mix-blend-scree absolute w-full h-full backdrop-blur-3xl"></div>
       <div className="w-full h-full backdrop-blur-3xl">
         <div className="w-full h-full  pt-16 overflow-y-scroll relative">
           {/* Main head */}
@@ -108,7 +108,7 @@ const showToast = (message, type = "success") => {
             }
 
             {/* <button className="absolute bottom-16 right-16 px-16 py-2 bg-[linear-gradient(to_left,#0bc175,#0f4586)] text-[20px] rounded-full text-white font-medium">Continue</button> */}
-            { productsData && <HoverKing event={()=>navigate("/user/ordersummery", { state: { items: [...productsData?.map( data=> data )], } })} styles={'fixed bottom-28 right-64'} Icon={<i className="ri-apps-2-add-line text-[30px] text-[#5fb064]"></i>} ></HoverKing>}
+            { productsData && <HoverKing event={()=>navigate("/user/ordersummery", { state: { items: [...productsData?.map( data=> data )], } })} styles={'fixed bottom-28 right-64 rounded-full font-medium '} Icon={<i className="ri-arrow-drop-right-line text-[50px] "></i>} >Continue</HoverKing>}
 
         </div>
       </div>

@@ -5,8 +5,8 @@ const { getProducts,getCAtegoryProducts,getProductDetails,getAllProduct } = requ
 const { upsertAddress,getAdresses,deleteAddress } = require('../controllers/config/AdressController')
 const { getCategories } = require('../controllers/config/categoryController');
 const { addtoCart,checkPorductInCart,getCartItems,updateCartITem } = require('../controllers/config/cartController');
-const { placeOrder,getOders } = require('../controllers/config/orderController');
-const { getCollections,getCAtegoryCollection } = require('../controllers/config/collectionController');
+const { placeOrder,getOders,cancelOrder } = require('../controllers/config/orderController');
+const { getCollections,getCAtegoryCollection,getAllCollection } = require('../controllers/config/collectionController');
 const { authMiddleware } = require('../middlewares/checkUser');
 
 const router = express.Router();
@@ -33,13 +33,16 @@ router.delete('/deleteAddress/:id',authMiddleware,deleteAddress);
 
 router.post('/placeOrder',placeOrder);
 router.get('/getOders/:id',getOders);
+router.post('/cancelOrder',cancelOrder);
+
 
 router.post('/addtoCart',addtoCart);
 router.get('/checkPorductInCart/:prductID',authMiddleware,checkPorductInCart);
 router.get('/getCartItems',authMiddleware,getCartItems);
 router.post('/updateCartITem/:id',authMiddleware,updateCartITem);
 
-router.get('/getAllProduct',authMiddleware,getAllProduct);
+router.get('/getAllProduct',getAllProduct);
+router.get('/getAllCollection',getAllCollection);
 
 router.get('/getUser',authMiddleware,getUserData);
 router.get('/getCategories',getCategories);

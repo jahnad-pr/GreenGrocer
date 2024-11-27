@@ -63,5 +63,6 @@ export const {
   useUpdateCartITemMutation,
   
   useGetAllProductMutation,
+  useGetAllCollectionMutation,
 
 } = userApiSlice;

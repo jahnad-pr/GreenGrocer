@@ -29,7 +29,7 @@ export const userOrderApi = (builder) => ({
 
     cancelOrder: builder.mutation({
       query: (cancelId) => ({
-        url: `admin/cancelOrder`,
+        url: `user/cancelOrder`,
         method: 'POST',
         body:{ cancelId },
         credentials: 'include',

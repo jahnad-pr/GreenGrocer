@@ -77,7 +77,7 @@ export default function DeletePopup({showPopup,deleteData={},updater,action='del
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className='text-[25px] font-bold'
+                        className='text-[25px] font-bold text-center'
                     >
                         Are You sure to {action} ?
                     </motion.h1>

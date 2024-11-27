@@ -64,19 +64,20 @@ export default function Carts({ data,setProductData,index,showToast }) {
     const cleanValue = value.toLowerCase().replace(/\s+/g, '');
     
     // Extract the numeric part and unit
-    const match = cleanValue.match(/^(\d+(?:\.\d+)?)(g|kg)?$/);
+    const match = cleanValue.match(/^(\d+(?:\.\d+)?)(g|Kg)?$/);
     if (!match) return null;
     
     const amount = parseFloat(match[1]);
     const unit = match[2] || 'g';
     
     // Convert to grams based on unit
-    return unit === 'kg' ? Math.round(amount * 1000) : amount;
+    return unit === 'Kg' ? Math.round(amount * 1000) : amount;
   };
 
   const deconvertToGrams = (value) => {
+    // alert(typeof value)
     if (value >= 1000) {
-      return `${value/1000}Kg`;
+      return `${value/1000} Kg`;
     } else {
       return `${value}g`;
     }
@@ -107,7 +108,7 @@ export default function Carts({ data,setProductData,index,showToast }) {
   const handleCustomQuantity = (newValue) => {
     showPopup(false);
     if (newValue) {
-      // Add to options and set as selected
+      // Add to options and set as selecteddeconvertToGrams
       setOptions(prev => [...prev, newValue]);
       updateCartITem({id:data?.product?._id,action:'update',seletor:convertToGrams(newValue)})
       setQnt(newValue);

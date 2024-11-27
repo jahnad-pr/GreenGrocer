@@ -92,11 +92,13 @@ module.exports.updateCollection = async(req,res)=>{
 module.exports.getCAtegoryCollection = async(req,res)=>{
 
     const id = req.params.id
+
     
-
+    
     try {
-
+        
         const Collections = await Collection.find({  category:id }).populate({ path: 'category', select: 'name' }).populate({ path: 'products' })
+        // console.log(Collections);
 
         
         if(Collections.length<=0){
@@ -115,6 +117,32 @@ module.exports.getCAtegoryCollection = async(req,res)=>{
         
     } catch (error) {
         return res.status(500).json({mission:false,message: error.messgae }) 
+    }
+
+}
+
+
+module.exports.getAllCollection = async(req,res)=>{
+    
+    // const _id = req.params.id
+    
+    try {
+            const productDetails = await Collection.find({}).populate('category','name')
+
+            // console.log(productDetails);
+            
+
+
+            if(productDetails){
+
+                return res.status(200).json(productDetails)
+            }
+
+            return res.status(500).json('no collection found') 
+
+    } catch (error) {
+
+        return res.status(500).json(error.message) 
     }
 
 }

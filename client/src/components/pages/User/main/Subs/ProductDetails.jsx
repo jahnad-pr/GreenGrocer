@@ -220,8 +220,9 @@ useEffect(() => {
 
     return (
         <> { popup &&
-            <ProductQuantityPopup stock={product?.stock} onClose={addNewVlaue} options={setOptions} showPopup={showPopup} />
+            <ProductQuantityPopup stock={product?.stock} setOptions={setOptions} onClose={addNewVlaue} options={setOptions} showPopup={showPopup} />
           }
+
          <ToastContainer title="Error" position="bottom-left" />
             <div className={`w-[96%] h-full flex-1 bg-product`}>
                 <div className="bg-[#ceb6499c] mix-blend-screen absolute w-full h-full"></div>
@@ -307,9 +308,13 @@ useEffect(() => {
                                     {/* <div className="w-12 h-12 bg-[#afa57046] absolute top-1/2 -left-16 z-10 justify-center items-center flex rounded-full">
                                     <i className="ri-arrow-left-s-fill text-[35px] -translate-x-[1px]"></i>
                                 </div> */}
+
+                                { productsData.length > 3 &&
                                     <div className="w-12 h-12 bg-[#afa57046] absolute top-1/2 -right-4 rotate-180 z-10 justify-center items-center flex rounded-full">
                                         <i className="ri-arrow-left-s-fill text-[35px] -translate-x-[1px]"></i>
                                     </div>
+
+                                }
 
                                     {/* <div className="h-[80%] w-20 bg-[#ceb6499c] absolute right-16 top-[54%] rounded-r-3xl -translate-y-1/2"></div>
                                 <div className="h-[80%] w-20 bg-[#ceb6499c] absolute left-0 top-[54%] rounded-l-3xl -translate-y-1/2"></div> */}
@@ -364,13 +369,19 @@ useEffect(() => {
 
                         {/* product image container */}
                         <div className="w-[55%] h-full  flex flex-col relative">
+                            
+                            {  userData?._id &&
+                                <> 
+                                <span onClick={() => checkData||gotoCart ? navigation('/user/Cart') : addToCartItem(product._id)} className=" absolute top-10 right-10 text-[25px] group duration-500 w-24 hover:w-48 rounded-full px-8 items-center gap-5  hover:bg-[#ceb64950] flex">
+                                    <i className="ri-shopping-cart-line duration-500 py-2"></i>
+                                    <p className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{checkData|| gotoCart ? 'Go to Cart' : 'Add to cart'}</p>
+                                </span>
+    
+                                <i className="ri-bookmark-line absolute top-28 right-10 text-[25px] rounded-full p-5 py-3 "></i>
+                                <i className="ri-share-line absolute top-48 right-10 text-[25px] rounded-full p-5 py-3 "></i>
+                            </>
 
-                            <span onClick={() => checkData||gotoCart ? navigation('/user/Cart') : addToCartItem(product._id)} className=" absolute top-10 right-10 text-[25px] group duration-500 w-24 hover:w-48 rounded-full px-8 items-center gap-5  hover:bg-[#ceb64950] flex">
-                                <i className="ri-shopping-cart-line duration-500 py-2"></i>
-                                <p className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{checkData|| gotoCart ? 'Go to Cart' : 'Add to cart'}</p>
-                            </span>
-                            <i className="ri-bookmark-line absolute top-28 right-10 text-[25px] rounded-full p-5 py-3 "></i>
-                            <i className="ri-share-line absolute top-48 right-10 text-[25px] rounded-full p-5 py-3 "></i>
+                            }
 
                             <span className="flex-1"></span>
                             <img className="px-60 oscillate" src={cirrentImage} alt="" />
@@ -382,52 +393,51 @@ useEffect(() => {
                             <span className="flex-1"></span>
                             <div className="w-full max-h-20  flex gap-5   overflow-hidden">
 
+                                <span className="flex-1"></span>
                                 <span onClick={() => showQnt(!qnt)} className="inline-flex justify-center items-center gap-5">
-                                    <span className="flex items-center justify-center gap-5 bg-[#ceb64930] px-5 rounded-[22px] py-2">
-                                        <i className="ri-weight-line text-[25px] "></i>
+                                    <span className="flex items-center justify-center gap-5 bg-[#ceb64925] px-5 rounded-full py-2">
+                                        <i className="ri-shopping-basket-line text-[22px] opacity-70"></i>
+                                        {
+                                            product?.stock ? 
+                                            <>
                                         <p className="font-bold">{quantity}</p>
-                                        <i className="ri-arrow-down-wide-fill"></i>
+                                        <i className="ri-expand-vertical-fill text-[18px] opacity-35"></i>
+                                            </>:
+                                            <p className="text-[15px] text-red-900 opacity-75 font-bold">Out of stock<span className="opacity-45"></span></p>
+                                        }
 
                                     </span>
                                 </span>
-                                <span className="flex-1"></span>
-                                <div
-                                    onClick={() => setCurrentImage(product?.pics?.one)}
-                                    className="w-20 h-20 border-2 border-[#ceb649] rounded-[22px] p-[10px] flex justify-center items-center"
-                                >
+                                <div onClick={() => setCurrentImage(product?.pics?.one)} className="w-20 h-20 border-2 border-[#ceb649] rounded-[32px] p-[10px] flex justify-center items-center" >
                                     <img src={product?.pics?.one} alt="" />
                                 </div>
 
                                 <span style={{ transform: !qnt ? 'translateY(-50%)' : 'translateY(0)' }} className="flex h-40 duration-500 flex-col cursor-pointer">
                                     <span className="max-h-20 flex-1 flex items-center justify-center gap-5">
-                                        <div
-                                            onClick={() => setCurrentImage(product?.pics?.two)}
-                                            className="w-20 border-2 h-20 border-[#ceb649] rounded-[22px] p-[10px] flex justify-center items-center cursor-pointer"
-                                        >
+                                        <div onClick={() => setCurrentImage(product?.pics?.two)} className="w-20 border-2 h-20 border-[#ceb649] rounded-[22px] p-[10px] flex justify-center items-center cursor-pointer" >
                                             <img src={product?.pics?.two} alt="" />
                                         </div>
-                                        <div
-                                            onClick={() => setCurrentImage(product?.pics?.three)}
-                                            className="w-20 border-2 h-20 border-[#ceb649] rounded-[22px] p-[10px] mr-8  flex justify-center items-center cursor-pointer"
-                                        >
+                                        <div onClick={() => setCurrentImage(product?.pics?.three)} className="w-20 border-2 h-20 border-[#ceb649] rounded-[22px] p-[10px] mr-8  flex justify-center items-center cursor-pointer" >
                                             <img src={product?.pics?.three} alt="" />
                                         </div>
                                         <span>
-                                            <h1 className="font-bold text-[24px]">₹ {product?.salePrice}</h1>
-                                            <p>With inc tax</p>
+                                            <h1 className="font-bold text-[24px] leading-snug">₹ {product?.salePrice}</h1>
+                                            <p className="opacity-55">With inc tax</p>
                                         </span>
-
+                                        { userData?._id &&  product?.stock ?
                                         <button
                                             onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:product,quantity:convertToGrams(quantity) }], qnt: quantity } })}
                                             className="p-5 bg-black rounded-full text-white px-10 ml-5"
                                         >
                                             Buy now
-                                        </button>
+                                        </button>:""
+
+                                        }
                                     </span>
 
-                                    <span className="min-h-20 flex-1 gap-5  flex items-center justify-center">
-                                        <p className="font-medium ml-4">Offer Price</p>
-                                        <span className="flex-1 gap-2"></span>
+                                    <span className="min-h-20 flex-1 gap-8 pl-5  flex items-center justify">
+                                        {/* <p className="font-medium ml-4">Offer Price</p> */}
+                                        {/* <span className="flex-1 gap-2"></span> */}
                                         <span>
                                             <span className="flex ">
                                                 <p className="text-[20px] font-bold">₹ {product?.salePrice}   </p>&nbsp;&nbsp;&nbsp;
@@ -436,19 +446,21 @@ useEffect(() => {
                                                 </s>
                                             </span>
                                             <span className="flex opacity-45">
-                                                <p>₹ {product?.salePrice/10} </p>
-                                                <>&nbsp;
-                                                    <p> / 100g</p>
-                                                </>
+                                                <p>₹ {product?.salePrice/10}/100g</p>
                                             </span>
 
 
                                         </span>
 
                                             <span className="">
-                                                <p className="text-[20px] font-medium">{product?.stock/1000}<span className="opacity-45"> Kg left</span></p>
-                                            </span>
+                                                {  product?.stock?
+                                                    <p className="text-[20px] font-medium border-[#ceb649] bg-[#d8d5c520] border-2 p-2 rounded-full px-5">{product?.stock/1000}<span className="opacity-45"> Kg left</span></p>:
+                                                    <p className="text-[20px] text-red-500 font-bold">Out of stock<span className="opacity-45"></span></p>
 
+                                                }
+                                            </span>
+                                        {
+                                            product?.stock ?
                                         <select value={qnto}
                                             className="text-[20px] text-[#6C6C6C] font-medium focus:outline-none cursor-pointer custom-selecter"
                                             defaultValue="1Kg"
@@ -460,7 +472,8 @@ useEffect(() => {
                                                 </option>
                                             ))}
 
-                                        </select>
+                                        </select>:''
+                                        }
 
                                     </span>
 

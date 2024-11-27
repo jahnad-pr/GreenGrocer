@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import rpi from "../../../../assets/images/rpillu.png";
 import { useNavigate } from "react-router-dom";
-import { useMatchPasswordMutation, useResetPasswordMutation } from "../../../../services/User/userApi";
+import { useLogoutUserMutation, useMatchPasswordMutation, useResetPasswordMutation } from "../../../../services/User/userApi";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import { useUpdateProfileMutation } from "../../../../services/User/userApi";
+import DeletePopup from "../../../parts/popups/DeletePopup";
 
 export default function ResetPassword({ userData }) {
 
@@ -13,6 +14,8 @@ export default function ResetPassword({ userData }) {
     useMatchPasswordMutation();
   const [resetPassword, { isLoading:resetLoading, error:resetError, data:resetData }] =
     useResetPasswordMutation();
+  const [logoutUser,{ data:logData }] = useLogoutUserMutation()
+
 
     // states
     const navigaror = useNavigate();
@@ -20,6 +23,8 @@ export default function ResetPassword({ userData }) {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [success, setSuccess] = useState(false);
+  const [popup, showPopup] = useState(false);
+
 
 
   // Custom content component for the toast
@@ -115,8 +120,25 @@ export default function ResetPassword({ userData }) {
 
   }
 
+  useEffect(()=>{
+    
+    if(logData){
+        setTimeout(()=>{
+        navigaror('/user/signup')
+      },2000)
+      }
+  },[logData])
+
   return (
-    <>
+    <>{popup && (
+      <DeletePopup
+        updater={logoutUser}
+        deleteData={{id:userData._id}}
+        showPopup={showPopup}
+        action="Logout and reset the password"
+        isUser={true}
+      />
+    )}
       {" "}
       <ToastContainer title="Error" position="bottom-left" />
       <div className="w-[96%] h-full bg-prof">
@@ -137,9 +159,12 @@ export default function ResetPassword({ userData }) {
               type="password"
               placeholder="Old Password"
             />
-            <p className="max-w-[410px] w-full text-blue-500 font-medium">
+
+            <p onClick={() => showPopup(true)} className="max-w-[410px] w-full text-blue-500 font-medium">
               Forget password ?
             </p>
+
+
             {/* new password */}
             <span
               className={`flex-col w-full max-w-[450px] flex justify-center items-center gap-5  ${

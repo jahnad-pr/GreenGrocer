@@ -216,6 +216,9 @@ module.exports.logoutUser = async(req,res)=>{
 
   const { id } = req.body
 
+  console.log(id);
+  
+
   try {
 
     if(id){
@@ -297,10 +300,15 @@ module.exports.matchPassword = async (req, res) => {
 // Reset password
 module.exports.resetPassword = async (req, res) => {
 
-  const { password,_id } = req.body;
+  const { password,_id,email } = req.body;
+
+  const filter = { email } || { _id }    
 
   
-  const UserData = await User.findOne({ _id },{ password:1,_id:0 })
+  
+  const UserData = await User.findOne( filter ,{ password:1,_id:0 })
+  
+  
   const isPasswordSame = await bcrypt.compare(password, UserData.password);
   
   if(isPasswordSame){
@@ -311,12 +319,18 @@ module.exports.resetPassword = async (req, res) => {
     
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
-    const updateStatus = await User.updateOne({ _id },{$set:{ password:hashedPassword }})
+    
+    const updateStatus = await User.updateOne(filter,{$set:{ password:hashedPassword }})
+    
+    // console.log(updateStatus);
 
     if(updateStatus.modifiedCount){
+
       return res.status(200).json('Reset password successfully');
+
     }
+
+
     
   } catch (error) {
 

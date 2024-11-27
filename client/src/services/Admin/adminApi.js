@@ -32,5 +32,6 @@ export const {
   useGetProductsMutation,
   useUpdateProductMutation,
   useUploadImagesMutation,
-  useLogoutAdminMutation
+  useLogoutAdminMutation,
+  useCancelOrderMutation
 } = adminApiSlice;

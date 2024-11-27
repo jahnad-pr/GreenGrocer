@@ -31,5 +31,15 @@ export const productEndpoints = (builder) => ({
         credentials: 'include',
       }),
     }),
+
+    cancelOrder: builder.mutation({
+      query: (cancelId) => ({
+        url: `admin/cancelOrder`,
+        method: 'POST',
+        body:{ cancelId },
+        credentials: 'include',
+      }),
+    }),
+
   });
   

@@ -39,6 +39,7 @@ import Orders from "./components/pages/Admin/Config/Orders"
 import OrderDetails from "./components/pages/User/Profile/OrderDetails"
 import Cart from "./components/pages/User/main/Cart"
 import Search from "./components/pages/User/main/Search"
+import NotFound from "./components/pages/User/main/Subs/NotFound"
 
 export default function App() {
 
@@ -71,9 +72,9 @@ export default function App() {
             <Route path="/admin/Products" element={<AdminProtucter><Productes /></AdminProtucter>} />
             <Route path="/admin/Products/manage" element={<AdminProtucter><ProductManage /></AdminProtucter>} />
             <Route path="/admin/Orders" element={<AdminProtucter><Orders /></AdminProtucter>} />
-          </Routes>
 
-        <Routes>
+          <Route path="*" element={<NotFound />} />
+          
           <Route path="/user/signup" element={ <UserProtecter><Signup /></UserProtecter> } />
           <Route path="/user/home" element={ <UserProtecter><Home /></UserProtecter> } />
           <Route path="/user/products" element={ <UserProtecter><Products /></UserProtecter> } />
@@ -93,7 +94,10 @@ export default function App() {
           <Route path="/user/OrderList" element={ <UserProtecter><OrderList /></UserProtecter> } />
           <Route path="/user/OrderDetails" element={ <UserProtecter><OrderDetails/></UserProtecter> } />
           <Route path="/user/cart" element={ <UserProtecter><Cart/></UserProtecter> } />
+          </Routes>
 
+        <Routes>
+          {/* <Route path="*" element={<NotFound />} /> */}
         </Routes>
 
       </div>

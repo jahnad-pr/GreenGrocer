@@ -206,7 +206,7 @@ useEffect(()=>{
                     </span>
 
                     <span className="flex">
-                        <p className="text-blue-500 font-medium">View on Map</p>
+                        <p className="text-blue-500 font-medium">View</p>
                         <span className="flex-1"></span>
                         {/* <i className="ri-more-line text-[28px]"></i> */}
                         <i onClick={(e) =>{

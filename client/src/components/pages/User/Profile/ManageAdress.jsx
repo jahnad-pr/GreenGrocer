@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 
-import Homeloc from "../../../../assets/images/homeLocation.png";
+import Homeloc from "../../../../assets/images/homeLocatio.png";
 import PersonLoc from "../../../../assets/images/personLocation.png";
 import OtheLoc from "../../../../assets/images/otherLocation.png";
 import WorkLOc from "../../../../assets/images/workLocation.png";

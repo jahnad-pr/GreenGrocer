@@ -1,19 +1,31 @@
 const Order = require('../../models/other/OrderModel')
 const Cart = require('../../models/other/cartModel')
-
-
+const Product = require('../../models/other/productModel')
 
 
 module.exports.placeOrder = async (req, res) => {
 
     const OrderData = req.body
 
+    console.log(OrderData);
+    
+
 
     try {
+
         const result = await Order.create(OrderData)
+
         await Cart.updateOne({ user: OrderData.user }, { $set: { items: [] } })
 
+        OrderData.items.forEach(async (item) => {
+            await Product.updateOne(
+                { _id: item.product },
+                { $inc: { stock : -item.quantity } }
+            );
+        });
+
         if(result){
+
             return res.status(200).json('Order succsffuly')
         }
             return res.status(400).json('Order Not confirmed')
@@ -82,6 +94,9 @@ module.exports.updateOrderStatus = async (req, res) => {
 module.exports.cancelOrder = async (req, res) => {
 
     const { cancelId } = req.body
+
+    console.log(cancelId);
+    
 
     try {
 

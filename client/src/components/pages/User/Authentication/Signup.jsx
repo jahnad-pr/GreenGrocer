@@ -6,6 +6,7 @@ import greenGrocerLogo from "../../../../assets/Logos/main.png";
 import { IoAdd } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { ToastContainer, toast } from "react-toastify";
+import ForgotPassword from "./ForgotPassword";
 
 import {
   useLoginMutation,
@@ -40,13 +41,14 @@ export default function Signup({ setSign }) {
   const navigator = useNavigate();
   const scroller = useRef();
   const [errors, setErrors] = useState({}); // Error state
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   // data form etk query api
   const [
     signUp,
     { isLoading: isSignUpLoading, error: signUpError, data: data },
   ] = useSignUpMutation();
-  const [login, { isLoading: isLoginLoading, error: loginError, data:loginData }] =
+  const [login, { isLoading: isLoginLoading, error: loginError, data: loginData }] =
     useLoginMutation();
   const [
     googleLog,
@@ -83,48 +85,48 @@ export default function Signup({ setSign }) {
     }
   };
 
-  useEffect(()=>{  
-    if(signUpError?.data?.message){
-      showToast(signUpError?.data?.message,'error')
+  useEffect(() => {
+    if (signUpError?.data?.message) {
+      showToast(signUpError?.data?.message, 'error')
     }
-  },[signUpError])
+  }, [signUpError])
 
-  useEffect(()=>{  
+  useEffect(() => {
     console.log(loginError);
-    
-    if(loginError?.data?.message){
-      showToast(loginError?.data?.message,'error')
-    }
-  },[loginError]) 
-  
-  useEffect(()=>{  
-    if(googleError){
-      showToast(googleError,'error')
-    }
-  },[googleError])
 
-  useEffect(()=>{  
+    if (loginError?.data?.message) {
+      showToast(loginError?.data?.message, 'error')
+    }
+  }, [loginError])
+
+  useEffect(() => {
+    if (googleError) {
+      showToast(googleError, 'error')
+    }
+  }, [googleError])
+
+  useEffect(() => {
     console.log(isUerExistError);
-    
-    if(isUerExistError?.data){
-      showToast(isUerExistError?.data,'error')
-    }
-  },[isUerExistError])
 
-  useEffect(()=>{
-    
-    if(isUerExistData?.forWord){
+    if (isUerExistError?.data) {
+      showToast(isUerExistError?.data, 'error')
+    }
+  }, [isUerExistError])
+
+  useEffect(() => {
+
+    if (isUerExistData?.forWord) {
       setData(formData);
       setMethode("normal");
       showPopup(true);
     }
-  },[isUerExistData])
+  }, [isUerExistData])
 
-  useEffect(()=>{
-    if(loginData){
-      navigator('/user/home', { state:{userData:loginData.user,message:loginData.message} } )
+  useEffect(() => {
+    if (loginData) {
+      navigator('/user/home', { state: { userData: loginData.user, message: loginData.message } })
     }
-  },[loginData])
+  }, [loginData])
 
   // login with google
   const loginWithGoogle = async () => {
@@ -210,7 +212,7 @@ export default function Signup({ setSign }) {
           const dataForm = {
             username: data.displayName,
             email: data.email,
-            gmail:data.email,
+            gmail: data.email,
             password: "Google@123",
             confirmPassword: "Google@123",
             gender: verifiedData.gender,
@@ -228,12 +230,12 @@ export default function Signup({ setSign }) {
           setErrors({});
         })();
       } else if (method === "normal") {
-        (async()=>{
+        (async () => {
           const dataForm = {
             ...formData,
-            nder:verifiedData.gender,
-            phone:verifiedData.phone,
-            place:verifiedData.place,
+            nder: verifiedData.gender,
+            phone: verifiedData.phone,
+            place: verifiedData.place,
           };
           await signUp(dataForm).unwrap();
           // setSign(true);
@@ -247,13 +249,13 @@ export default function Signup({ setSign }) {
     const { name, value } = e.target;
     mission
       ? setFormData((prevData) => ({
-          ...prevData,
-          [name]: name === "password" ? value.trim() : value,
-        }))
+        ...prevData,
+        [name]: name === "password" ? value.trim() : value,
+      }))
       : setUpData((prevData) => ({
-          ...prevData,
-          [name]: name === "password" ? value.trim() : value,
-        }));
+        ...prevData,
+        [name]: name === "password" ? value.trim() : value,
+      }));
   };
 
   return (
@@ -269,14 +271,16 @@ export default function Signup({ setSign }) {
           dataForm={dataForm}
         />
       )}
+      {showForgotPassword && (
+        <ForgotPassword setShowForgotPassword={setShowForgotPassword} />
+      )}
       {/* <div ref={scroller} className="w-[150%] h-full  flex duration-500"> */}
       <div ref={scroller} className={`w-[150%] duration-500
       bg-[linear-gradient(#d2d2d0,#d1d1cf,#cecece,#c6c8c7,#c6c7c6,#c3c4c3,#b5b9b8)] h-full flex`}>
         <div
           onClick={() => navigator("/user/home")}
-          className={`bg-gray-200 font-medium absolute ${
-            mission ? "right-10" : "right-[39%]"
-          } duration-700 top-10 px-5 py-2 rounded-full flex gap-3 items-center justify-center z-10`}
+          className={`bg-gray-200 font-medium absolute ${mission ? "right-10" : "right-[39%]"
+            } duration-700 top-10 px-5 py-2 rounded-full flex gap-3 items-center justify-center z-10`}
         >
           <i className="ri-user-4-line text-[20px]"></i>
           <p>Gust accound</p>
@@ -298,7 +302,7 @@ export default function Signup({ setSign }) {
             <div className="w-full h-full flex flex-col max-w-[50%] mx-auto items-center justify-center duration-700">
               {/* App logo */}
               <img
-                className={`w-[18%] absolute bottom-8 right-8 ${mission?"opacity-20":"opacity-0"} brightness-0 duration-300`}
+                className={`w-[18%] absolute bottom-8 right-8 ${mission ? "opacity-20" : "opacity-0"} brightness-0 duration-300`}
                 src={greenGrocerLogo}
                 alt="Logo"
               />
@@ -410,6 +414,12 @@ export default function Signup({ setSign }) {
                     )}
                   </button>
                 </div>
+                
+                {  !mission &&
+                <p className="text-[16px] text-blue-500 cursor-pointer ml-3" onClick={() => setShowForgotPassword(true)}>
+                  Forgot password?
+                </p>
+                }
 
                 {/* Confirm Password Input */}
                 <AnimatePresence>
@@ -481,7 +491,7 @@ export default function Signup({ setSign }) {
               </button>
 
               {/* Switch to Login */}
-              <p className="text-[18px] text-gray-400 my-10">
+              <p className="text-[18px] text-gray-400 my-10 cursor-pointer">
                 Already a member?{" "}
                 <span
                   onClick={() => (setMission(!mission), setErrors({}))}
@@ -492,7 +502,7 @@ export default function Signup({ setSign }) {
               </p>
               <FcGoogle onClick={loginWithGoogle} size={45} />
 
-              
+
             </div>
           </div>
         </div>

@@ -10,11 +10,11 @@ const ProductQuantityPopup = ({ onClose, options, stock ,setOptions,showPopup}) 
     let newOption;
     if(unit ==='Kg'){
       if(quantity > stock/1000){
-        alert(stock/1000)
         setError('Quantity must be less than or equal to stock')
         return;
       } else {
-      if(quantity>=1){
+        if(quantity>=1){
+        // alert(quantity)
         newOption = `${quantity}Kg`;
       }else{
         newOption = `${quantity*1000}g`;

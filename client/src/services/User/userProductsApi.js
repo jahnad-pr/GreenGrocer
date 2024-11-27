@@ -48,6 +48,15 @@ export const userProductsApi = (builder) => ({
       }),
     }),
 
+    getAllCollection: builder.mutation({
+      query: () => ({
+        url: `user/getAllCollection`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
+
+
 
   });
   

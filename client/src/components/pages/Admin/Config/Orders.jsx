@@ -6,8 +6,8 @@ import Recents from "../../../parts/Main/Recents";
 import { ToastContainer, toast } from "react-toastify";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import "react-toastify/dist/ReactToastify.css";
+import { useCancelOrderMutation } from "../../../../services/Admin/adminApi";
 import {
-  useCancelOrderMutation,
   useGetOdersMutation,
   useUpdateOrderStatusMutation,
 } from "../../../../services/User/userApi";
@@ -252,175 +252,177 @@ const Orders = () => {
             </div>
 
             {/* orders Table */}
-            <div className="overflow-auto pb-96 px-20">
+            <div className="h-[calc(100vh-250px)] overflow-auto px-20">
               {ordersData?.length > 0 ? (
-                <table className="w-full border-collapse px-80">
-                  {/* Table Header */}
-                  <thead className="sticky top-0 z-10">
-                    <tr className="bg-[linear-gradient(to_right,#c5ebd1,#f1f5f9)]">
-                      <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600 rounded-l-full">
-                        Order ID & Method
-                      </th>
-                      <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
-                        Product
-                      </th>
+                <div className="relative">
+                  <table className="w-full border-collapse">
+                    {/* Table Header */}
+                    <thead className="sticky top-0 z-10">
+                      <tr className="bg-[linear-gradient(to_right,#c5ebd1,#f1f5f9)]">
+                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600 rounded-l-full">
+                          Order ID & Method
+                        </th>
+                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
+                          Product
+                        </th>
 
-                      <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
-                        Sale Details
-                      </th>
-                      <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
-                        Pic
-                      </th>
-                      <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
-                        Address
-                      </th>
-                      <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
-                        Status
-                      </th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-gray-600 rounded-r-full">
-                        Cancel
-                      </th>
-                    </tr>
-                  </thead>
-                  <tr>
-                    <th>&nbsp;</th>
-                  </tr>
-
-                  {/* Table Body */}
-
-                  <tbody>
-                    {ordersData?.map((order, index) => (
-                      <tr key={order._id} className="">
-                        <td className="px-3 py-2">
-                          <p className=" font-medium text-[15px]">
-                            {splitCode(order.order_id, 1)}
-                          </p>
-                          <p>{splitCode(order.order_id, 2)}</p>
-                          <p className="opacity-45">{order.payment_method}</p>
-                        </td>
-                        <td className="px-3 py-2">
-                          <div className="font-medium text-gray-900 text-[18px]">
-                            {order.items.product?.name}
-                          </div>
-                          <div className="font-medium text-gray-500 text-[15px]">
-                            {order.items.product?.from}
-                          </div>
-                          <div className="text-[16px] text-gray-500">
-                            {order.total_quantity / 1000} kilo gram
-                          </div>
-                        </td>
-
-                        <td className="px-3 py-2">
-                          <div className="text-[14px] text-gray-500 line-through">
-                            ₹{order.price.discountPrice}
-                          </div>
-
-                          <div className="font-bold text-gray-600">
-                           ₹{order.price.grandPrice}
-                          </div>
-
-                          <div className="text-gray-600">
-                            {datCoverter(order.time)}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2">
-                          <img
-                            src={order?.items[0]?.product.pics?.one}
-                            alt={order.name}
-                            className="w-12 h-12 object-cover"
-                          />
-                        </td>
-                        <td className="Sansation-font">
-                          <p className="font-bold">{order.user.username} </p>
-                          <span className="opacity-65">
-                            <p>
-                              {order.delivery_address.locationType},{" "}
-                              {order.delivery_address.streetAddress}
-                            </p>
-                            {/* <p>{order.delivery_address.exactAddress}</p> */}
-                            <p>
-                              {order.delivery_address.state.toUpperCase()},
-                              {order.delivery_address.pincode}
-                            </p>
-                          </span>
-                        </td>
-                        <td className="px-3 py-2 space-x-2">
-                          <span
-                          style={{background:`linear-gradient(215deg,#4a4d4c,${colorProvider(order.order_status)})`}}
-                            className={`p-1 rounded-full bg-[] py-4`}
-                          >
-                            {/*  */}
-
-                            <select
-                              className={`px-3 py-2 bg-transparent rounded-full text-white ${order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?'opacity-100 custom-selectero':'opacity-65 custom-selecteror'}`}
-                              name=""
-                              disabled={order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?false:true}
-                              value={order.order_status}
-                              defaultValue={order.order_status}
-                              onChange={(e) => {
-                                updateOrdersStatus({
-                                  id: order._id,
-                                  value: e.target.value,
-                                  index,
-                                });
-                              }}
-                              id=""
-                            >
-                              <option
-                                style={{
-                                  backgroundColor: "#aa880050",
-                                  color: "black",
-                                }}
-                                value="Pending"
-                              >
-                                Pending
-                              </option>
-                              <option
-                                style={{
-                                  backgroundColor: "#00aa7450",
-                                  color: "black",
-                                }}
-                                value="Processed"
-                              >
-                                Processed
-                              </option>
-                              <option
-                                style={{
-                                  backgroundColor: "#aa520050",
-                                  color: "white",
-                                }}
-                                value="Shipped"
-                              >
-                                Shipped
-                              </option>
-                              <option
-                                style={{
-                                  backgroundColor: "#3eaa0050",
-                                  color: "black",
-                                }}
-                                value="Delivered"
-                              >
-                                Delivered
-                              </option>
-                              <option
-                                style={{
-                                  backgroundColor: "#aa003e50",
-                                  color: "black",
-                                }}
-                                value="Cancelled"
-                              >
-                                Cancelled
-                              </option>
-                            </select>
-                          </span>
-                        </td>
-                        <td onClick={() => order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?handleCancel(order._id, index):showToast(`Order already ${order.order_status}`,'error')}>
-                          <i className={`ri-close-circle-fill text-[30px] text-center pl-5 ${order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?'opacity-100':'opacity-25'}`}></i>
-                        </td>
+                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
+                          Sale Details
+                        </th>
+                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
+                          Pic
+                        </th>
+                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
+                          Address
+                        </th>
+                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">
+                          Status
+                        </th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600 rounded-r-full">
+                          Cancel
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tr>
+                      <th>&nbsp;</th>
+                    </tr>
+
+                    {/* Table Body */}
+
+                    <tbody className="overflow-scroll">
+                      {ordersData?.map((order, index) => (
+                        <tr key={order._id} className="">
+                          <td className="px-3 py-2">
+                            <p className=" font-medium text-[15px]">
+                              {splitCode(order.order_id, 1)}
+                            </p>
+                            <p>{splitCode(order.order_id, 2)}</p>
+                            <p className="opacity-45">{order.payment_method}</p>
+                          </td>
+                          <td className="px-3 py-2">
+                            <div className="font-medium text-gray-900 text-[18px]">
+                              {order.items.product?.name}
+                            </div>
+                            <div className="font-medium text-gray-500 text-[15px]">
+                              {order.items.product?.from}
+                            </div>
+                            <div className="text-[16px] text-gray-500">
+                              {order.total_quantity / 1000} kilo gram
+                            </div>
+                          </td>
+
+                          <td className="px-3 py-2">
+                            <div className="text-[14px] text-gray-500 line-through">
+                              ₹{order.price.discountPrice}
+                            </div>
+
+                            <div className="font-bold text-gray-600">
+                             ₹{order.price.grandPrice}
+                            </div>
+
+                            <div className="text-gray-600">
+                              {datCoverter(order.time)}
+                            </div>
+                          </td>
+                          <td className="px-3 py-2">
+                            <img
+                              src={order?.items[0]?.product.pics?.one}
+                              alt={order.name}
+                              className="w-12 h-12 object-cover"
+                            />
+                          </td>
+                          <td className="Sansation-font">
+                            <p className="font-bold">{order.user.username} </p>
+                            <span className="opacity-65">
+                              <p>
+                                {order.delivery_address.locationType},{" "}
+                                {order.delivery_address.streetAddress}
+                              </p>
+                              {/* <p>{order.delivery_address.exactAddress}</p> */}
+                              <p>
+                                {order.delivery_address.state.toUpperCase()},
+                                {order.delivery_address.pincode}
+                              </p>
+                            </span>
+                          </td>
+                          <td className="px-3 py-2 space-x-2">
+                            <span
+                            style={{background:`linear-gradient(215deg,#4a4d4c,${colorProvider(order.order_status)})`}}
+                              className={`p-1 rounded-full bg-[] py-4`}
+                            >
+                              {/*  */}
+
+                              <select
+                                className={`px-3 py-2 bg-transparent rounded-full text-white ${order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?'opacity-100 custom-selectero':'opacity-65 custom-selecteror'}`}
+                                name=""
+                                disabled={order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?false:true}
+                                value={order.order_status}
+                                defaultValue={order.order_status}
+                                onChange={(e) => {
+                                  updateOrdersStatus({
+                                    id: order._id,
+                                    value: e.target.value,
+                                    index,
+                                  });
+                                }}
+                                id=""
+                              >
+                                <option
+                                  style={{
+                                    backgroundColor: "#aa880050",
+                                    color: "black",
+                                  }}
+                                  value="Pending"
+                                >
+                                  Pending
+                                </option>
+                                <option
+                                  style={{
+                                    backgroundColor: "#00aa7450",
+                                    color: "black",
+                                  }}
+                                  value="Processed"
+                                >
+                                  Processed
+                                </option>
+                                <option
+                                  style={{
+                                    backgroundColor: "#aa520050",
+                                    color: "white",
+                                  }}
+                                  value="Shipped"
+                                >
+                                  Shipped
+                                </option>
+                                <option
+                                  style={{
+                                    backgroundColor: "#3eaa0050",
+                                    color: "black",
+                                  }}
+                                  value="Delivered"
+                                >
+                                  Delivered
+                                </option>
+                                <option
+                                  style={{
+                                    backgroundColor: "#aa003e50",
+                                    color: "black",
+                                  }}
+                                  value="Cancelled"
+                                >
+                                  Cancelled
+                                </option>
+                              </select>
+                            </span>
+                          </td>
+                          <td onClick={() => order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?handleCancel(order._id, index):showToast(`Order already ${order.order_status}`,'error')}>
+                            <i className={`ri-close-circle-fill text-[30px] text-center pl-5 ${order.order_status!=='Cancelled'&&order.order_status!=='Delivered'?'opacity-100':'opacity-25'}`}></i>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
                 <EmptyState />
               )}
