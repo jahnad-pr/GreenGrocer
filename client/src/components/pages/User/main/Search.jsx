@@ -7,6 +7,8 @@ import 'rsuite/dist/rsuite.min.css';
 import './Search.css';
 import { useAddtoCartMutation, useCheckPorductInCartMutation, useGetAllCollectionMutation, useGetAllProductMutation } from '../../../../services/User/userApi';
 import CollectionCard from '../../../parts/Cards/Collection';
+import { ToastContainer, toast } from 'react-toastify';
+import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 const Search = ({userData}) => {
 
@@ -24,10 +26,13 @@ const Search = ({userData}) => {
   const [priceRange, setPriceRange] = useState([10, 2500]);
   const [showProducts, setShowProducts] = useState(true);
   const [showCollections, setShowCollections] = useState(false);
-  const [sortBy, setSortBy] = useState('featured');
+  const [sortBy, setSortBy] = useState('name-asc');
   const [activeCategory, setActiveCategory] = useState(0);
   const [filteredProducts, setFilteredProducts] = useState(productData);
-  const [collections,setCollections] = useState([])
+  const [collections,setCollections] = useState([]);
+  const [showInStock, setShowInStock] = useState(false);
+  const [showFeatured, setShowFeatured] = useState(false);
+  const [popularityData, setPopularityData] = useState({});
 
   // Categories limited to fruits and vegetables
   const categories = [
@@ -48,32 +53,20 @@ const Search = ({userData}) => {
   useEffect(() => { getAllProduct() }, [])
   useEffect(() => { getAllCollection() }, [])
 
-  useEffect(() => {
-    if (data) {
-      setProductData(data)
-      setFilteredProducts(data)
-    }
-  }, [data])
-
-  useEffect(() => {
-    if (collData) {
-      console.log(collData);
-      
-      setCollections(collData)
-    }
-  }, [collData])
-
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    const filtered = productData?.filter(product =>
-      product.name.toLowerCase().includes(query.toLowerCase()) ||
-      product.description.toLowerCase().includes(query.toLowerCase()) ||
-      product.category.name.toLowerCase().includes(query.toLowerCase())
-        // product.collection.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredProducts(filtered);
-  };
+ useEffect(() => {
+  if (data?.productDetails) {
+    setProductData(data?.productDetails)
+    setFilteredProducts(data?.productDetails)
+  }
+  if (data?.pipeline) {
+    // Create a map of product IDs to order counts
+    const popularityMap = data.pipeline.reduce((acc, item) => {
+      acc[item._id] = item.totalOrders;
+      return acc;
+    }, {});
+    setPopularityData(popularityMap);
+  }
+}, [data])
 
   const handleSort = (sortType) => {
     let sorted = [...filteredProducts];
@@ -96,6 +89,13 @@ const Search = ({userData}) => {
       case 'date-desc':
         sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
+      case 'popularity':
+        sorted.sort((a, b) => {
+          const ordersA = popularityData[a._id] || 0;
+          const ordersB = popularityData[b._id] || 0;
+          return ordersB - ordersA; // Sort by number of orders in descending order
+        });
+        break;
       default:
         break;
     }
@@ -103,25 +103,93 @@ const Search = ({userData}) => {
     setSortBy(sortType);
   };
 
+  useEffect(() => {
+    if (collData) {
+      // console.log(collData);
+      
+      setCollections(collData)
+    }
+  }, [collData])
+
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = productData?.filter(product =>
+      (product.name.toLowerCase().includes(query.toLowerCase()) ||
+      product.description.toLowerCase().includes(query.toLowerCase()) ||
+      product.category.name.toLowerCase().includes(query.toLowerCase())) &&
+      (!showInStock || product.stock > 0) &&
+      (!showFeatured || product.featured === true)
+    );
+    setFilteredProducts(filtered);
+  };
+
   const handlePriceChange = (event, newValue) => {
     setPriceRange(newValue);
     const filtered = productData.filter(product =>
       product.salePrice >= newValue[0] && product.salePrice <= newValue[1]
     );
-    setFilteredProducts(filtered);
+    setFilteredProducts(filtered)
   };
+
+      // Custom content component for the toast
+      const ToastContent = ({ title, message }) => (
+        <div>
+            <strong>{title}</strong>
+            <div>{message}</div>
+        </div>
+    );
+    
+
+    // Show toast notification function
+const showToast = (message, type = "success") => {
+  if (type === "success" && message) {
+      toast.success(
+          type && <ToastContent title={"SUCCESS"} message={message} />,
+          {
+              icon: <FaCheckCircle className="text-[20px]" />,
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              className: "custom-toast-success",
+              bodyClassName: "custom-toast-body-success",
+              progressClassName: "custom-progress-bar-success",
+          }
+      );
+  } else if (message) {
+      toast.error(<ToastContent title={"ERROR"} message={message} />, {
+          icon: <FaExclamationTriangle className="text-[20px]" />,
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-progress-bar",
+      });
+  }
+};
 
   
 
   return (
+    <>
+    <ToastContainer title="Error" position="bottom-left" />
     <div className="w-[96%] h-full bg-product">
-      <div className=" mix-blend-screen bg-[#ffffff50] absolute w-full h-full"></div>
+      <div className=" mix-blend-screen bg-[#ffffff85] absolute w-full h-full"></div>
       <div className="w-full h-full backdrop-blur-3xl pr-40">
         <div className="w-full h-full  overflow-y-scroll flex">
           {/* Filter Sidebar */}
 
           <div className="w-[400px] h-full pr-6">
-            <div className="h-full bg-[#ffffff20] backdrop-blur-md  p-6 px-20">
+            <div className="h-full bg-[#ffffff20] backdrop-blur-md  p-6 px-20 overflow-scroll pb-40">
               <h2 onClick={() => getAllCollection()} className="text-[30px] font-medium mb-6">Filters</h2>
 
               {/* View Options */}
@@ -177,7 +245,7 @@ const Search = ({userData}) => {
               </div>
 
               {/* Price Range */}
-              <div className="mb-6">
+              <div className={`mb-6 ${!showProducts ? 'opacity-35' : 'opacity-100'}`}>
                 <h3 className="text-[20px] opacity-45 font-medium mb-8 mt-8">Price Range</h3>
                 <div className="px-2">
                   <RangeSlider
@@ -186,6 +254,7 @@ const Search = ({userData}) => {
                     min={10}
                     max={2500}
                     step={250}
+                    disabled={!showProducts}
                     progress
                     className="custom-slider"
                     graduated
@@ -202,6 +271,7 @@ const Search = ({userData}) => {
                   <input 
                     type="number" 
                     value={priceRange[0]} 
+                    disabled={!showProducts}
                     onChange={(e) => {
                       const value = e.target.value;
                       if (value === '') {
@@ -221,6 +291,7 @@ const Search = ({userData}) => {
                   <input 
                     type="number" 
                     value={priceRange[1]} 
+                    disabled={!showProducts}
                     onChange={(e) => {
                       const value = e.target.value;
                       if (value === '') {
@@ -243,18 +314,63 @@ const Search = ({userData}) => {
               {/* Sort Options */}
               <div className="mb-6">
                 <h3 className="text-[20px] opacity-45 font-medium mb-8 mt-8">Sort by</h3>
+                {  
+                <span className={`${!showProducts ? 'opacity-35' : 'opacity-100'}`}>
+
+                <label className="category-label flex items-center gap-3 mb-4">
+                  <input
+                    type="checkbox"
+                    checked={showInStock}
+                    disabled={!showProducts}
+                    onChange={(e) => {
+                      setShowInStock(e.target.checked);
+                      const filtered = productData?.filter(product =>
+                        (!e.target.checked || product.stock > 0) &&
+                        (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        product.category.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      );
+                      setFilteredProducts(filtered);
+                    }}
+                    className="category-radio"
+                  />
+                  Show In-Stock Only
+                </label>
+
+                <label className="category-label flex items-center gap-3 mb-4">
+                  <input
+                    type="checkbox"
+                    checked={showFeatured}
+                    disabled={!showProducts}
+                    onChange={(e) => {
+                      setShowFeatured(e.target.checked);
+                      const filtered = productData?.filter(product =>
+                        (!showInStock || product.stock > 0) &&
+                        (!e.target.checked || product.featured === true) &&
+                        (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        product.category.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      );
+                      setFilteredProducts(filtered);
+                    }}
+                    className="category-radio"
+                  />
+                  Show Featured Only
+                </label>
+                </span>
+                }
                 <select
                   value={sortBy}
                   onChange={(e) => handleSort(e.target.value)}
                   className="w-full px-4 py-2 bg-[#3f6b51] custom-selectero text-white rounded-[10px] focus:outline-none"
                 >
-                  <option value="featured">Featured</option>
                   <option value="name-asc">Name (A-Z)</option>
                   <option value="name-desc">Name (Z-A)</option>
                   <option value="price-asc">Price (Low to High)</option>
                   <option value="price-desc">Price (High to Low)</option>
                   <option value="date-asc">Date (Oldest First)</option>
                   <option value="date-desc">Date (Newest First)</option>
+                  <option value="popularity">Popularity</option>
                 </select>
               </div>
             </div>
@@ -284,18 +400,22 @@ const Search = ({userData}) => {
 
             {/* Products Grid */}
             {showProducts && (
-              <div className="w-full h-auto flex my-5 gap-5 relative flex-wrap">
+              <div className="w-full h-auto flex my-5 gap-5 relative flex-wrap product-grid">
                 {filteredProducts.map((product) => ((product?.category?.name.toLowerCase() === selectedCategory.toLowerCase() || selectedCategory === 'All Categories' || selectedCategory === 'all') &&
-                  <ProductCard key={product._id} product={product} navigate={navigate} userData={userData} />
+                  <div key={product._id} className="animate-card">
+                    <ProductCard key={product._id} showToast={showToast} product={product} navigate={navigate} userData={userData} />
+                  </div>
                 ))}
               </div>
             )}
 
             {/* Collections Grid */}
             {showCollections && (
-              <div className="w-full h-auto flex my-5 gap-8 relative flex-wrap">
+              <div className="w-full h-auto flex my-5 gap-8 relative flex-wrap product-grid">
                 {collections.map((collection, index) => ( (collection?.category?.name.toLowerCase() === selectedCategory.toLowerCase() || selectedCategory === 'All Categories' || selectedCategory === 'all') &&
-                   <CollectionCard key={index} type={'collection'} data={collection} pos={index} />
+                  <div key={index} className="animate-card">
+                    <CollectionCard type={'collection'} data={collection} pos={index} />
+                  </div>
                 ))}
               </div>
             )}
@@ -312,11 +432,12 @@ const Search = ({userData}) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
 
-function ProductCard({ navigate, product, userData }) {
+function ProductCard({ navigate, product, userData, showToast }) {
 
   const [addtoCart, { error: addError, data: addData }] = useAddtoCartMutation()
   const [checkPorductInCart, { data: checkData }] = useCheckPorductInCartMutation();
@@ -325,13 +446,18 @@ function ProductCard({ navigate, product, userData }) {
   useEffect(() => {
     if (addData) {
         setGoToCart(true)
-        // showToast(addData, 'success')
+        showToast(addData, 'success')
     }
 }, [addData])
 
+// useEffect(()=>{
+//   console.log(checkData)
+// },[checkData])
+
 
   useEffect(() => {
-    if (product&&userData>0) {
+    if (product&&userData?._id) {
+      // alert('jh')
         checkPorductInCart(product?._id)
     };
 }, [product]);
@@ -346,26 +472,51 @@ function ProductCard({ navigate, product, userData }) {
     addtoCart({ cartData, userId })
   }
 
-  return (<div onClick={() => console.log()} key={product.id} className="h-80 min-w-56 max-w-56 flex flex-col justify-center items-center rounded-[40px] relative group">
+  const handleAddToCart = (e) => {
+   e.stopPropagation()
+  //  console.log(checkData)
+   if(checkData||gotoCart){
+     navigate('/user/Cart')
+    }else{
+     addToCartItem(product._id)
+   }
+  }
+
+  return (
+  <div onClick={()=> navigate('/user/productPage',{ state:{ id:product._id } })} className="h-80 min-w-56 max-w-56 flex flex-col justify-center items-center rounded-[40px] relative group cursor-pointer">
     <img className="max-w-[120px] h-[120px] w-[120px] object-cover max-h-[120px] oscillater mix-blend-darken drop-shadow-2xl z-20" src={product.pics.one} alt={product.name} />
     <img className="px-0 max-w-[80px] shadowed opacity-20 absolute" src={product.pic} alt="" />
-    <span className="w-full h-auto bg-[linear-gradient(#ffffff40,#ffffff70)] flex flex-col px-10 rounded-t-[30px] rounded-bl-[30px] rounded-br-[120px] pt-10 flex-1 justify- gap-2 pb-0">
+    <span className="w-full h-auto bg-[linear-gradient(#ffffff40,#ffffff70)] flex flex-col px-10 rounded-t-[30px] rounded-bl-[30px] rounded-br-[120px] pt-10 flex-1 justify- gap-2 pb-10">
       <span className="mt-2">
         <h1 className="text-[28px] font-medium">{product.name}</h1>
         <span className="flex flex-col">
           <s>
             <p className="opacity-30">₹ {product.regularPrice}</p>
           </s>
-          <p className="opacity-60 text-[25px] font-bold text-[#14532d]">
+          <p className={`opacity-60 text-[25px]  font-bold ${product?.stock>0?'text-[#14532d]':'text-red-600'}`}>
             ₹ {product.salePrice}
           </p>
+          <p className={`${product?.stock>0?'text-[#14532d]':'text-red-900'} font-medium opacity-55`}>{product?.stock>0?(product.stock/1000).toFixed(0):'Out of Stock'}{product?.stock>1000?" Kg left":product?.stock?" g":""}</p>
+          { product?.featured &&
+            <p className={`bg-yellow-500 rounded-full font-medium opacity-55 pl-4 text-[black] mt-2 py-1`}>Featured</p>
+          }
         </span>
       </span>
-      <button onClick={() => checkData||gotoCart ? navigate('/user/Cart') : addToCartItem(product._id) } className="flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500">
+      { userData?._id && product?.stock>0 ?
+      <button onClick={handleAddToCart} className={`flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 ${product?.stock>0?'bg-[linear-gradient(#b4c2ba,#789985)]':'bg-[linear-gradient(45deg,#e07373,#ad867c)]'} overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500`}>
         <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
-        <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
-      </button>
+        { !product?.stock>0?
+          <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>:
+          <i className="ri-shopping-cart-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+        }
+      </button>:
+      <button className={`flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 ${product?.stock>0?'bg-[linear-gradient(#b4c2ba,#789985)]':'bg-[linear-gradient(45deg,#e07373,#ad867c)]'} overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500`}>
+      <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+      <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+    </button>
+      }
     </span>
   </div>);
 }
+
 export default Search;

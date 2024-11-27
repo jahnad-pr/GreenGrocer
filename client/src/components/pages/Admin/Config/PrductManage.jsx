@@ -38,6 +38,7 @@ const ProductManage = () => {
     freshness: "fresh",
     harvestedTime:new Date().toISOString().slice(0, 16),
     from: "",
+    featured: false,
   });
 
   const location = useLocation();
@@ -525,7 +526,7 @@ const ProductManage = () => {
                   <select
                     className="w-[250px] py-3 px-5 rounded-full text-[18px] custom-selecter bg-[#BFD3E0]"
                     name="freshness"
-                    value={FormData.freshness}
+                    value={formData.freshness}
                     onChange={handleChange}
                   >
                     <option value="Fresh">Fresh</option>
@@ -564,6 +565,22 @@ const ProductManage = () => {
                     placeholder="Enter source location"
                   />
                 </span>
+
+                <div className="flex items-center justify-between gap-3 px-3 py-4 bg-[#ffffff10] rounded-xl">
+                  <span className="text-[18px] text-black font-medium opacity-75">Featured Product</span>
+                  <div 
+                    onClick={() => setFormData(prev => ({ ...prev, featured: !prev.featured }))}
+                    className={`relative w-14 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ease-in-out ${
+                      formData.featured ? 'bg-green-500' : 'bg-gray-400'
+                    }`}
+                  >
+                    <div
+                      className={`bg-white w-6 h-6 rounded-full shadow-md transform duration-300 ease-in-out ${
+                        formData.featured ? 'translate-x-6' : 'translate-x-0'
+                      }`}
+                    />
+                  </div>
+                </div>
 
                 <button
                   onClick={handleFormSubmit}

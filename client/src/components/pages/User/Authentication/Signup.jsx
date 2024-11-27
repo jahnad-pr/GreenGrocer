@@ -20,6 +20,7 @@ import { validateFormData } from "./validation/validation";
 import { auth, googleProvider } from "../../../../config/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import SignDetails from "./signDetails";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 
 export default function Signup({ setSign }) {
   // Form data state for signup and login
@@ -60,30 +61,51 @@ export default function Signup({ setSign }) {
     { isLoading: isUerExistLoading, error: isUerExistError, data: isUerExistData },
   ] = useIsUerExistMutation();
 
-  // Show toast notification
-  const showToast = (message, type = "success") => {
-    if (type === "success") {
-      toast.success(message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+    // Custom content component for the toast
+    const ToastContent = ({ title, message }) => (
+      <div>
+          <strong>{title}</strong>
+          <div>{message}</div>
+      </div>
+  );
+  
+
+  // Show toast notification function
+const showToast = (message, type = "success") => {
+  if (type === "success" && message) {
+      toast.success(
+          type && <ToastContent title={"SUCCESS"} message={message} />,
+          {
+              icon: <FaCheckCircle className="text-[20px]" />,
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              className: "custom-toast-success",
+              bodyClassName: "custom-toast-body-success",
+              progressClassName: "custom-progress-bar-success",
+          }
+      );
+  } else if (message) {
+      toast.error(<ToastContent title={"ERROR"} message={message} />, {
+          icon: <FaExclamationTriangle className="text-[20px]" />,
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          className: "custom-toast",
+          bodyClassName: "custom-toast-body",
+          progressClassName: "custom-progress-bar",
       });
-    } else {
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
+  }
+};
+
 
   useEffect(() => {
     if (signUpError?.data?.message) {
@@ -272,7 +294,7 @@ export default function Signup({ setSign }) {
         />
       )}
       {showForgotPassword && (
-        <ForgotPassword setShowForgotPassword={setShowForgotPassword} />
+        <ForgotPassword showToast={showToast} setShowForgotPassword={setShowForgotPassword} />
       )}
       {/* <div ref={scroller} className="w-[150%] h-full  flex duration-500"> */}
       <div ref={scroller} className={`w-[150%] duration-500

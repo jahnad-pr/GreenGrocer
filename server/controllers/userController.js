@@ -304,6 +304,9 @@ module.exports.resetPassword = async (req, res) => {
 
   const filter = { email } || { _id }    
 
+  console.log('hhhhhhhhhhhhhsd');
+  
+
   
   
   const UserData = await User.findOne( filter ,{ password:1,_id:0 })

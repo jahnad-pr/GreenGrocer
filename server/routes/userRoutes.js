@@ -22,21 +22,21 @@ router.post('/addDetails',updateVerification);
 router.post('/isUerExist',isUerExist);
 router.post('/logoutUser',logoutUser);
 
-router.post('/updateProfile',updateProfile);
-router.post('/matchPassword',matchPassword);
+router.post('/updateProfile',authMiddleware,updateProfile);
+router.post('/matchPassword',authMiddleware,matchPassword);
 router.post('/resetPassword',resetPassword);
 
 
-router.post('/upsertAddress',upsertAddress);
-router.get('/getAdresses/:id',getAdresses);
+router.post('/upsertAddress',authMiddleware,upsertAddress);
+router.get('/getAdresses/:id',authMiddleware,getAdresses);
 router.delete('/deleteAddress/:id',authMiddleware,deleteAddress);
 
-router.post('/placeOrder',placeOrder);
-router.get('/getOders/:id',getOders);
-router.post('/cancelOrder',cancelOrder);
+router.post('/placeOrder',authMiddleware,placeOrder);
+router.get('/getOders/:id',authMiddleware,getOders);
+router.post('/cancelOrder',authMiddleware,cancelOrder);
 
 
-router.post('/addtoCart',addtoCart);
+router.post('/addtoCart',authMiddleware,addtoCart);
 router.get('/checkPorductInCart/:prductID',authMiddleware,checkPorductInCart);
 router.get('/getCartItems',authMiddleware,getCartItems);
 router.post('/updateCartITem/:id',authMiddleware,updateCartITem);

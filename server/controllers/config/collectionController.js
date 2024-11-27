@@ -93,6 +93,9 @@ module.exports.getCAtegoryCollection = async(req,res)=>{
 
     const id = req.params.id
 
+    // console.log(id);
+    
+
     
     
     try {
@@ -107,7 +110,7 @@ module.exports.getCAtegoryCollection = async(req,res)=>{
 
         }else{
 
-            if(Collections[0].isListed){
+            if(Collections){
 
                 res.status(200).json({mission:true,message:'successfull',data:Collections})
 

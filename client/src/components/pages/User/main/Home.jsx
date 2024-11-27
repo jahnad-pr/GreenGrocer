@@ -32,7 +32,9 @@ export default function Home({ userData }) {
 
   useEffect(() => {
     (async () => {
+      // alert()
       const fru = await getCAtegoryCollctiions("67330399f1253d47197eec6f");
+      
       setFRuitColl(fru?.data?.data);
       await getCAtegoryCollctiions("6733066df1253d47197eec70");
 
@@ -141,12 +143,12 @@ export default function Home({ userData }) {
           Fruits
         </h1>
         <div className="w-full h-auto flex my-5 mt-8 gap-5  mb-10 relative flex-wrap pl-20">
-          <p className="px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full">
+          {/* <p className="px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full">
             View all
-          </p>
+          </p> */}
           {fruits?.map((data, index) => {
             if (data?.pics && fruitColl[index]) {
-              return (
+              return (  fruitColl[index].isListed &&
                 <>
                   <Product
                     key={index}
@@ -168,7 +170,7 @@ export default function Home({ userData }) {
                 <Product key={index} type={"product"} data={data} pos={index} />
               );
             } else if (fruitColl[index]) {
-              return (
+              return (  fruitColl[index].isListed &&
                 <CollectionCard
                   key={index}
                   type={"collection"}
@@ -240,12 +242,12 @@ export default function Home({ userData }) {
               onClick={() => console.log(CollData?.data)}
               className={`text-[30px] $'ml-40':''} font-semibold mt-20 pl-20`}
             >
-              Fruits
+              Vegetables
             </h1>
             <div className="w-full h-auto flex my-5 mt-8 gap-5  mb-10 relative flex-wrap pl-20">
-              <p className="px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full">
+              {/* <p className="px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full">
                 View all
-              </p>
+              </p> */}
               { }
               {proData?.data?.map((data, index) => {
                 if (proData?.data && CollData?.data[index]) {

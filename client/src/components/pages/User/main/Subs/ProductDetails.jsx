@@ -413,7 +413,7 @@ useEffect(() => {
                                 </div>
 
                                 <span style={{ transform: !qnt ? 'translateY(-50%)' : 'translateY(0)' }} className="flex h-40 duration-500 flex-col cursor-pointer">
-                                    <span className="max-h-20 flex-1 flex items-center justify-center gap-5">
+                                    <span className="max-h-20 flex-1 flex items-center gap-5">
                                         <div onClick={() => setCurrentImage(product?.pics?.two)} className="w-20 border-2 h-20 border-[#ceb649] rounded-[22px] p-[10px] flex justify-center items-center cursor-pointer" >
                                             <img src={product?.pics?.two} alt="" />
                                         </div>

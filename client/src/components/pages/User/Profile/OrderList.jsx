@@ -74,17 +74,17 @@ const OrderList = ({userData}) => {
   return (
     <div className="h-full w-full max-w-[96%] flex bg-product">
       <div className="bg-[#5a52319c] mix-blend-screen absolute w-full h-full"></div>
-      <div className="w-full h-full px-40 backdrop-blur-3xl">
+      <div className="w-full h-full px-40 backdrop-blur-3xl overflow-hidden">
         {/* Main Content */}
         { orders.length>0 ?
-        <main className="mt-8">
-          <h1 className="text-[30px] font-bold mb-16 mt-16">Manage your orders</h1>
-          <div className="flex items-center gap-4 flex-wrap">
+        <main className="pt-8 h-full overflow-y-auto pb-20">
+          <h1 className="text-[30px] font-bold mb-16 mt-16 top-0 backdrop-blur-md py-4 z-10">Manage your orders</h1>
+          <div className="flex flex-wrap gap-4">
             {orders?.map((order, index) => (
 
               <div onClick={()=>navigate('/user/OrderDetails',{ state:order })}
                 key={index}
-                className={`p-4 py-8 w-[22%] duration-500 relative group shadow-2xl rounded-[20px] rounded-tl-[109px] border-2 border-[#eeeeee4d] px-10 mb-4 ${getStatusColor(order.order_status)}`}
+                className={`p-4 py-8 w-[calc(25%_-_16px)] min-w-[300px] duration-500 relative group shadow-2xl rounded-[20px] rounded-tl-[109px] border-2 border-[#eeeeee4d] px-10 mb-4 cursor-pointer hover:scale-[0.98] ${getStatusColor(order.order_status)}`}
               >
                 { order.items.length > 1 && <div className={`absolute w-full h-full -left-2 shadow rounded-tl-[109px] rounded-[30px] group-hover:scale-[1.05] duration-500 -z-10 -top-2 border-2 border-[#eeeeee4d] ${getStatusColor(order.order_status)}`}></div>}
                 { order.items.length > 2 && <div className={`absolute w-full h-full -left-4 shadow rounded-tl-[109px] rounded-[30px] group-hover:scale-[1.10] duration-500 -z-20 -top-4 border-2 border-[#eeeeee4d] ${getStatusColor(order.order_status)}`}></div>}
@@ -105,7 +105,7 @@ const OrderList = ({userData}) => {
                           Item Quantity:{" "}
                           <span className="text-gray-600">{order.items[0].quantity/1000}Kg</span>
                         </h3>
-                        <p className="text-sm text-gray-600">Total Price: ₹{order.price.grandPrice}</p>
+                        <p className="text-sm text-gray-600">Total Price: ₹{order.price.grandPrice.toFixed(2)}</p>
                       </div>
                     </div>
 

@@ -1,4 +1,5 @@
 const Product = require('../../models/other/productModel')
+const Order = require('../../models/other/OrderModel')
 
 
 
@@ -191,7 +192,103 @@ module.exports.getProductDetails = async(req,res)=>{
 
 
 module.exports.getAllProduct = async(req,res)=>{
-    
+
+    // MongoDB Aggregation Pipeline for Product Popularity
+    const pipeline = await Order.aggregate([
+        // Unwind the items array to work with individual items
+        { $unwind: "$items" },
+
+        // Lookup product details
+        {
+            $lookup: {
+                from: "products",
+                localField: "items.product",
+                foreignField: "_id",
+                as: "productDetails"
+            }
+        },
+        // Unwind the productDetails array (since lookup returns an array)
+        { $unwind: "$productDetails" },
+
+        // Group by product ID to calculate metrics
+        {
+            $group: {
+                _id: "$items.product",
+                productName: { $first: "$productDetails.name" },
+                totalOrders: { $sum: 1 },
+                totalQuantity: { $sum: "$items.quantity" },
+                totalSales: {
+                    $sum: {
+                        $multiply: [
+                            { $divide: ["$items.quantity", 1000] },
+                            "$productDetails.salePrice"
+                        ]
+                    }
+                },
+                avgQuantityPerOrder: { $avg: "$items.quantity" },
+                orderDates: { $push: "$createdAt" }
+            }
+        },
+        // Calculate popularity score
+        // Based on: order frequency, quantity sold, and revenue generated
+        {
+            $addFields: {
+                popularityScore: {
+                    $add: [
+                        { $multiply: ["$totalOrders", 0.4] },  // 40% weight to order frequency
+                        { $multiply: [{ $divide: ["$totalQuantity", 1000] }, 0.3] },  // 30% weight to quantity
+                        { $multiply: [{ $divide: ["$totalSales", 10000] }, 0.3] }  // 30% weight to sales
+                    ]
+                }
+            }
+        },
+        // Sort by popularity score in descending order
+        { $sort: { popularityScore: -1 } },
+        // Project the final output format
+        {
+            $project: {
+                _id: 1,
+                productName: 1,
+                totalOrders: 1,
+                totalQuantity: { $divide: ["$totalQuantity", 1000] },  // Convert to Kg
+                totalSales: { $round: ["$totalSales", 2] },
+                avgQuantityPerOrder: { $round: [{ $divide: ["$avgQuantityPerOrder", 1000] }, 2] },
+                popularityScore: { $round: ["$popularityScore", 2] },
+                // Calculate if trending (more orders in last 7 days compared to previous 7 days)
+                isTrending: {
+                    $let: {
+                        vars: {
+                            last7Days: {
+                                $filter: {
+                                    input: "$orderDates",
+                                    as: "date",
+                                    cond: {
+                                        $gte: ["$$date", { $subtract: [new Date(), { $multiply: [7, 24, 60, 60, 1000] }] }]
+                                    }
+                                }
+                            },
+                            prev7Days: {
+                                $filter: {
+                                    input: "$orderDates",
+                                    as: "date",
+                                    cond: {
+                                        $and: [
+                                            { $lt: ["$$date", { $subtract: [new Date(), { $multiply: [7, 24, 60, 60, 1000] }] }] },
+                                            { $gte: ["$$date", { $subtract: [new Date(), { $multiply: [14, 24, 60, 60, 1000] }] }] }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        in: { $gt: [{ $size: "$$last7Days" }, { $size: "$$prev7Days" }] }
+                    }
+                }
+            }
+        }
+    ]);
+
+//   console.log(pipeline);
+  
     // const _id = req.params.id
     
     try {
@@ -203,7 +300,7 @@ module.exports.getAllProduct = async(req,res)=>{
 
             if(productDetails){
 
-                return res.status(200).json(productDetails)
+                return res.status(200).json({productDetails,pipeline})
             }
 
             return res.status(500).json('no product found') 

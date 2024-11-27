@@ -63,6 +63,11 @@ const productSchema = new mongoose.Schema({
     from:{
         type: String,
         required: true
+    },
+    featured:{
+        type: Boolean,
+        required: true,
+        default: false
     }
 
 

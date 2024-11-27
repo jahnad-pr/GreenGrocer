@@ -82,7 +82,7 @@ export default function App() {
           <Route path="/user/productpage" element={ <UserProtecter><ProductDetails /></UserProtecter> } />
           <Route path="/user/collection/:name/products" element={ <UserProtecter><ProductsAll /></UserProtecter> } />
           <Route path="/user/productpage/:id/reviews" element={ <UserProtecter><ProductReview /></UserProtecter> } />
-          <Route path="/user/profile/:id/logout" element={ <UserProtecter><Logout /></UserProtecter> } />
+          <Route path="/user/profile/logout" element={ <UserProtecter><Logout /></UserProtecter> } />
           <Route path="/user/profile/:id" element={ <UserProtecter><Main /></UserProtecter> } />
           <Route path="/user/profile/:id/manage" element={ <UserProtecter><Profiler /></UserProtecter> } />
           <Route path="/user/profile/:id/resetPassword" element={ <UserProtecter><ResetPassword /></UserProtecter> } />

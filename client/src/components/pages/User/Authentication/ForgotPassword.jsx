@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ToastContainer, toast } from "react-toastify";
+// import { ToastContainer, toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import greenGrocerLogo from "../../../../assets/Logos/main.png";
 import { useConformOTPMutation, useGetOTPMutation, useIsUerExistMutation, useResetPasswordMutation } from "../../../../services/User/userApi";
@@ -60,7 +60,7 @@ const TextScramble = ({ text }) => {
   );
 };
 
-export default function ForgotPassword({ setShowForgotPassword }) {
+export default function ForgotPassword({ setShowForgotPassword,showToast }) {
 
   const [getOTP, { isLoading: sendLoading, error: sendError, data: sendData }] = useGetOTPMutation(); 
   const [ isUerExist, { isLoading: isUerExistLoading, error: isUerExistError, data: isUerExistData }, ] = useIsUerExistMutation();
@@ -229,29 +229,29 @@ export default function ForgotPassword({ setShowForgotPassword }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const showToast = (message, type = "success") => {
-    if (type === "success") {
-      toast.success(message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } else {
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
+  // const showToast = (message, type = "success") => {
+  //   if (type === "success") {
+  //     toast.success(message, {
+  //       position: "top-right",
+  //       autoClose: 3000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   } else {
+  //     toast.error(message, {
+  //       position: "top-right",
+  //       autoClose: 3000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   }
+  // };
 
   useEffect(()=>{
 
@@ -334,7 +334,7 @@ export default function ForgotPassword({ setShowForgotPassword }) {
           }}
           className="w-full max-w-[550px] backdrop-blur-2xl py-10 bg-[linear-gradient(45deg,#00000080,#412524)] flex items-center justify-center flex-col gap-5 rounded-3xl px-10 relative z-10"
         >
-          <ToastContainer position="bottom-left" />
+          {/* <ToastContainer position="bottom-left" /> */}
           
           <motion.div 
             initial={{ y: 20, opacity: 0 }}

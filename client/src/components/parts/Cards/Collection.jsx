@@ -8,13 +8,13 @@ export default function CollectionCard({ pos, data, type }) {
 
   const navigate = useNavigate()
 
-  return (
-    <div className={`h-80 min-w-56 max-w-56 flex flex-col justify-center items-center rounded-[40px] relative group`}>
+  return ( data?.name &&
+    <div onClick={()=>console.log(data)} className={`h-80 min-w-56 max-w-56 flex flex-col justify-center items-center rounded-[40px] relative group`}>
       {/* <img className="px-0 max-w-[80px] shadowed opacity-20 absolute" src={data.pic} alt="" /> */}
 
       <span layoutId='full' className='w-full h-auto bg-[linear-gradient(#ffffff70,#ffffff30)] flex flex-col px-10 rounded-[30px] rounded-tr-[120px] flex-1 justify- gap-2 pb-0'>
         <span className='mt-10 flex flex-col gap-3 '>
-          <motion.h1 layoutId='oi' className='text-[28px] font-medium leading-none text-[#14532d]'>{data?.name}</motion.h1>
+          <h1 layoutId='oi' className='text-[28px] font-medium leading-none text-[#14532d]'>{data?.name}</h1>
           {/* <p className='opacity-30' >{data.category.name}</p> */}
           <span className='flex flex-col'>
             <><p className='opacity-30' >{data?.description}</p></>
@@ -28,7 +28,7 @@ export default function CollectionCard({ pos, data, type }) {
         </button>
 
       </span>
-      <motion.img layoutId='oo' className=' h-[120px] w-[120px] object-cover max-h-[120px] -translate-y-[30%] mix-blend-darken drop-shadow-2xl z-20' src={data?.pic || data?.pics?.one} alt="" />
+      <img layoutId='oo' className=' h-[120px] w-[120px] object-cover max-h-[120px] -translate-y-[30%] mix-blend-darken drop-shadow-2xl z-20' src={data.pic} alt="" />
       {/* <MotionConfig></MotionConfig> */}
     </div>
   )

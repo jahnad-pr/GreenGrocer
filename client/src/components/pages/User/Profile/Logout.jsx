@@ -5,11 +5,11 @@ import { useLogoutUserMutation } from '../../../../services/User/userApi';
 import DeletePopup from '../../../parts/popups/DeletePopup';
 
 
-export default function Logout() {
+export default function Logout({userData}) {
 
   const [popup,showPopup] = useState(false)
 
-  const { id } = useParams()
+  // const { id } = useParams()
 
   const navigator = useNavigate()
 
@@ -27,7 +27,7 @@ export default function Logout() {
    return (
     <>
    { popup &&
-    <DeletePopup updater={logoutUser} deleteData={{id}} showPopup={showPopup} action={'logout'} isUser={true}   />
+    <DeletePopup updater={logoutUser} deleteData={{id:userData._id}} showPopup={showPopup} action={'logout'} isUser={true}   />
    }
       <div className="w-[96%] h-full">
         <div className="w-full h-full px-96 flex flex-col items-center gap-5">

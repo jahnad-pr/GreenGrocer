@@ -64,14 +64,14 @@ export default function Carts({ data,setProductData,index,showToast }) {
     const cleanValue = value.toLowerCase().replace(/\s+/g, '');
     
     // Extract the numeric part and unit
-    const match = cleanValue.match(/^(\d+(?:\.\d+)?)(g|Kg)?$/);
+    const match = cleanValue.match(/^(\d+(?:\.\d+)?)(g|kg)?$/);
     if (!match) return null;
     
     const amount = parseFloat(match[1]);
     const unit = match[2] || 'g';
     
     // Convert to grams based on unit
-    return unit === 'Kg' ? Math.round(amount * 1000) : amount;
+    return unit === 'kg' ? Math.round(amount * 1000) : amount;
   };
 
   const deconvertToGrams = (value) => {
@@ -96,7 +96,9 @@ export default function Carts({ data,setProductData,index,showToast }) {
     const gramsValue = convertToGrams(value);
     
     if (gramsValue !== null) {
+
       updateCartITem({id,action:'update',seletor:convertToGrams(value)})
+
       setProductData((prevItems) =>
         prevItems.map((item, indexo) =>
           indexo === index ? { ...item, quantity: gramsValue } : item
@@ -249,7 +251,7 @@ export default function Carts({ data,setProductData,index,showToast }) {
           </span>
           }
         </p>
-        <p onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:data?.product,quantity:(qnt) }], qnt: qnt } })} className="w-[calc(100%_-_64px)] text-center py-[6px] bg-[#ffffff50] my-2 rounded-full">Buy now</p>
+        <p onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:data?.product,quantity:convertToGrams(qnt) }], qnt: qnt } })} className="w-[calc(100%_-_64px)] text-center py-[6px] bg-[#ffffff50] my-2 rounded-full">Buy now</p>
  
       </div>
     </div>
