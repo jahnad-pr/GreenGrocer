@@ -175,7 +175,7 @@ const OrderPayment = ({userData}) => {
                  flex flex-col py-10 gap-12 items-center justify-center rounded-[30px] border-2 cursor-pointer transition-all relative
                 ${
                   selectedMethod === method.id
-                    ? 'border-red-200 bg-red-50'
+                   ? 'border-red-200 bg-red-50'
                     : 'border-gray-200 hover:border-gray-300'
                 } 
               `}

@@ -40,6 +40,7 @@ import OrderDetails from "./components/pages/User/Profile/OrderDetails"
 import Cart from "./components/pages/User/main/Cart"
 import Search from "./components/pages/User/main/Search"
 import NotFound from "./components/pages/User/main/Subs/NotFound"
+import Bookmark from "./components/pages/User/main/Bookmark"
 
 export default function App() {
 
@@ -68,11 +69,6 @@ export default function App() {
             <Route path="/admin/Category" element={<AdminProtucter><Categories /></AdminProtucter>} />
             <Route path="/admin/Category/manage" element={<AdminProtucter><CategoryManage /></AdminProtucter>} />
             <Route path="/admin/Collection" element={<AdminProtucter><Collections /></AdminProtucter>} />
-            <Route path="/admin/Collection/manage" element={<AdminProtucter><CollectionManage /></AdminProtucter>} />
-            <Route path="/admin/Products" element={<AdminProtucter><Productes /></AdminProtucter>} />
-            <Route path="/admin/Products/manage" element={<AdminProtucter><ProductManage /></AdminProtucter>} />
-            <Route path="/admin/Orders" element={<AdminProtucter><Orders /></AdminProtucter>} />
-
           <Route path="*" element={<NotFound />} />
           
           <Route path="/user/signup" element={ <UserProtecter><Signup /></UserProtecter> } />
@@ -94,6 +90,7 @@ export default function App() {
           <Route path="/user/OrderList" element={ <UserProtecter><OrderList /></UserProtecter> } />
           <Route path="/user/OrderDetails" element={ <UserProtecter><OrderDetails/></UserProtecter> } />
           <Route path="/user/cart" element={ <UserProtecter><Cart/></UserProtecter> } />
+          <Route path="/user/bookmarks" element={ <UserProtecter><Bookmark/></UserProtecter> } />
           </Routes>
 
         <Routes>

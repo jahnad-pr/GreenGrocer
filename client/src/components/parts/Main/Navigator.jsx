@@ -7,7 +7,7 @@ export default function Navigator({userData}) {
   const location = useLocation()
 
   return (
-    <div className='h-full min-w-[6%] bg-gray-100 pr-8 pb-14 pt-6 z-10'>
+    <div className='h-full min-w-[6%] bg-gradient-to-bl from-[#52a556] to-[#3c6e51]  pr-8 pb-14 pt-6 z-10'>
         <div className="w-full h-full flex flex-col gap-5 items-end">
 
         { !location.pathname.startsWith('/user/home')&&!location.pathname.startsWith('/user/products') ?
@@ -20,7 +20,7 @@ export default function Navigator({userData}) {
         <i onClick={()=>navigator('/user/home')} className="ri-home-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
         <i className="ri-movie-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
         <i onClick={()=>navigator('/user/products')} className="ri-shopping-bag-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
-        <i className="ri-bookmark-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
+        <i onClick={()=>navigator('/user/bookmarks')} className="ri-bookmark-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
         <span className='flex-1'></span>
         { location.pathname.startsWith('/user/profile') && <i onClick={()=>navigator('/user/profile/logout')} className="ri-logout-circle-r-line text-[30px] text-red-600 hover:scale-110 duration-500 cursor-pointer"></i>}
         { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}`)} className="ri-user-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>}

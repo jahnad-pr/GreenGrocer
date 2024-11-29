@@ -56,6 +56,42 @@ export const userProductsApi = (builder) => ({
       }),
     }),
 
+    addToBookmark: builder.mutation({
+      query: (bookmarkData) => ({
+        url: `user/addToBookmark`,
+        method: 'POST',
+        body: bookmarkData,
+        credentials: 'include',
+      }),
+    }),
+
+    checkItemIntheBookmark: builder.mutation({
+      query: (productId) => ({
+        url: `user/checkItemIntheBookmark/${productId}`,
+        method: 'GET',
+        // body: bookmarkData,
+        credentials: 'include',
+      }),
+    }),
+
+    removeBookmarkItme: builder.mutation({
+      query: (productId) => ({
+        url: `user/removeBookmarkItme/${productId}`,
+        method: 'DELETE',
+        // body: bookmarkData,
+        credentials: 'include',
+      }),
+    }),
+
+
+    getBookmarkItems: builder.mutation({
+      query: () => ({
+        url: `user/getBookmarkItems`,
+        method: 'GET',
+        // body: bookmarkData,
+        credentials: 'include',
+      }),
+    }),
 
 
   });

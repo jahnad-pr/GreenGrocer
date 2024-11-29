@@ -5,10 +5,13 @@ import { Scale } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import {
+    useAddToBookmarkMutation,
     useAddtoCartMutation,
+    useCheckItemIntheBookmarkMutation,
     useCheckPorductInCartMutation,
     useGetCAtegoryProductsMutation,
     useGetProductDetailsMutation,
+    useRemoveBookmarkItmeMutation,
 } from "../../../../../services/User/userApi";
 import Product from "../../../../parts/Cards/Product";
 import { toast, ToastContainer } from "react-toastify";
@@ -19,6 +22,9 @@ export default function ProductDetails({ userData }) {
     const [getCAtegoryProducts, { error: proError, data: proData }] = useGetCAtegoryProductsMutation();
     const [addtoCart, { error: addError, data: addData }] = useAddtoCartMutation();
     const [checkPorductInCart, { data: checkData }] = useCheckPorductInCartMutation();
+    const [addToBookmark, { data: addToBookmarkData }] = useAddToBookmarkMutation();
+    const [checkItemIntheBookmark, { data: bookMarkData }] = useCheckItemIntheBookmarkMutation();
+    const [removeBookmarkItme, { data: removeData }] = useRemoveBookmarkItmeMutation();
 
     const [productsData, setProductsData] = useState([]);
     const [product, setProduct] = useState();
@@ -27,6 +33,7 @@ export default function ProductDetails({ userData }) {
   const [qnto, setQnt] = useState(null);
     const [qnt, showQnt] = useState(true);
     const [gotoCart, setGoToCart] = useState(false);
+    const [remover, setRemover] = useState(false);
     const [quantity, setQuantity] = useState('1Kg');
     const [cirrentImage, setCurrentImage] = useState();
     const [options, setOptions] = useState(["100g", "250g", "500g", "1Kg", "2Kg", "5Kg", "10Kg", "25Kg", "50Kg", "75Kg", "100Kg", "custom",]);
@@ -41,6 +48,8 @@ export default function ProductDetails({ userData }) {
             <div>{message}</div>
         </div>
     );
+
+    
 
 
     // Show toast notification function
@@ -89,12 +98,37 @@ export default function ProductDetails({ userData }) {
     }, [checkData])
 
     useEffect(() => {
+        if (addToBookmarkData) {
+            // alert('jss')
+            setRemover(true)
+        }
+
+    }, [addToBookmarkData])
+
+    useEffect(() => {
+        if (removeData) {
+            // alert('jss')
+            showToast(removeData, 'success')
+            setRemover(false)
+        }
+
+    }, [removeData])
+
+    useEffect(() => {
         if (addData) {
             setGoToCart(true)
             showToast(addData, 'success')
 
         }
     }, [addData])
+
+    useEffect(() => {
+        if (addToBookmarkData) {
+            showToast(addToBookmarkData, 'success')
+        }
+    }, [addToBookmarkData])
+
+
     useEffect(() => {
         if (addError?.data) {
             showToast(addError.data, 'error')
@@ -117,8 +151,10 @@ export default function ProductDetails({ userData }) {
         if (data) {
             setProduct(data)
             checkPorductInCart(data?._id)
+            checkItemIntheBookmark(data?._id)
         };
     }, [data]);
+
     useEffect(() => {
         if (proData?.data) {
             setProductsData(proData.data.filter((datas) => datas._id !== data._id));
@@ -216,6 +252,17 @@ useEffect(() => {
             product: id,
         }
         addtoCart({ cartData, userId })
+    }
+
+
+    const addToBookmarkItem = (id) => {
+
+        const userId = userData._id
+        const bookmarkData = {
+            user: userData._id,
+            product: id,
+        }
+        addToBookmark({ bookmarkData, userId })
     }
 
     return (
@@ -373,11 +420,16 @@ useEffect(() => {
                             {  userData?._id &&
                                 <> 
                                 <span onClick={() => checkData||gotoCart ? navigation('/user/Cart') : addToCartItem(product._id)} className=" absolute top-10 right-10 text-[25px] group duration-500 w-24 hover:w-48 rounded-full px-8 items-center gap-5  hover:bg-[#ceb64950] flex">
-                                    <i className="ri-shopping-cart-line duration-500 py-2"></i>
+                                    <i className={`ri-shopping-cart-${checkData|| gotoCart?'fill':'line'} duration-500 py-2`}></i>
                                     <p className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{checkData|| gotoCart ? 'Go to Cart' : 'Add to cart'}</p>
                                 </span>
+
+                                <span onClick={() => remover||bookMarkData ?removeBookmarkItme(product._id):  addToBookmarkItem(product._id)} className=" absolute top-28 right-10 text-[25px] group duration-500 w-24 hover:w-[305px] rounded-full px-8 items-center gap-5  hover:bg-[#ceb64950] flex">
+                                    <i className={`ri-bookmark-${remover|| bookMarkData?'fill':'line'} line duration-500 py-2`}></i>
+                                    <p className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{remover|| bookMarkData ? 'Remove from bookmark' : 'Add to bookmark'}</p>
+                                </span>
     
-                                <i className="ri-bookmark-line absolute top-28 right-10 text-[25px] rounded-full p-5 py-3 "></i>
+                                {/* <i className="ri-bookmark-line absolute top-28 right-10 text-[25px] rounded-full p-5 py-3 "></i> */}
                                 <i className="ri-share-line absolute top-48 right-10 text-[25px] rounded-full p-5 py-3 "></i>
                             </>
 

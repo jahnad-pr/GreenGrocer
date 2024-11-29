@@ -4,6 +4,7 @@ const {createAUser,loginUser,googleLog, getUserData,
 const { getProducts,getCAtegoryProducts,getProductDetails,getAllProduct } = require('../controllers/config/ProductController')
 const { upsertAddress,getAdresses,deleteAddress } = require('../controllers/config/AdressController')
 const { getCategories } = require('../controllers/config/categoryController');
+const { addToBookmark,checkItemIntheBookmark,removeBookmarkItme,getBookmarkItems } = require('../controllers/config/bookmarkController');
 const { addtoCart,checkPorductInCart,getCartItems,updateCartITem } = require('../controllers/config/cartController');
 const { placeOrder,getOders,cancelOrder } = require('../controllers/config/orderController');
 const { getCollections,getCAtegoryCollection,getAllCollection } = require('../controllers/config/collectionController');
@@ -43,6 +44,11 @@ router.post('/updateCartITem/:id',authMiddleware,updateCartITem);
 
 router.get('/getAllProduct',getAllProduct);
 router.get('/getAllCollection',getAllCollection);
+
+router.post('/addToBookmark',addToBookmark);
+router.get('/checkItemIntheBookmark/:id',authMiddleware,checkItemIntheBookmark);
+router.delete('/removeBookmarkItme/:id',authMiddleware,removeBookmarkItme);
+router.get('/getBookmarkItems',authMiddleware,getBookmarkItems);
 
 router.get('/getUser',authMiddleware,getUserData);
 router.get('/getCategories',getCategories);

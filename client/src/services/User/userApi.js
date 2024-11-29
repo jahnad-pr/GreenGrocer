@@ -65,4 +65,9 @@ export const {
   useGetAllProductMutation,
   useGetAllCollectionMutation,
 
+  useAddToBookmarkMutation,
+  useCheckItemIntheBookmarkMutation,
+  useRemoveBookmarkItmeMutation,
+  useGetBookmarkItemsMutation,
+
 } = userApiSlice;

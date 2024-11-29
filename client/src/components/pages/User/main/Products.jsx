@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import CollectionCard from "../../../parts/Cards/Collection";
 
 
-export default function Products() {
+export default function Products({userData}) {
 
     const [cPosition,setPosition] = useState(0)
     const navigator = useNavigate()
@@ -116,7 +116,7 @@ export default function Products() {
               // console.log(data);
                 if(true){
 
-                    return <Product key={index} type={'product'} data={data} pos={index} />;
+                    return <Product userData={userData} key={index} type={'product'} data={data} pos={index} />;
                     
                 }
             })}
