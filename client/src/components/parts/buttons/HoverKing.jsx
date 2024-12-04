@@ -16,7 +16,7 @@ function classNames(...classes) {
         // light mode
         'border-zinc-300 text-zinc-800',
         // dark mode
-        `dark:border-[#5fb064]  ${redish?'dark:bg-[linear-gradient(45deg,#00000099,#ff000099)]':'dark:bg-[#5fb064]'} dark:text-zinc-100 `,
+        `  ${redish?'dark:bg-[linear-gradient(45deg,#00000099,#ff000099)]':'bg-gradient-to-l from-[#50a055] to-[#3d7051]'} dark:text-zinc-100 `,
         rest.className
       )}
     >

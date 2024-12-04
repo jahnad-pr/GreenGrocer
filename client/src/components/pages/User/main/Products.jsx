@@ -51,8 +51,8 @@ export default function Products({userData}) {
 
   return (
     // motion-preset-slide-right
-    <div className="w-[96%] h-full   bg-product">
-    <div className="bg-[#494d4ad5] mix-blend-screen absolute w-full h-full"></div>
+    <div className="w-[96%] h-full bg-[#f2f2f2]">
+    {/* <div className="bg-[#494d4ad5] absolute w-full h-full"></div> */}
       <div className="w-full h-full backdrop-blur-3xl pl-40">
         <div className="w-full h-full pt-16 overflow-y-scroll">
           {/* Main head */}

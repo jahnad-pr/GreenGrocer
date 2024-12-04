@@ -1,3 +1,4 @@
+import { Order } from './../../../parts/Cards/Order';
 import React, { useEffect, useState } from "react";
 import { useDeleteAddressMutation, useGetOdersMutation } from "../../../../services/User/userApi";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
@@ -22,7 +23,7 @@ const OrderList = ({userData}) => {
   const getStatusColor = (status) => {
     switch (status.toUpperCase()) {
       case "PROCESSED":
-        return "bg-[linear-gradient(45deg,#c7ccd6_30%,#d3d3d1_70%)]";
+        return "bg-[linear-gradient(45deg,#c7ccd660_30%,#d3d3d190_70%)]";
         case "SHIPPED":
         return "bg-[linear-gradient(45deg,#ebaf8a35_30%,#ffffff20_70%)]";
       case "PENDING":
@@ -72,62 +73,17 @@ const OrderList = ({userData}) => {
   );
 
   return (
-    <div className="h-full w-full max-w-[96%] flex bg-product">
-      <div className="bg-[#5a52319c] mix-blend-screen absolute w-full h-full"></div>
+    <div className="h-full w-full max-w-[96%] flex">
+      {/* <div className=" mix-blend-screen absolute w-full h-full"></div> */}
       <div className="w-full h-full px-40 backdrop-blur-3xl overflow-hidden">
         {/* Main Content */}
         { orders.length>0 ?
         <main className="pt-8 h-full overflow-y-auto pb-20">
-          <h1 className="text-[30px] font-bold mb-16 mt-16 top-0 backdrop-blur-md py-4 z-10">Manage your orders</h1>
+          <h1 className="text-[30px] font-bold mb-8 top-0 backdrop-blur-md p-4 z-10">Manage your orders</h1>
           <div className="flex flex-wrap gap-4">
             {orders?.map((order, index) => (
 
-              <div onClick={()=>navigate('/user/OrderDetails',{ state:order })}
-                key={index}
-                className={`p-4 py-8 w-[calc(25%_-_16px)] min-w-[300px] duration-500 relative group shadow-2xl rounded-[20px] rounded-tl-[109px] border-2 border-[#eeeeee4d] px-10 mb-4 cursor-pointer hover:scale-[0.98] ${getStatusColor(order.order_status)}`}
-              >
-                { order.items.length > 1 && <div className={`absolute w-full h-full -left-2 shadow rounded-tl-[109px] rounded-[30px] group-hover:scale-[1.05] duration-500 -z-10 -top-2 border-2 border-[#eeeeee4d] ${getStatusColor(order.order_status)}`}></div>}
-                { order.items.length > 2 && <div className={`absolute w-full h-full -left-4 shadow rounded-tl-[109px] rounded-[30px] group-hover:scale-[1.10] duration-500 -z-20 -top-4 border-2 border-[#eeeeee4d] ${getStatusColor(order.order_status)}`}></div>}
-
-                <div className="flex items-center gap-4">
-
-                  <div className="flex-grow items-center justify-center flex flex-col">
-                    { order.items.length > 1 &&
-                    <div className="w-16 items-center justify-center h-16 px-2 scale-50 opacity-0 group-hover:opacity-100 group-hover:scale-100 duration-500 text-center leading-none font-medium bg-[linear-gradient(45deg,#929291,#00000080)] text-white absolute flex flex-wrap left-0 top-0 rounded-full">
-                      <p>{order.items.length-1} More</p>
-                    </div>
-                    }
-                  <img src={order.items[0].product?.pics?.one} alt="Order Item" className="w-[60%] min-w-[60%] max-h-[60%] min-h-[60%] object-cover rounded-[60px]" />
-                    <div className="flex justify-between items-start ">
-                      <div className="w-full flex flex-col gap-1">
-                        <h1 className="font-bold text-[25px] text-center">{order.items[0].product?.name}</h1>
-                        <h3 className="font-medium text-[18px] opacity-60">
-                          Item Quantity:{" "}
-                          <span className="text-gray-600">{order.items[0].quantity/1000}Kg</span>
-                        </h3>
-                        <p className="text-sm text-gray-600">Total Price: ₹{order.price.grandPrice.toFixed(2)}</p>
-                      </div>
-                    </div>
-
-                    
-
-                    <span className="flex-1"></span>
-                    <div className="text-right mx-10 flex items-center justify-center flex-col gap-1 mt-2">
-                      <div
-                        className={`font-medium ${getStatusTextColor(order.order_status)}`}
-                      >
-                        {order.order_status.toUpperCase()}
-                      </div>
-                      <p className="text-[15px] text-gray-500 w-full text-center">
-                        Orderd on : {new Date(order.time).toLocaleDateString()}
-                      </p>
-                    </div>
-
-                    
-                  
-                  </div>
-                </div>
-              </div>
+              <Order order={order}  navigate={navigate} index={index} getStatusColor={getStatusColor} name={name} getStatusTextColor={getStatusTextColor}  />
 
             ))}
           </div>

@@ -9,6 +9,8 @@ const { addtoCart,checkPorductInCart,getCartItems,updateCartITem } = require('..
 const { placeOrder,getOders,cancelOrder } = require('../controllers/config/orderController');
 const { getCollections,getCAtegoryCollection,getAllCollection } = require('../controllers/config/collectionController');
 const { authMiddleware } = require('../middlewares/checkUser');
+const { createOrder, verifyPayment } = require('../controllers/config/razorpayController');
+const { getAllCoupons } = require('../controllers/config/couponControll');
 
 const router = express.Router();
 
@@ -44,11 +46,12 @@ router.post('/updateCartITem/:id',authMiddleware,updateCartITem);
 
 router.get('/getAllProduct',getAllProduct);
 router.get('/getAllCollection',getAllCollection);
+router.get('/getAllCollection',getAllCollection);
 
 router.post('/addToBookmark',addToBookmark);
 router.get('/checkItemIntheBookmark/:id',authMiddleware,checkItemIntheBookmark);
-router.delete('/removeBookmarkItme/:id',authMiddleware,removeBookmarkItme);
 router.get('/getBookmarkItems',authMiddleware,getBookmarkItems);
+router.delete('/removeBookmarkItme/:id',authMiddleware,removeBookmarkItme);
 
 router.get('/getUser',authMiddleware,getUserData);
 router.get('/getCategories',getCategories);
@@ -57,5 +60,12 @@ router.get('/getCollections/:id',getCollections);
 router.get('/getCAtegoryProducts/:id',getCAtegoryProducts);
 router.get('/getCAtegoryCollctiions/:id',getCAtegoryCollection);
 // router.get('/getCollectionProducts/:id',getCollectionProducts);
+
+router.get('/getAllCoupons',authMiddleware,getAllCoupons);
+
+
+// Razorpay routes
+router.post('/razorpay/create-order', createOrder);
+router.post('/razorpay/verify-payment', verifyPayment);
 
 module.exports = router;

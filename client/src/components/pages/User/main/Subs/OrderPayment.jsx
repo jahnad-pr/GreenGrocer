@@ -7,99 +7,207 @@ import roz from '../../../../../assets/images/roz.png'
 import coin from '../../../../../assets/images/con.png'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePlaceOrderMutation } from '../../../../../services/User/userApi';
+import { toast } from 'react-hot-toast';
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 const OrderPayment = ({userData}) => {
-
   const [placeOrder, { error, data }] = usePlaceOrderMutation();
-
   const [selectedMethod, setSelectedMethod] = useState('cash');
   const [currentData, setCurrentData] = useState('cash');
+  const [isLoading, setIsLoading] = useState(false);
 
   const location = useLocation()
   const navigator = useNavigate()
 
-  function convertToGrams(value) {
-    // Check if the value is "custom"
-    if (value === "custom") {
-        console.error("Custom input detected. Please handle this case separately.");
-        return null;
-    }
+  useEffect(() => {
+    if(data){ navigator('/user/success') } 
+  }, [data])
 
-    // Extract the numeric part and the unit (g or kg)
-    const match = value.match(/^(\d+)(g|Kg)$/);
-    if (!match) {
-        console.error("Invalid value format. Expected formats: '100g', '1kg', etc.");
-        return null;
-    }
-
-    const amount = parseInt(match[1], 10); // Numeric part
-    const unit = match[2]; // Unit
-
-    // Convert to grams
-    return unit === "Kg" ? amount * 1000 : amount;
-}
-
-
-
-  useEffect(()=>{
-  if(data){ navigator('/user/success') } 
-  } ,[data])
-
-  useEffect(()=>{
-    console.log(location?.state?.order);
-    
+  useEffect(() => {
     if(location?.state?.order){
-      console.log(location.state.order);
+      console.log("Order data:", location.state.order);
       setCurrentData(location.state.order)
     }
-  },[location])
+  }, [location])
+
+  const handleRazorpayPayment = async () => {
+    try {
+      setIsLoading(true);
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        toast.error('Razorpay SDK failed to load');
+        return;
+      }
+
+      // Create order on server
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/user/razorpay/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: currentData.price,
+        }),
+      });
+      const orderData = await response.json();
+
+      // Configure Razorpay options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Green Grocer",
+        description: "Payment for your order",
+        order_id: orderData.id,
+        handler: async function (response) {
+          try {
+            // Verify payment
+            const verifyResponse = await fetch(`${import.meta.env.VITE_SERVER_URL}/user/razorpay/verify-payment`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+            
+            const verifyData = await verifyResponse.json();
+            
+            if (verifyData.verified) {
+              // Create the order data
+              const orderData = {
+                user: userData._id,
+                delivery_address: currentData.address,
+                payment_method: selectedMethod,
+                coupon: '',
+                items: currentData.items,
+                price: {
+                  grandPrice: currentData.price,
+                  discountPrice: 0
+                },
+                order_id: generateOrderId(),
+                time: Date.now(),
+                total_quantity: currentData.items?.reduce((acc, data) => acc += data.quantity, 0),
+                order_status: 'Processed',
+                payment_status: 'completed',
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id
+              };
+
+              // Place the order directly
+              await placeOrder(orderData).unwrap();
+              toast.success('Payment successful! Order placed.');
+              navigator('/user/success');
+            } else {
+              toast.error('Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast.error('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: userData?.name || "",
+          email: userData?.email || "",
+        },
+        theme: {
+          color: "#0bc175",
+        },
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+    } catch (error) {
+      console.error('Razorpay payment error:', error);
+      toast.error('Payment failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const placeOrders = async () => {
+    try {
+      setIsLoading(true);
+      
+      if (selectedMethod === 'Razorpay') {
+        await handleRazorpayPayment();
+        return;
+      }
+
+      const orderData = {
+        user: userData._id,
+        delivery_address: currentData.address,
+        payment_method: selectedMethod,
+        coupon: currentData.coupon,
+        items: currentData.items,
+        price: {
+          grandPrice: currentData.price,
+          discountPrice: 0
+        },
+        order_id: generateOrderId(),
+        time: Date.now(),
+        total_quantity: currentData.items?.reduce((acc, data) => acc += data.quantity, 0),
+        order_status: 'Processed',
+        payment_status: selectedMethod === 'Cash on Delivery' ? 'pending' : 'completed',
+      };
+
+      await placeOrder(orderData).unwrap();
+      toast.success('Order placed successfully!');
+      navigator('/user/success');
+    } catch (error) {
+      console.error('Order placement error:', error);
+      toast.error('Failed to place order');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const paymentMethods = [
     {
       id: 'UPI',
       name: 'UPI',
-      icon: (
-        <img src={upi} alt="" />
-      ),
+      icon: <img src={upi} alt="UPI" />,
     },
     {
       id: 'Net Banking',
       name: 'Net Banking',
-      icon: (
-        <img src={netb} alt="" />
-      ),
+      icon: <img src={netb} alt="Net Banking" />,
     },
     {
       id: 'Razorpay',
       name: 'Razorpay',
-      icon: (
-        <img src={roz} alt="" />
-      ),
+      icon: <img src={roz} alt="Razorpay" />,
     },
     {
       id: 'Credit / Debit Card',
       name: 'Credit / Debit Card',
-      icon: (
-        <img src={deb} alt="" />
-      ),
+      icon: <img src={deb} alt="Card" />,
     },
     {
       id: 'Cash on Delivery',
       name: 'Cash on Delivery',
-      icon: (
-        <img className='' src={code} alt="" />
-      ),
+      icon: <img className='' src={code} alt="COD" />,
     },
     {
       id: 'Coin Wallet',
       name: 'Coin',
-      icon: (
-        <img className='px-12' src={coin} alt="" />
-      ),
+      icon: <img className='px-12' src={coin} alt="Coin" />,
     },
   ];
 
-  function generateOrderId(length = 6) {
+  const generateOrderId = (length = 6) => {
     // Get the current timestamp
     const timestamp = Date.now().toString(); // Current time in milliseconds since Jan 1, 1970
     
@@ -116,102 +224,80 @@ const OrderPayment = ({userData}) => {
     // Combine timestamp and random part
     const orderId = `${timestamp}-${randomPart}`;
     return orderId;
-}
-
-
-
-
-  useEffect(()=>{ setSelectedMethod(paymentMethods[0].id) },[])
-
-  
-  
-  const placeOrders = async()=>{
-    const orderData ={
-      user:userData._id,
-      delivery_address:currentData.address,
-      payment_method:selectedMethod,
-      coupon:'',
-      items:currentData.items,
-      price:{
-        grandPrice:currentData.price,
-        discountPrice:0
-      },
-      order_id:generateOrderId(),
-      time:Date.now(),
-      total_quantity:currentData.items?.reduce( (acc,data) => acc+=data.quantity , 0),
-      order_status:'Processed',
-      payment_status:'pending',
-    }
-
-    placeOrder(orderData).unwrap()
-    "Order validation failed: items.totalPrice: Path `items.totalPrice` is required., order_status: `proccessing` is not a valid enum value for path `order_status`."
-
   }
-
 
   return (
     <div className="max-w-[96%] w-full mx-auto p-6">
-        <div className="w-full h-full px-40">
-            
-      {/* Payment amount */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4"></h2>
-        <h1 onClick={()=>console.log(selectedMethod)} className="text-[30px] font-bold my-16 mb-8">Payment Method</h1>
+      <div className="w-full h-full px-40">
+        {/* Payment amount */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4"></h2>
+          <h1 className="text-[30px] font-bold my-16 mb-8">Payment Method</h1>
 
-        <div className="bg-[#e1e5f0] px-16 py-8 rounded-lg inline-block">
-          <div className="text-3xl font-bold text-green-700 lemon-regular">₹ {currentData.price}</div>
-          <div className="text-gray-400 font-medium">Grand Total</div>
-        </div>
-      </div>
-
-      {/* Payment method selection */}
-      <div className="mb-8">
-        <h3 className="text-gray-600 mb-4">Choose Your Payment Method</h3>
-        <div className="grid grid-cols-6 md:grid-cols-6 gap-4">
-          {paymentMethods.map((method) => (
-            <div
-              key={method.id}
-              className={`
-                 flex flex-col py-10 gap-12 items-center justify-center rounded-[30px] border-2 cursor-pointer transition-all relative
-                ${
-                  selectedMethod === method.id
-                   ? 'border-red-200 bg-red-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                } 
-              `}
-              onClick={() => setSelectedMethod(method.id)}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <div
-                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center absolute top-5 left-5
-                    ${
-                      selectedMethod === method.id
-                        ? 'border-red-500'
-                        : 'border-gray-300'
-                    }
-                  `}
-                >
-                  {selectedMethod === method.id && (
-                    <div className="w-2 h-2 rounded-full bg-red-500" />
-                  )}
-                </div>
-                {method.icon}
-              </div>
-              <div className="text-[18px] font-medium opacity-45">{method.name}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Pay button */}
-      <div className="mt-8 flex justify-end">
-          <button onClick={placeOrders} className="px-16 absolute bottom-20 py-[15px] bg-[linear-gradient(to_left,#0bc175,#0f45ff)] text-[18px] rounded-full text-white font-medium mt-10 w-full max-w-[300px]">Pay</button>
-
+          <div className="bg-[#e1e5f0] px-16 py-8 rounded-lg inline-block">
+            <div className="text-3xl font-bold text-green-700 lemon-regular">₹ {currentData.price}</div>
+            <div className="text-gray-400 font-medium">Grand Total</div>
           </div>
-
         </div>
+
+        {/* Payment method selection */}
+        <div className="mb-8">
+          <h3 className="text-gray-600 mb-4">Choose Your Payment Method</h3>
+          <div className="grid grid-cols-6 md:grid-cols-6 gap-4">
+            {paymentMethods.map((method) => (
+              <div
+                key={method.id}
+                className={`
+                  flex flex-col py-10 gap-12 items-center justify-center rounded-[30px] border-2 cursor-pointer transition-all relative
+                  ${
+                    selectedMethod === method.id
+                      ? 'border-red-200 bg-red-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  } 
+                `}
+                onClick={() => setSelectedMethod(method.id)}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center absolute top-5 left-5
+                      ${
+                        selectedMethod === method.id
+                          ? 'border-red-500'
+                          : 'border-gray-300'
+                      }
+                    `}
+                  >
+                    {selectedMethod === method.id && (
+                      <div className="w-2 h-2 rounded-full bg-red-500" />
+                    )}
+                  </div>
+                  {method.icon}
+                </div>
+                <div className="text-[18px] font-medium opacity-45">{method.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Pay button */}
+        <div className="mt-8 flex justify-end">
+          <button
+            onClick={placeOrders}
+            disabled={isLoading}
+            className={`
+              px-16 absolute bottom-20 py-[15px] 
+              bg-[linear-gradient(to_left,#0bc175,#0f45ff)] 
+              text-[18px] rounded-full text-white font-medium 
+              mt-10 w-full max-w-[300px]
+              ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}
+            `}
+          >
+            {isLoading ? 'Processing...' : 'Pay'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default OrderPayment
+export default OrderPayment;

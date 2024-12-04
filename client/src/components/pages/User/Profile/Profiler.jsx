@@ -4,10 +4,10 @@ import pic from "../../../../assets/images/image 32.png";
 import ind from "../../../../assets/images/indicator.png";
 import { motion } from 'framer-motion';
 import { useUpdateProfileMutation } from "../../../../services/User/userApi";
-import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { FaExclamationTriangle,FaCheckCircle,FaSave } from "react-icons/fa";
 import HoverKing from "../../../parts/buttons/HoverKing";
+import { showToast } from "../../../parts/Toast/Tostify";
 
 export default function Profiler({ userData }) {
 
@@ -25,42 +25,16 @@ const ToastContent = ({ title, message }) =>
   </div>
 );
 
-    
-// Show toast notification function
-const showToast = ( message, type = "success") => {
-  if (type === "success"&&message) {
-    toast.success( type&& <ToastContent title={"SUCESSS"} message={message} />, {
-      icon: <FaCheckCircle className="text-[20px]" />,
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      className: "custom-toast-success",
-      bodyClassName: "custom-toast-body-success",
-      progressClassName: "custom-progress-bar-success",
-    });
-  } else if(message){
-    toast.error(<ToastContent title={"ERROR"} message={message} />, {
-      icon: <FaExclamationTriangle className="text-[20px]" />,
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      className: "custom-toast",
-      bodyClassName: "custom-toast-body",
-      progressClassName: "custom-progress-bar",
-    });
-  }
-};
+  
 
   // to show the error and success
-  useEffect(()=>showToast(data,'success' ),[data])
+  useEffect(()=>{
+    if(data){
+      showToast(data,'success' ) 
+       navigator('/user/profile/12') 
+
+    }
+  },[data])
   useEffect(()=>showToast(error?.data,'error'),[error])
 
   // the states
@@ -86,10 +60,9 @@ const showToast = ( message, type = "success") => {
 
   return (  userData &&
     <> 
-     <ToastContainer title="Error" position="bottom-left" />
-      <div className="w-[96%] h-full bg-prof">
-        <div className="w-full h-full flex flex-col items-center gap-5 backdrop-blur-3xl">
-          <span className="w-full h-full px-64 bg-[#ffffff59]">
+      <div className="w-[96%] h-full">
+        <div className="w-full h-full flex flex-col items-center gap-5">
+          <span className="w-full h-full px-64 ">
             {/* Head */}
             <div className="flex justify-between items-center my-16 mb-5">
               <h1 className="text-[30px] font-bold">Profile</h1>

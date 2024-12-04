@@ -4,6 +4,7 @@ import { customerEndpoints } from './customerEndpoints';
 import { categoryEndpoints } from './categoryEndpoints';
 import { collectionEndpoints } from './collectionEndpoints';
 import { productEndpoints } from './productEndpoints';
+import { couponEndpoints } from './couponEndPoit';
 
 export const adminApiSlice = createApi({
   reducerPath: 'adminApi',
@@ -14,6 +15,7 @@ export const adminApiSlice = createApi({
     ...categoryEndpoints(builder),
     ...collectionEndpoints(builder),
     ...productEndpoints(builder),
+    ...couponEndpoints(builder),
   }),
 });
 
@@ -33,5 +35,9 @@ export const {
   useUpdateProductMutation,
   useUploadImagesMutation,
   useLogoutAdminMutation,
-  useCancelOrderMutation
+  useCancelOrderMutation,
+  useUpdateOfferMutation,
+  useGetAllDiscountsMutation,
+  useUpdateCouponMutation,
+  useGetAllCouponsMutation,
 } = adminApiSlice;

@@ -44,12 +44,11 @@ const userSchema = new mongoose.Schema({
     googleMail:{
         type:String,
         default:''
+    },
+    couponApplyed:{
+        type:Object,
+        default:{}
     }
 });
 
 module.exports = mongoose.model('User', userSchema);
-
-
-// createdAt: Date.now(),
-//         isVrified: false,
-//         isListed: false,

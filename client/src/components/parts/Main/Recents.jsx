@@ -51,6 +51,26 @@ export default function Recents() {
         </div>
       )}
 
+      {location.pathname.startsWith("/admin/Offers") && (
+        <div
+          onClick={() => navigate("/admin/Offers/manage", { state: { name: false } })}
+          className=" bg-[linear-gradient(to_left,#e2fff8,#e7f4f7)] my-6 flex  gap-5 items-center justify-center rounded-full" >
+          <i className="ri-percent-fill text-[35px]"></i>
+          <p className="text-[20px] font-medium">Add Offer</p>
+        </div>
+      )}
+
+      {location.pathname.startsWith("/admin/Coupons") && (
+        <div
+          onClick={() => navigate("/admin/Coupons/manage", { state: { name: false } })}
+          className=" bg-[linear-gradient(to_right,#f6ebcc,#07090c20)] my-6 flex  gap-5 items-center justify-center rounded-full" >
+          <i className="ri-ticket-line text-[35px]"></i>
+          <p className="text-[20px] font-medium">Add Coupon</p>
+        </div>
+      )}
+
+      
+
 
       <h1 className="text-[30px] font-bold my-5 mb-5">Recent Orders</h1>
 

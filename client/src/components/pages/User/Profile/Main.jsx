@@ -12,7 +12,7 @@ export default function Main({ userData}) {
 
   return (
       <> 
-    <div className="w-[96%] duration-500 h-full bg-green-100 bg-prof">
+    <div className="w-[96%] duration-500 h-full">
       <div className="h-full duration-500 w-full backdrop-blur-3xl">
           
          {/* container root */}
@@ -63,9 +63,9 @@ export default function Main({ userData}) {
                 details, and check their order history in one convenient place
               </p>
             </div>
-
+            
             {/* user coupon list btn */}
-            <div className="w-72 h- bg-[linear-gradient(#ffffff70,#ffffff20)] hover:-translate-y-10 duration-500 rounded-[65px] order-3 translate-y-[19%]">
+            <div onClick={()=>navigator('/user/Coupons')} className="w-72 h- bg-[linear-gradient(#ffffff70,#ffffff20)] hover:-translate-y-10 duration-500 rounded-[65px] order-3 translate-y-[19%]">
               <div className="w-full grid place-items-center  mb-5">
                 <p className="text-[35px] font-bold translate-y-[30px]">
                   Coupons

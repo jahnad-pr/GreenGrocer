@@ -2,6 +2,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { userAuthApi } from './userAuthApi';
 import { userDetailsApi } from './userDetailsApi';
+import { couponEndpoints } from './couponEndPoit';
 import { userCategoriesApi } from './userCategoriesApi';
 import { userProductsApi } from './userProductsApi';
 import { AdressMangeApi } from './AddressMange';
@@ -14,6 +15,7 @@ export const userApiSlice = createApi({
   endpoints: (builder) => ({
     ...userAuthApi(builder),
     ...userDetailsApi(builder),
+    ...couponEndpoints(builder),
     ...userCategoriesApi(builder),
     ...userProductsApi(builder),
     ...AdressMangeApi(builder),
@@ -64,6 +66,8 @@ export const {
   
   useGetAllProductMutation,
   useGetAllCollectionMutation,
+
+  useGetAllCouponsMutation,
 
   useAddToBookmarkMutation,
   useCheckItemIntheBookmarkMutation,

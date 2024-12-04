@@ -136,7 +136,7 @@ export default function ProductDetails({ userData }) {
     }, [addError])
 
     useEffect(() => {
-        if (location.state.id) {
+        if (location.state?.id) {
             getProductDetails(location.state.id).unwrap();
         }
     }, [location]);
@@ -276,53 +276,39 @@ useEffect(() => {
                 <div className="w-full h-full px-40 py-12 backdrop-blur-3xl">
                     {/* main container */}
                     <div className="w-full h-full flex py-2">
-                        <div className="w-[45%] h-full">
-                            {/* products titlrs */}
-                            <h1 className="text-[45px] leading-none">
-                                {product?.name.toUpperCase()}
-                            </h1>
-                            <p className="text-[18px] opacity-45">
-                                {product?.category?.name}
-                            </p>
-                            <div className="my-10"></div>
+                        <div className="w-[45%] h-full flex flex-col">
+                            <span>
+                                
 
-                            <p className="text-[20px] mb-5 font-medium">Highlites</p>
+                            {/* <p className="text-[20px] mb-5 font-medium">Highlites</p> */}
                             {/* Highlights of product */}
-                            <div className="w-full h-96 flex flex-col pr-16 gap-4">
-                                <span className="flex-grow-[3] flex  gap-5">
-                                    <div className="bg-[#ffffff7c] h-full w-1/2 px-10 rounded-[22px] py-3 relative">
-                                        <p className="text-[18px] mb-2 font-medium">Rating</p>
-                                        {/* stars and reviews */}
-                                        <span className="flex gap-10">
-                                            <div className="flex ">
-                                                <img className="w-5 h-5" src={star} alt="" />
-                                                <img className="w-5 h-5" src={star} alt="" />
-                                                <img className="w-5 h-5" src={star} alt="" />
-                                                <img className="w-5 h-5" src={star} alt="" />
-                                                <img className="w-5 h-5 grayscale" src={star} alt="" />
-                                            </div>
-                                            <p className="text-[30px] font-medium absolute top-1/2 -translate-y-1/2 right-12">
-                                                4.0
-                                            </p>
-                                        </span>
-                                    </div>
 
-                                    <div className="bg-[#ffffff7c] h-full w-1/2 px-10 rounded-[22px] relative py-3">
+                            <div className="w-full flex flex-wrap pr-16">
+                                
+                                    <div className=" h-full w-1/2 relative py-3">
                                         <p className="text-[18px] mb-2 font-medium">From</p>
-                                        <h1 className="text-[22px] font-medium leading-none">
+                                        <h1 className="text-[22px] font-medium leading-none mb-4">
                                             {product?.from}
                                         </h1>
-                                        <i className="ri-caravan-fill text-[30px] font-medium absolute top-1/2 -translate-y-1/2 right-12"></i>
+                                        <p className="opacity-45 mb-2 mr-5">
+                                        Who selling the product from their farm, this farm
+                                        probebly your nearby farm,wich making fresh fruits
+                                        and vegetables to you. We are planning to give
+                                         the review option for all users,so stay tuned 
+                                        </p>
+                                        {/* <i className="ri-caravan-fill text-[30px] font-medium"></i> */}
                                     </div>
-                                </span>
 
-                                <span className="flex-grow-[7] flex gap-5 relative">
-                                    <div className="bg-[#ffffff7c] w-1/2 h-full px-10 rounded-[22px] py-3">
+
+
+
+
+                                    <div className=" w-1/2 h-full py-3">
                                         <p className="text-[18px] mb-2 font-medium">Quality</p>
                                         <p className="text-[22px] font-medium leading-none mb-4 text-[#3c6e51]">
                                             {product?.freshness}
                                         </p>
-                                        <p className="opacity-45">
+                                        <p className="opacity-45 mr-5">
                                             Once the customer confirms their order, the wood is cut
                                             specifically for that piece. This approach minimizes waste
                                             and ensures fresh, custom-prepared material for every
@@ -330,26 +316,52 @@ useEffect(() => {
                                         </p>
                                     </div>
 
-                                    <div className="bg-[#ffffff7c] w-1/2 h-full px-10 rounded-[22px] py-3 relative">
-                                        <p className="text-[18px] mb-2 font-medium">Offer</p>
-                                        <p className="text-[38px] mt-4 leadin mb-4 opacity-45 font-bold">
-                                            FLAT
+                                    <div className=" w-1/2 h-full py-3 relative">
+                                        <p className="text-[18px] font-medium">Offer</p>
+                                        <p className="text-[40px] leading-10 mt-5">
+                                            {(() => {
+                                                const productVal = product?.discount?.value || 0;
+                                                const categoryVal = product?.category?.discount?.value || 0;
+                                                
+                                                // Convert both to percentage for comparison
+                                                const productPercent = product?.discount?.isPercentage ? productVal : (productVal / product?.regularPrice * 100);
+                                                const categoryPercent = product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / product?.regularPrice * 100);
+                                                
+                                                // Return the greater discount with its symbol
+                                                if (productPercent > categoryPercent) {
+                                                    return `${productVal}${product?.discount?.isPercentage ? '%' : '₹'}`;
+                                                } else {
+                                                    return `${categoryVal}${product?.category?.discount?.isPercentage ? '%' : '₹'}`;
+                                                }
+                                            })()}
                                         </p>
-                                        <p className="text-[100px] leading-10 font-bold">20%</p>
-                                        <p className="text-[38px] mt-3 text-right opacity-35 font-light">
+                                        {/* <p className="text-[40px] leading-10 mt-5">{product?.category?.discount?.value}</p> */}
+                                        <p className="text-[28px] leadin opacity-45">
+                                            FLAT OFF
+                                        </p>
+                                        <p  className="opacity-45 mb-2 mr-20">The offer should be maximum amound and min quantity of 1 Kg</p>
+                                        {/* <p className="text-[38px] mt-3 text-left opacity-35 font-bold">
                                             OFF
-                                        </p>
-                                        <p className="absolute bottom-4 font-medium opacity-75 left-4">
+                                        </p> */}
+                                        {/* <p className="absolute bottom-4 font-medium opacity-75 left-4">
                                             00:00:00 <span className="opacity-45">remaining</span>
-                                        </p>
-                                        <p className="absolute top-3 font-medium opacity-75 right-4">
-                                            Summer Special
-                                        </p>
+                                        </p> */}
+                                    
                                     </div>
-                                </span>
+
+                                    <div className=" h-full w-1/2 flex flex-1 flex-col py-3 relative">
+                                        <p className="text-[18px] mb-2 font-medium">Location</p>
+                                        <div className="flex-1 "></div>
+                                        {/* stars and reviews */}
+                                    
+                                    </div>
+                                    
                             </div>
+                            </span>
+
 
                             {/* the realted product section */}
+
                             {productsData.length > 0 && (
                                 <span className="relative">
                                     {/* <div className="w-12 h-12 bg-[#afa57046] absolute top-1/2 -left-16 z-10 justify-center items-center flex rounded-full">
@@ -366,26 +378,27 @@ useEffect(() => {
                                     {/* <div className="h-[80%] w-20 bg-[#ceb6499c] absolute right-16 top-[54%] rounded-r-3xl -translate-y-1/2"></div>
                                 <div className="h-[80%] w-20 bg-[#ceb6499c] absolute left-0 top-[54%] rounded-l-3xl -translate-y-1/2"></div> */}
 
-                                    <p className="text-[20px] my-5 font-medium">Related</p>
+                                    {/* <p className="text-[20px] mt-8 font-bold">Related</p> */}
                                     {/* related */}
                                     <div className="overflow-hidden w-[628px] h-auto ">
-                                        <div className="w-full  flex flex-col relative">
-                                            <span className="flex-grow-[7] flex -translate-x-[33%] gap-2 list ">
-                                                {productsData?.map((relatedProduct) => {
+                                        <div className="w-full  flex flex-col relative scale-90 translate-x-[-5%]">
+                                            <span className="flex-grow-[7] flex gap-8 list">
+                                                {productsData?.map((relatedProduct,index) => {
                                                     return (
-                                                        <div className=" min-w-[200px] hover:ml-3 h-full item py-4 px-5 rounded-[22px]  bg-[linear-gradient(#ffffff65,#ffffff40)]">
-                                                            <p className="text-[23px] text-black mb-1 font-medium leading-none">
-                                                                {relatedProduct.name}
-                                                            </p>
-                                                            <p className="text-[18px] text-black mb-2 font-medium opacity-45">
-                                                                Apple, {relatedProduct.category.name}
-                                                            </p>
-                                                            <img
-                                                                className="w-28 aspect-square object-cover mx-auto p-2"
-                                                                src={relatedProduct?.pics?.one}
-                                                                alt=""
-                                                            />
-                                                        </div>
+                                                        // <div className=" min-w-[200px] hover:ml-3 h-full item py-4 px-5 rounded-[22px]  bg-[linear-gradient(#ffffff65,#ffffff40)]">
+                                                        //     <p className="text-[23px] text-black mb-1 font-medium leading-none">
+                                                        //         {relatedProduct.name}
+                                                        //     </p>
+                                                        //     <p className="text-[18px] text-black mb-2 font-medium opacity-45">
+                                                        //         Apple, {relatedProduct.category.name}
+                                                        //     </p>
+                                                        //     <img
+                                                        //         className="w-28 aspect-square object-cover mx-auto p-2"
+                                                        //         src={relatedProduct?.pics?.one}
+                                                        //         alt=""
+                                                        //     />
+                                                        // </div>
+                                                        <Product userData={userData} key={index} type={'product'} data={relatedProduct} pos={index} />
                                                     );
                                                 })}
 
@@ -416,14 +429,36 @@ useEffect(() => {
 
                         {/* product image container */}
                         <div className="w-[55%] h-full  flex flex-col relative">
+
+                             {/* products titlrs */}
+                             <h1 className="text-[45px] leading-none font-thin">
+                                {product?.name.toUpperCase()}
+                            </h1>
+                            <p className="text-[18px] opacity-45 mb-3">
+                                {product?.category?.name}
+                            </p>
+                            <span className="flex gap-5">
+                                <div className="flex ">
+                                    <img className="w-5 h-5" src={star} alt="" />
+                                    <img className="w-5 h-5" src={star} alt="" />
+                                    <img className="w-5 h-5" src={star} alt="" />
+                                    <img className="w-5 h-5" src={star} alt="" />
+                                    <img className="w-5 h-5 grayscale" src={star} alt="" />
+                                </div>
+                                <p className="text-[18px] font-medium">
+                                    4.0
+                                </p>
+                            </span>
                             
                             {  userData?._id &&
                                 <> 
+                                { product?.stock> 0 &&
                                 <span onClick={() => checkData||gotoCart ? navigation('/user/Cart') : addToCartItem(product._id)} className=" absolute top-10 right-10 text-[25px] group duration-500 w-24 hover:w-48 rounded-full px-8 items-center gap-5  hover:bg-[#ceb64950] flex">
                                     <i className={`ri-shopping-cart-${checkData|| gotoCart?'fill':'line'} duration-500 py-2`}></i>
                                     <p className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{checkData|| gotoCart ? 'Go to Cart' : 'Add to cart'}</p>
                                 </span>
-
+                                    
+                                }
                                 <span onClick={() => remover||bookMarkData ?removeBookmarkItme(product._id):  addToBookmarkItem(product._id)} className=" absolute top-28 right-10 text-[25px] group duration-500 w-24 hover:w-[305px] rounded-full px-8 items-center gap-5  hover:bg-[#ceb64950] flex">
                                     <i className={`ri-bookmark-${remover|| bookMarkData?'fill':'line'} line duration-500 py-2`}></i>
                                     <p className="text-[18px] text-nowrap absolute group-hover:block opacity-0 py-2 hover:opacity-100 hidden duration-700 transition-all right-8">{remover|| bookMarkData ? 'Remove from bookmark' : 'Add to bookmark'}</p>
@@ -450,7 +485,7 @@ useEffect(() => {
                                     <span className="flex items-center justify-center gap-5 bg-[#ceb64925] px-5 rounded-full py-2">
                                         <i className="ri-shopping-basket-line text-[22px] opacity-70"></i>
                                         {
-                                            product?.stock ? 
+                                            product?.stock>0 ? 
                                             <>
                                         <p className="font-bold">{quantity}</p>
                                         <i className="ri-expand-vertical-fill text-[18px] opacity-35"></i>
@@ -473,10 +508,26 @@ useEffect(() => {
                                             <img src={product?.pics?.three} alt="" />
                                         </div>
                                         <span>
-                                            <h1 className="font-bold text-[24px] leading-snug">₹ {product?.salePrice}</h1>
+                                            <h1 className="font-bold text-[24px] leading-snug">₹ {(() => {
+                                                const productVal = product?.discount?.value || 0;
+                                                const categoryVal = product?.category?.discount?.value || 0;
+                                                
+                                                // Convert both to percentage for comparison
+                                                const productPercent = product?.discount?.isPercentage ? productVal : (productVal / product?.regularPrice * 100);
+                                                const categoryPercent = product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / product?.regularPrice * 100);
+                                                
+                                                // Use the discount with higher percentage
+                                                if (productPercent > categoryPercent) {
+                                                    return product?.regularPrice - (product?.discount?.isPercentage ? 
+                                                        (product?.regularPrice * productVal / 100) : productVal);
+                                                } else {
+                                                    return product?.regularPrice - (product?.category?.discount?.isPercentage ? 
+                                                        (product?.regularPrice * categoryVal / 100) : categoryVal);
+                                                }
+                                            })()}</h1>
                                             <p className="opacity-55">With inc tax</p>
                                         </span>
-                                        { userData?._id &&  product?.stock ?
+                                        { userData?._id &&  product?.stock>0 ?
                                         <button
                                             onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:product,quantity:convertToGrams(quantity) }], qnt: quantity } })}
                                             className="p-5 bg-black rounded-full text-white px-10 ml-5"
@@ -492,7 +543,23 @@ useEffect(() => {
                                         {/* <span className="flex-1 gap-2"></span> */}
                                         <span>
                                             <span className="flex ">
-                                                <p className="text-[20px] font-bold">₹ {product?.salePrice}   </p>&nbsp;&nbsp;&nbsp;
+                                                <p className="text-[20px] font-bold">₹ {(() => {
+                                                    const productVal = product?.discount?.value || 0;
+                                                    const categoryVal = product?.category?.discount?.value || 0;
+                                                    
+                                                    // Convert both to percentage for comparison
+                                                    const productPercent = product?.discount?.isPercentage ? productVal : (productVal / product?.regularPrice * 100);
+                                                    const categoryPercent = product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / product?.regularPrice * 100);
+                                                    
+                                                    // Use the discount with higher percentage
+                                                    if (productPercent > categoryPercent) {
+                                                        return product?.regularPrice - (product?.discount?.isPercentage ? 
+                                                            (product?.regularPrice * productVal / 100) : productVal);
+                                                    } else {
+                                                        return product?.regularPrice - (product?.category?.discount?.isPercentage ? 
+                                                            (product?.regularPrice * categoryVal / 100) : categoryVal);
+                                                    }
+                                                })()}</p>&nbsp;&nbsp;&nbsp;
                                                 <s>
                                                     <p className="text-[16px] mt-2 opacity-45">₹ {product?.regularPrice}</p>
                                                 </s>
@@ -505,14 +572,14 @@ useEffect(() => {
                                         </span>
 
                                             <span className="">
-                                                {  product?.stock?
+                                                {  product?.stock>0?
                                                     <p className="text-[20px] font-medium border-[#ceb649] bg-[#d8d5c520] border-2 p-2 rounded-full px-5">{product?.stock/1000}<span className="opacity-45"> Kg left</span></p>:
                                                     <p className="text-[20px] text-red-500 font-bold">Out of stock<span className="opacity-45"></span></p>
 
                                                 }
                                             </span>
                                         {
-                                            product?.stock ?
+                                            product?.stock>0 ?
                                         <select value={qnto}
                                             className="text-[20px] text-[#6C6C6C] font-medium focus:outline-none cursor-pointer custom-selecter"
                                             defaultValue="1Kg"

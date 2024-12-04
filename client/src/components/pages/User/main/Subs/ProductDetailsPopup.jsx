@@ -100,7 +100,21 @@ const ProductDetailsPopup = ({ product, onClose, onNext, onPrev }) => {
                 transition={{ type: "spring", delay: 0.2 }}
                 className="absolute top-2 left-2 bg-green-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg border border-white/50"
               >
-                {((product.regularPrice - product.salePrice) / product.regularPrice * 100).toFixed(0)}% OFF
+                {(() => {
+                  const productVal = product?.discount?.value || 0;
+                  const categoryVal = product?.category?.discount?.value || 0;
+
+                  // Convert both to percentage for comparison
+                  const productPercent = product?.discount?.isPercentage ? productVal : (productVal / product?.regularPrice * 100);
+                  const categoryPercent = product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / product?.regularPrice * 100);
+
+                  // Return the greater discount with its symbol
+                  if (productPercent > categoryPercent) {
+                    return `${productVal}${product?.discount?.isPercentage ? '%' : '₹'}`;
+                  } else {
+                    return `${categoryVal}${product?.category?.discount?.isPercentage ? '%' : '₹'}`;
+                  }
+                })()}
               </motion.div>
             </motion.div>
             
@@ -157,13 +171,36 @@ const ProductDetailsPopup = ({ product, onClose, onNext, onPrev }) => {
                   className="bg-[#ffffff25] p-4 rounded-xl relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-b  before:to-transparent before:-z-10"
                 >
                   <p className="text-gray-800 flex justify-between items-center">
-                    <span className="font-medium flex items-center gap-2">
+                    <span className="font-medium flex items-center gap-2 ">
                       <i className="ri-price-tag-3-line"></i>
                       Price per Kg
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">₹{product.salePrice}</span>
-                      <span className="text-sm text-gray-500 line-through">₹{product.regularPrice}</span>
+                      <span className="text-lg">₹
+                        {(() => {
+                        const productVal = product?.discount?.value || 0;
+                        const categoryVal = product?.category?.discount?.value || 0;
+                        
+                        // Convert both to percentage for comparison
+                        const productPercent = product?.discount?.isPercentage ? productVal : (productVal / product?.regularPrice * 100);
+                        const categoryPercent = product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / product?.regularPrice * 100);
+                        
+                        // Calculate final price with the higher percentage discount
+                        let finalPrice;
+                        if (productPercent > categoryPercent) {
+                            finalPrice = product?.discount?.isPercentage ? 
+                                (product?.regularPrice - (product?.regularPrice * productVal / 100)) : 
+                                (product?.regularPrice - productVal);
+                        } else {
+                            finalPrice = product?.category?.discount?.isPercentage ? 
+                                (product?.regularPrice - (product?.regularPrice * categoryVal / 100)) : 
+                                (product?.regularPrice - categoryVal);
+                        }
+                        
+                        return finalPrice.toFixed(2);
+                      })()}
+                      </span>
+                      <span className="text-sm text-gray-500 line-through">₹{product?.regularPrice}</span>
                     </div>
                   </p>
                 </motion.div>
@@ -178,7 +215,28 @@ const ProductDetailsPopup = ({ product, onClose, onNext, onPrev }) => {
                       You Save
                     </span>
                     <span className="text-lg text-green-600">
-                      ₹{((product.regularPrice - product.salePrice) * (product.quantity/1000)).toFixed(2)}
+                      ₹{(() => {
+                        const productVal = product?.discount?.value || 0;
+                        const categoryVal = product?.category?.discount?.value || 0;
+                        
+                        // Convert both to percentage for comparison
+                        const productPercent = product?.discount?.isPercentage ? productVal : (productVal / product?.regularPrice * 100);
+                        const categoryPercent = product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / product?.regularPrice * 100);
+                        
+                        // Calculate savings amount (the actual discount)
+                        let savings;
+                        if (productPercent > categoryPercent) {
+                            savings = product?.discount?.isPercentage ? 
+                                (product?.regularPrice * productVal / 100) : 
+                                productVal;
+                        } else {
+                            savings = product?.category?.discount?.isPercentage ? 
+                                (product?.regularPrice * categoryVal / 100) : 
+                                categoryVal;
+                        }
+                        
+                        return ((product.quantity/1000) * savings).toFixed(2);
+                      })()}
                     </span>
                   </p>
                 </motion.div>
@@ -193,7 +251,28 @@ const ProductDetailsPopup = ({ product, onClose, onNext, onPrev }) => {
                       Total Amount
                     </span>
                     <span className="text-xl font-bold text-green-600">
-                      ₹{(product.quantity/1000) * product.salePrice}
+                      ₹{(() => {
+                        const productVal = product?.discount?.value || 0;
+                        const categoryVal = product?.category?.discount?.value || 0;
+                        
+                        // Convert both to percentage for comparison
+                        const productPercent = product?.discount?.isPercentage ? productVal : (productVal / product?.regularPrice * 100);
+                        const categoryPercent = product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / product?.regularPrice * 100);
+                        
+                        // Calculate final price with the higher percentage discount
+                        let finalPrice;
+                        if (productPercent > categoryPercent) {
+                            finalPrice = product?.discount?.isPercentage ? 
+                                (product?.regularPrice - (product?.regularPrice * productVal / 100)) : 
+                                (product?.regularPrice - productVal);
+                        } else {
+                            finalPrice = product?.category?.discount?.isPercentage ? 
+                                (product?.regularPrice - (product?.regularPrice * categoryVal / 100)) : 
+                                (product?.regularPrice - categoryVal);
+                        }
+                        
+                        return ((product.quantity/1000) * finalPrice).toFixed(2);
+                      })()}
                     </span>
                   </p>
                 </motion.div>

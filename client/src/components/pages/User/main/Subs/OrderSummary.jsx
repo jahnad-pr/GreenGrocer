@@ -2,15 +2,21 @@ import React, { useEffect, useState } from "react";
 import past from '../../../../../assets/images/fast.png'
 import normal from '../../../../../assets/images/normal.png'
 import eco from '../../../../../assets/images/rco.png'
-import { useGetAdressesMutation } from "../../../../../services/User/userApi";
+import { useGetAdressesMutation, useGetAllCouponsMutation } from "../../../../../services/User/userApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import HoverKing from "../../../../parts/buttons/HoverKing";
 import ProductDetailsPopup from "./ProductDetailsPopup";
+import { Coupon } from "../../../../parts/Cards/Coupon";
+// import useData from "rsuite/esm/InputPicker/hooks/useData";
+import { showToast } from '../../../../parts/Toast/Tostify';
 
 export default function OrderSummary({userData}) {
 
   const [ getAdresses, { isLoading, error, data }, ] = useGetAdressesMutation();
+  const [getAllCoupons,{data:couponData}] = useGetAllCouponsMutation()
 
+  useEffect(()=>{ getAllCoupons() },[])
+  
   const [adressData,setaddressData] = useState()
   const [itemses,setItems] = useState()
   const navigate = useNavigate()
@@ -19,7 +25,13 @@ export default function OrderSummary({userData}) {
   const [cart, setCart] = useState([]);
   const [delivery, setDelivery] = useState('Fast Delivery');
   const [address, setAddress] = useState();
+  const [couponCode, setCode] = useState();
+  const [applyCoupon, setApplyCoupon] = useState(false);
+  const [CouponDatas, setCouponData] = useState();
+  const [originalCouponData, setOriginalCouponData] = useState();
   const [number, setNumber] = useState();
+  const [grandTotal, setGrandTotel] = useState();
+  const [counDiscount, setCouponDiscount] = useState(0);
 
   const [summary, setSummary] = useState({
     items: 0,
@@ -31,17 +43,17 @@ export default function OrderSummary({userData}) {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-
+  
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setShowPopup(true);
   };
-
+  
   const closePopup = () => {
     setShowPopup(false);
     setSelectedProduct(null);
   };
-
+  
   const handleNextProduct = () => {
     const currentIndex = cart.findIndex(item => item.id === selectedProduct.id);
     const nextIndex = (currentIndex + 1) % cart.length;
@@ -53,11 +65,25 @@ export default function OrderSummary({userData}) {
     const prevIndex = (currentIndex - 1 + cart.length) % cart.length;
     setSelectedProduct(cart[prevIndex]);
   };
+  
+  const resetcoupons = () => {
+    if(couponData){
+      setOriginalCouponData(couponData);
+      setCouponData(couponData.filter( data => {
+        if(userData?.couponApplyed[data?.code]<data.usageLimit || !userData?.couponApplyed[data?.code]){
+          if(data.minimumPurchase<=grandTotal){
+            return data
+          }
+        }
+      } )) 
+    }
+  }
 
-  const grandTotal = summary.items/2 - summary.discount/2 + (summary.taxes + summary.deliveryFee) - summary.coupon;
+  useEffect(()=>{ 
+    resetcoupons()
+  },[couponData,userData,grandTotal])
 
   useEffect(() => {
-    console.log(location?.state?.items);
     
     if (location?.state?.items) {
       setItems(location?.state?.items)
@@ -72,8 +98,27 @@ export default function OrderSummary({userData}) {
       
           // If item doesn't exist, add it; otherwise, return the previous data
           if (!isItemExists) {
-            setSummary((prevData) => ({ ...prevData, items: prevData.items + ((data.quantity/1000)*data.product?.regularPrice) }))
-            setSummary((prevData) => ({ ...prevData, discount: prevData.discount + ((data.quantity/1000)*(data.product.regularPrice - data.product.salePrice)) }))
+            setSummary((prevData) => ({ 
+              ...prevData, 
+              items: prevData.items + ((data.quantity/1000)*data.product?.regularPrice),
+              discount: prevData.discount + ((data.quantity/1000) * (() => {
+                const productVal = data.product?.discount?.value || 0;
+                const categoryVal = data.product?.category?.discount?.value || 0;
+                
+                // Convert both to percentage for comparison
+                const productPercent = data.product?.discount?.isPercentage ? productVal : (productVal / data.product?.regularPrice * 100);
+                const categoryPercent = data.product?.category?.discount?.isPercentage ? categoryVal : (categoryVal / data.product?.regularPrice * 100);
+                
+                // Use the discount with higher percentage
+                if (productPercent > categoryPercent) {
+                    return data.product?.discount?.isPercentage ? 
+                        (data.product?.regularPrice * productVal / 100) : productVal;
+                } else {
+                    return data.product?.category?.discount?.isPercentage ? 
+                        (data.product?.regularPrice * categoryVal / 100) : categoryVal;
+                }
+              })())
+            }))
             
             return [
               ...prevData,
@@ -84,33 +129,71 @@ export default function OrderSummary({userData}) {
                 price: data.product.regularPrice,
                 imgSrc: data.product.pics.one,
                 regularPrice: data.product.regularPrice,
-                salePrice: data.product.salePrice
+                discount: {
+                  value: data.product?.discount?.value || 0,
+                  isPercentage: data.product?.discount?.isPercentage || false
+                },
+                category: {
+                  discount: {
+                    value: data.product?.category?.discount?.value || 0,
+                    isPercentage: data.product?.category?.discount?.isPercentage || false
+                  }
+                }
               },
             ];
           }
-      
           return prevData;
         });
       })
     }
   }, [location?.state?.items])
 
+    useEffect(()=>{
+    setGrandTotel((summary.items/2 - summary.discount/2 + (summary.taxes + summary.deliveryFee) - summary.coupon - counDiscount ).toFixed(2))
+
+  },[summary,counDiscount])
+
+
   useEffect(()=>{ (async()=>{ if(userData){ await getAdresses(userData?._id) } })() },[userData])
 
+    
   useEffect(()=>{ if(data){
-     setaddressData(data) 
-     setAddress(data[0])
+    setaddressData(data) 
+    setAddress(data[0])
     } 
   },[data])
 
+  const couponApplyHandler = ()=>{
+    if(couponCode.length<=0){
+      return showToast('enter coupon code', 'error')
+    }
+    if(couponCode.length<6){
+      return showToast('code should be 6 digit', 'error')
+    }
+    if(CouponDatas.filter( data => data.code === couponCode ).length>0){
+      showToast('coupon applied', 'success')
+      setCouponData(CouponDatas.filter( data => data.code !== couponCode ))
+      setApplyCoupon(couponData.filter( data => data.code === couponCode )[0])
+    }else{
+      showToast('invalid coupon', 'error')
+    }
+  }
+
+  useEffect(()=>{
+    if(applyCoupon){
+      // alert(grandTotal-applyCoupon.discountAmount)
+      setCouponDiscount((applyCoupon.discountType==='fixed'?applyCoupon.discountAmount:(grandTotal/100)*applyCoupon.discountAmount))
+    }
+  },[applyCoupon])
+
   return (
     <>
-    <div className="w-[96%] h-full bg-product">
-      <div className="bg-[#ffffffa4] mix-blend-screen absolute w-full h-full backdrop-blur-3xl"></div>
+    <div className="w-[96%] h-full">
+      <div className="absolute w-full h-full"></div>
       <div className="w-full h-full px-40 py-10 flex gap-20 relative">
         <span className="min-w-[50%]">
           {/* Head */}
-          <h1 onClick={()=>console.log(summary.discount)} className="text-[30px] font-bold my-8">Order Summary</h1>
+          <h1 onClick={()=>console.log(applyCoupon)} className="text-[30px] font-bold my-8">Order Summary</h1>
 
           {/* order address */}
           <p className="text-[20px] opacity-40 font-medium">
@@ -133,7 +216,7 @@ export default function OrderSummary({userData}) {
               </select>
             </div>
           </div>: <p onClick={()=>navigate('/user/profile/:12/address')} className="text-[18px] font-medium text-blue-500">Add your adress and coutinue</p>
-           }
+          }
           <div className="mt-4">
             <label className="block text-[20px] opacity-40 font-medium">
               Enter Your Mobile Number to get updates
@@ -157,7 +240,7 @@ export default function OrderSummary({userData}) {
           {cart.map((item) => (
             <div key={item.id} className="flex justify-between items-center mt-2 cursor-pointer hover:bg-[#ffffff80] p-2 rounded-lg transition-all" onClick={() => handleProductClick(item)}>
               <div className="flex items-center space-x-2">
-                <img src={item.imgSrc} alt={item.name} className="w-8 h-8" />
+                <img src={item.imgSrc} alt={item.name} className="w-8 h-8 object-cover" />
                 <span>{item.name}</span>
                 <span className="text-gray-500 font-medium">{item.quantity>=1000?item.quantity/1000:item.quantity} {item.quantity>=1000?'Kg':'g'}</span>
               </div>
@@ -190,7 +273,7 @@ export default function OrderSummary({userData}) {
           </div>
           <div className="flex justify-between mt-4 text-xl font-bold">
             <span>Grand Total</span>
-            <span className="text-green-600">₹{grandTotal.toFixed(2)}</span>
+            <span className="text-green-600">₹{grandTotal}</span>
           </div>
         </div>
       </div>
@@ -260,29 +343,63 @@ export default function OrderSummary({userData}) {
 
               
             </div>
-            {/* <div className="mt-8">
-              <h3 className="text-lg opacity-40 font-medium">Apply Coupon</h3>
+
+            <div className="mt-8 mb-3">
+              { CouponDatas?.length>0 &&  <>
+              <h3 onClick={()=>console.log(CouponDatas)} className="text-lg opacity-40 font-medium mb-5">Available Coupos</h3>
+              <div className="inline-flex gap-5 overflow-x-scroll max-w-[700px]">
+                  {CouponDatas?.map((coupon, index) => (
+                    <Coupon setCode={setCode} index={index} coupon={coupon} />
+                    
+                  ))}
+
+                </div> </> 
+    }
+                
+            </div>
+
+            <div className="mt-8">
+              <h3 className="text-lg mb-3 opacity-40 font-medium">Apply Coupon</h3>
               <div className="mt-2 flex items-center space-x-2">
                 <input
                   type="text"
                   className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
-                  value="Z076FXXX"
+                  value={couponCode}
+                  placeholder="Coupon Code"
+                  onChange={(e)=>setCode(e.target.value)}
                 />
-                <button className="px-6 py-3 bg-[linear-gradient(#e7ecff,#dcffe7)] text-gray-500 rounded-full">
-                  Applied
+                <button onClick={couponApplyHandler} className={`px-6 py-3 bg-[#498f53] text-white rounded-full ${applyCoupon?'opacity-45':'opacity-100'}`}>
+                {/* bg-[linear-gradient(#e7ecff,#dcffe7)] */}
+                {applyCoupon?.code?'Applied':'Apply'} 
                 </button>
-                <button className="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-bold">
+                <button onClick={()=> {
+                  if(applyCoupon) {
+                    // Restore original coupons with filters
+                    if(originalCouponData) {
+                      setCouponData(originalCouponData.filter(data => {
+                        if(userData?.couponApplyed[data?.code]<data.usageLimit || !userData?.couponApplyed[data?.code]){
+                          if(data.minimumPurchase<=grandTotal){
+                            return data
+                          }
+                        }
+                      }));
+                    }
+                    setApplyCoupon(false);
+                    setCode('');
+                    setCouponDiscount(0);
+                  }
+                }} className="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-bold">
                   Cancel
                 </button>
               </div>
-            </div> */}
+            </div>
           </div>
 
           <div className="mt-8 flex justify-end">
             { adressData?.length > 0 ? (
               <HoverKing 
-                event={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt } } })} 
-                styles={'fixed bottom-28 border-0 right-64 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
+                event={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt,coupon:{ code:applyCoupon.code, amount: counDiscount,usage:userData?.couponApplyed[applyCoupon?.code] || 0 } } } })} 
+                styles={'fixed bottom-12 border-0 right-20 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
                 Icon={<i className="ri-arrow-right-line text-[30px] rounded-full text-white"></i>}
               >
                 Checkout
@@ -291,7 +408,7 @@ export default function OrderSummary({userData}) {
               <HoverKing 
                 event={()=>navigate('/user/profile/:id/address')} 
                 // event={()=>navigate('/user/profile/:id/address', { state: { items: location?.state?.items } })} 
-                styles={'fixed bottom-28 border-0 right-64 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
+                styles={'fixed bottom-12 border-0 right-64 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
                 Icon={<i className="ri-arrow-left-line text-[30px] rounded-full text-white"></i>}
               >
                 Add address

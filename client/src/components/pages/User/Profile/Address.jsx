@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
-import picr from "../../../../assets/images/picr.png";
-import pic from "../../../../assets/images/image 32.png";
-import ind from "../../../../assets/images/indicator.png";
 import home from "../../../../assets/images/Adress icons/home.png";
 import work from "../../../../assets/images/Adress icons/bag.png";
 import person from "../../../../assets/images/Adress icons/person.png";
 import other from "../../../../assets/images/Adress icons/other.png";
-import { motion } from 'framer-motion';
-import { useDeleteAddressMutation, useGetAdressesMutation, useUpdateProfileMutation } from "../../../../services/User/userApi";
-import { ToastContainer, toast } from "react-toastify";
-import { FaExclamationTriangle,FaCheckCircle } from "react-icons/fa";
+import { useDeleteAddressMutation, useGetAdressesMutation } from "../../../../services/User/userApi";
 import HoverKing from "../../../parts/buttons/HoverKing";
 import { useLocation, useNavigate } from "react-router-dom";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import DeletePopup from "../../../parts/popups/DeletePopup";
+import { showToast } from "../../../parts/Toast/Tostify";
 
 
 const EmptyState = () => (
@@ -30,125 +25,82 @@ const EmptyState = () => (
 
 
 export default function Address({ userData }) {
-  
+
   // mutation to update user
-  const [ getAdresses, { isLoading, error, data }, ] = useGetAdressesMutation();
-  
-  
-  const [adressData,setaddressData] = useState()
-  
-  
+  const [getAdresses, { isLoading, error, data },] = useGetAdressesMutation();
+
+
+  const [adressData, setaddressData] = useState()
+
+
   const navigate = useNavigate()
   const location = useLocation()
-  
-    // useEffect(() => {
-    //   console.log('Location state:', location?.state);
-    //   if(location?.state?.items && adressData?.length > 0){
-    //     navigate('/user/ordersummery',{ state: location?.state })
-    //   }
-    // },[location,adressData]);
+
+  // useEffect(() => {
+  //   console.log('Location state:', location?.state);
+  //   if(location?.state?.items && adressData?.length > 0){
+  //     navigate('/user/ordersummery',{ state: location?.state })
+  //   }
+  // },[location,adressData]);
 
   // Custom content component for the toast
-const ToastContent = ({ title, message }) => 
-  ( 
-  <div>
-    <strong>{title}</strong>
-    <div>{message}</div>
-  </div>
-);
-
-    
-// Show toast notification function
-const showToast = (message, type = "success") => {
-  if (type === "success" && message) {
-    toast.success(
-      type && <ToastContent title={"SUCCESS"} message={message} />,
-      {
-        icon: <FaCheckCircle className="text-[20px]" />,
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        className: "custom-toast-success",
-        bodyClassName: "custom-toast-body-success",
-        progressClassName: "custom-progress-bar-success",
-      }
-    );
-  } else if (message) {
-    toast.error(<ToastContent title={"ERROR"} message={message} />, {
-      icon: <FaExclamationTriangle className="text-[20px]" />,
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      className: "custom-toast",
-      bodyClassName: "custom-toast-body",
-      progressClassName: "custom-progress-bar",
-    });
-  }
-};
 
 
-useEffect(()=>{
-  if(location?.state){
-    console.log(location?.state);
-    showToast(location?.state,'success')
-  }
-},[location])
+
+  useEffect(() => {
+    if (location?.state) {
+      console.log(location?.state);
+      showToast(location?.state, 'success')
+    }
+  }, [location])
 
   // to show the error and success
-  useEffect(()=>{
-    if(data){
+  useEffect(() => {
+    if (data) {
       setaddressData(data)
     }
-  },[data])
-  useEffect(()=>showToast(error?.data,'error'),[error])
+  }, [data])
+  useEffect(() => showToast(error?.data, 'error'), [error])
   getAdresses
 
-  useEffect(()=>{ (async()=>{ if(userData){ await getAdresses(userData?._id) } })() },[userData])
+  useEffect(() => { (async () => { if (userData) { await getAdresses(userData?._id) } })() }, [userData])
 
-  return (  userData &&
-    <>  
-     <ToastContainer title="Error" position="bottom-left" />
-      <div className="w-[96%] h-full bg-prof">
-      <div className="bg-[#30a5539c] mix-blend-screen absolute w-full h-full"></div>
+  return (userData &&
+    <>
+      {/* <ToastContainer title="Error" position="bottom-left" /> */}
+      <div className="w-[96%] h-full">
+        {/* <div className="bg-[#5a52319c] mix-blend-screen absolute w-full h-full"></div> */}
         <div className="w-full h-full flex flex-col items-center gap-5 backdrop-blur-3xl">
-          <span className="w-full h-full px-64 bg-[#ffffff81] relative  overflow-scroll pb-96"> 
+          <span className="w-full h-full px-64 bg-[#ffffff81] relative  overflow-scroll pb-96">
 
-            <HoverKing event={()=>navigate('/user/profile/:12/Manageaddress')} styles={'fixed bottom-28 right-64 rounded-full'} Icon={<i className="ri-apps-2-add-line text-[30px] "></i>} >Add Address</HoverKing>
+            <HoverKing event={() => navigate('/user/profile/:12/Manageaddress')} styles={'fixed bottom-28 right-64 rounded-full'} Icon={<i className="ri-apps-2-add-line text-[30px] "></i>} >Add Address</HoverKing>
 
             {/* Head */}
             <h1 className="text-[30px] font-bold my-16 mb-16">Manage Address</h1>
 
-            {   adressData?.length>0 ?
-              
-            // {/* address container */}
-            <div className="w-full flex flex-wrap gap-5">
+            {adressData?.length > 0 ?
 
-              {
-                adressData?.map((address,index)=>{
+              // {/* address container */}
+              <div className="w-full flex flex-wrap gap-5">
 
-                   return <span key={index} >
-               <AdressCard setaddressData={setaddressData} showToast={showToast} addressData={adressData}  home={home} work={work} person={person} other={other} address={address} navigate={navigate}  />
-                  </span>
+                {
+                  adressData?.map((address, index) => {
 
-                })
-              }
+                    return <span key={index} >
+                      <AdressCard setaddressData={setaddressData} showToast={showToast} addressData={adressData} home={home} work={work} person={person} other={other} address={address} navigate={navigate} />
+                    </span>
 
-            </div> : <EmptyState />
+                  })
+                }
 
-              
+              </div> : <EmptyState />
+
+
 
             }
 
 
-            
+
           </span>
         </div>
       </div>
@@ -156,67 +108,60 @@ useEffect(()=>{
   );
 }
 
-    function AdressCard({home, work, person, other, address, phone, navigate, showToast, addressData, setaddressData}) {
+function AdressCard({ home, work, person, other, address, phone, navigate, showToast, addressData, setaddressData }) {
 
-  const [ deleteAddress, { data }, ] = useDeleteAddressMutation();
+  const [deleteAddress, { data },] = useDeleteAddressMutation();
   const [popup, showPopup] = useState(false);
 
 
-  useEffect(()=>{
-    if(data){
-      showToast(data,'success')
-      setaddressData(addressData.filter((item)=>item._id!==address._id))
+  useEffect(() => {
+    if (data) {
+      showToast(data, 'success')
+      setaddressData(addressData.filter((item) => item._id !== address._id))
     }
-  },[data])
+  }, [data])
 
-      
-      return (
-      <> {popup && (
-        <DeletePopup
-          updater={deleteAddress}
-          deleteData={{ id: address._id }}
-          showPopup={showPopup}
-          action="Delete Address"
-          isUser={true}
-        />
-      )}
+
+  return (
+    <> {popup && (
+      <DeletePopup
+        updater={deleteAddress}
+        deleteData={{ id: address._id }}
+        showPopup={showPopup}
+        action="Delete Address"
+        isUser={true}
+      />
+    )}
       <div onClick={() => navigate('/user/profile/1233/Manageaddress', { state: address })}
-       className="w-[410px] border-2 hover:scale-105 duration-500 border-[#a2c4aade] bg-[linear-gradient(45deg,#ffffff70,#ffffff40)] rounded-[45px] flex flex-col p-10 py-4 gap-5">
+        className="w-[330px] h-[310px] border-2 hover:scale-105 duration-500 border-[#a2c4aa5d]  pt-10 bg-[linear-gradient(45deg,#ffffff00,#ffffff90)] rounded-[30px] rounded-tl-[120px] flex flex-col p-10 py-4 gap-5 relative group">
 
-                    <span className="flex items-center justify-center gap-3">
-                    <img className={`w-14 ${address.locationType === 'Work' ? 'p-1' : ''}`} src={address.locationType === 'Home' ? home : address.locationType === 'Work' ? work : address.locationType === 'Person' ? person : address.locationType === 'Other' ? other : ''} alt="" />
-                    <p className="text-[22px] font-medium">{address.locationType}</p>
-                    <span className="flex-1"></span>
-                    {/* <input className="h-5 w-5 bg-transparent rounded-full" type="checkbox" name="" id="" /> */}
-                    </span>
-                    
+        <span className="flex  items-center gap-3">
+          <img className={`w-24 group-hover:scale-125 duration-500 absolute -left-5 -top-5 ${address.locationType === 'Work' ? 'p-1' : ''}`} src={address.locationType === 'Home' ? home : address.locationType === 'Work' ? work : address.locationType === 'Person' ? person : address.locationType === 'Other' ? other : ''} alt="" />
+          <p className="text-[20px] font-bold mb-2 ml-14">{address.locationType}</p>
+      
+        </span>
 
-                    <span className="text-[18px]">
-                        <p className="font-medium">{address.FirstName} {address.LastName}</p>
-                        <span className="opacity-55">
 
-                        <p>{address.exactAddress}</p>
-                        <p>{address.streetAddress}</p>
-                        <p className="font-medium">{address.city.toUpperCase()}, {address.state.toUpperCase()} {address.pincode}</p>
-                        </span>
-                    </span>
+        <span className="text-[17px] leading-none opacity-65">
+          <p className="">{address.FirstName} {address.LastName}</p>
+            <p>{address.exactAddress}</p>
+            <p>{address.streetAddress}</p>
+            <p className="font-medium text-nowrap">{address.city.toUpperCase()}, {address.state.toUpperCase()} {address.pincode}</p>
+        </span>
 
-                    <span>
-                        <p className="font-medium"><span>+91</span> {address?.phone}</p>
-                    </span>
+        <span>
+          <p className="font-medium text-[16px] text-[#2d6933]"><span>+91</span> {address?.phone}</p>
+        </span>
 
-                    <span className="flex">
-                        <p className="text-blue-500 font-medium">View</p>
-                        <span className="flex-1"></span>
-                        {/* <i className="ri-more-line text-[28px]"></i> */}
-                        <i onClick={(e) =>{
-                          e.stopPropagation()  
-                          showPopup(true) }} 
-                          className="ri-delete-bin-6-line text-[28px] hover:scale-125 duration-500 text-red-500"></i>
-                    </span>
+        <span className="flex justify-end gap-5">
+        <i className="ri-eye-line text-[30px] opacity-45"></i>
 
-                </div>
-      </>
-                );
-    }
-  
+          {/* <span className="flex-1"></span> */}
+          {/* <i className="ri-more-line text-[28px]"></i> */}
+          <i onClick={(e) => { e.stopPropagation() && showPopup(true) }} className="ri-delete-bin-6-line text-[28px] hover:scale-125 duration-500 text-red-500"></i>
+        </span>
+
+      </div>
+    </>
+  );
+}

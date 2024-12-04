@@ -72,33 +72,34 @@ module.exports.checkPorductInCart = async (req, res) => {
 module.exports.getCartItems = async (req, res) => {
 
     const id = req.user.id
- 
-     try {
- 
- 
-         const result = await Cart.findOne( { user: id } ).populate('items.product').populate({
-            path: 'items.product', // Populate the product field
-            populate: { path: 'category',select: 'name' }, // Then populate the category field within product
-          })
 
- 
-         if(result){
- 
-             return res.status(200).json(result)
-         }
-             
-         return res.status(400).json('Somthing went wrong')
- 
-       } catch (error) {
- 
-         return res.status(400).json(error.message)
- 
-     }
- }
+    try {
 
- 
- 
- module.exports.updateCartITem = async (req, res) => {
+
+        const result = await Cart.findOne({ user: id }).populate({
+            path: 'items.product',
+            match: { stock: { $gt: 0 } },
+            populate: { path: 'category', select: 'name' }
+        })
+
+
+        if (result) {
+
+            return res.status(200).json(result)
+        }
+
+        return res.status(400).json('Somthing went wrong')
+
+    } catch (error) {
+
+        return res.status(400).json(error.message)
+
+    }
+}
+
+
+
+module.exports.updateCartITem = async (req, res) => {
 
     // console.log('jshalkd');
     

@@ -173,7 +173,7 @@ const Products = () => {
             </div>
 
             {/* Products Table */}
-            <div className="overflow-auto pb-96">
+            <div className="overflow-auto pb-96 px-20">
 
               { productsData?.length>0 ?
 

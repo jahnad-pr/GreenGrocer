@@ -69,7 +69,6 @@ export const userProductsApi = (builder) => ({
       query: (productId) => ({
         url: `user/checkItemIntheBookmark/${productId}`,
         method: 'GET',
-        // body: bookmarkData,
         credentials: 'include',
       }),
     }),
@@ -78,7 +77,6 @@ export const userProductsApi = (builder) => ({
       query: (productId) => ({
         url: `user/removeBookmarkItme/${productId}`,
         method: 'DELETE',
-        // body: bookmarkData,
         credentials: 'include',
       }),
     }),
@@ -88,7 +86,6 @@ export const userProductsApi = (builder) => ({
       query: () => ({
         url: `user/getBookmarkItems`,
         method: 'GET',
-        // body: bookmarkData,
         credentials: 'include',
       }),
     }),

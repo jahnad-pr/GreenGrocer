@@ -94,7 +94,6 @@ export default function BookmarkCard({ data,userData,setBookData }) {
 
       </div>
     </div>
-    <Tostify />
     </>
   );
 }

@@ -27,11 +27,11 @@ export default function ProductsAll() {
 
                 {/* fruit collection */}
                 <span className='flex'>
-           <h1 className={`text-[120px] mb-32 leading-none font-thin mt-20`}>
-            {location?.state?.title?.replace(' ','<br/>')}
+           <h1 style={{whiteSpace:'pre-line'}} className={`text-[120px] mb-32 leading-none font-thin mt-20`}>
+            {location?.state?.title?.replace(/ /g,'\n')}
           </h1>
           {/* <span className='flex-1'></span> */}
-          <img className='max-h-[300px] object-cover mr-40 py-5 drop-shadow-2xl' src={location?.state?.img} alt="" />
+          {/* <img className='max-h-[300px] object-cover mr-40 py-5 drop-shadow-2xl' src={location?.state?.img} alt="" /> */}
                 </span>
           <div className="w-full h-auto flex my-5 mt-8 gap-5 flex-wrap">
             {productsData?.map((data, index) => {

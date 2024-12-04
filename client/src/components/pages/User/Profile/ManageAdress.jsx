@@ -192,14 +192,14 @@ export default function ManageAddress({ userData }) {
     userData && (
       <>
         <ToastContainer />
-        <div className="w-[96%] h-full bg-prof">
+        <div className="w-[96%]">
           <div className={`bg-[#d8b94950] duration-500 ${
             formData.locationType === 'Home'?'bg-[#d8b94950]':
             formData.locationType === 'Work'?'bg-[#b1deeb80]':
             formData.locationType === 'Person'?'bg-[#28549f80]':
             formData.locationType === 'Other'?'bg-[#539e3b80]':''
             } mix-blend-screen absolute w-full h-full`}></div>
-          <div className="w-full h-full flex flex-col items-center gap-5 backdrop-blur-3xl">
+          <div className="w-full h-full flex flex-col items-center gap-5">
             <span className={`w-full h-full px-64 bg-[#ffffff59] flex`}>
               {/* Image Section */}
               <div className="w-[40%] flex items-center">

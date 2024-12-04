@@ -14,10 +14,19 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  coupon: {
-    type: String,
-    default: "", // Optional, defaults to empty string
-  },
+  coupon: 
+    {
+      code: {
+        type: String,
+        // required: true,
+      },
+      amount: {
+        type: Number,
+        // required: true,
+      },
+    }
+    // Optional, defaults to empty string
+  ,
   items: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
@@ -71,7 +80,7 @@ const orderSchema = new mongoose.Schema({
   },
   payment_status: {
     type: String,
-    enum: ["pending", "paid", "failed"], // Possible payment statuses
+    enum: ["pending", "paid", "completed" , "failed"], // Possible payment statuses
     default: "pending",
   },
 });

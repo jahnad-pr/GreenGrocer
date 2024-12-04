@@ -26,8 +26,8 @@ export default function Bookmark({userData}) {
   },[])
 
   return (
-    <div className="w-[96%] h-full bg-product">
-      <div className=" mix-blend-screen bg-[#ffffff70] absolute w-full h-full"></div>
+    <div className="w-[96%] h-full">
+      <div className=" mix-blend-screen absolute w-full h-full"></div>
       <div className="w-full h-full px-0 backdrop-blur-3xl">
         <div className="w-full h-full pt-16 overflow-y-scroll px-40">
           {/* Main head */}

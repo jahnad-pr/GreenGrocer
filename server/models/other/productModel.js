@@ -1,3 +1,4 @@
+const { type } = require('express/lib/response');
 const mongoose = require('mongoose');
 
 
@@ -68,6 +69,37 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    discount:{
+        type:{
+            type:String,
+            // required: true,
+            enum: ['percentage', 'flat','BOGO','free shipping']
+        },
+        isPercentage:{
+            type: Boolean,
+            // required: true,
+            default: false
+        },
+        value: {
+            type: Number,
+            // required: true
+        },
+        description: {
+            type: String,
+            // required: true
+        },
+        minQuantity: {
+            type: Number,
+            // required: true
+        },
+        maxAmount: {
+            type: Number,
+            // required: true
+        },
+        updatedAt:{
+            typ : Date
+        }
     }
 
 

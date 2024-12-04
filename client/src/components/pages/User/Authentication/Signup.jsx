@@ -5,8 +5,9 @@ import placeholder from "../../../../assets/images/placholder_profile.png";
 import greenGrocerLogo from "../../../../assets/Logos/main.png";
 import { IoAdd } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
-import { ToastContainer, toast } from "react-toastify";
+// import { ToastContainer, toast } from "react-toastify";
 import ForgotPassword from "./ForgotPassword";
+import { Tostify,showToast } from '../../../parts/Toast/Tostify'
 
 import {
   useLoginMutation,
@@ -70,41 +71,6 @@ export default function Signup({ setSign }) {
   );
   
 
-  // Show toast notification function
-const showToast = (message, type = "success") => {
-  if (type === "success" && message) {
-      toast.success(
-          type && <ToastContent title={"SUCCESS"} message={message} />,
-          {
-              icon: <FaCheckCircle className="text-[20px]" />,
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              className: "custom-toast-success",
-              bodyClassName: "custom-toast-body-success",
-              progressClassName: "custom-progress-bar-success",
-          }
-      );
-  } else if (message) {
-      toast.error(<ToastContent title={"ERROR"} message={message} />, {
-          icon: <FaExclamationTriangle className="text-[20px]" />,
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          className: "custom-toast",
-          bodyClassName: "custom-toast-body",
-          progressClassName: "custom-progress-bar",
-      });
-  }
-};
 
 
   useEffect(() => {
@@ -211,7 +177,7 @@ const showToast = (message, type = "success") => {
           await login(upData).unwrap();
         }
       } catch (err) {
-        showToast(err, "error");
+        showToast(err.message, "error");
       }
     }
   };
@@ -282,7 +248,6 @@ const showToast = (message, type = "success") => {
 
   return (
     <>
-      <ToastContainer position="bottom-left" />
       {popup && (
         <SignDetails
           method={method}

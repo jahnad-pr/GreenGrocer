@@ -1,6 +1,7 @@
 // Bismillah
 import React, { useEffect } from "react"
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom"
+import { Toaster } from 'react-hot-toast';
 import Login from './components/pages/Admin/Authentication/Login'
 import Header from './components/parts/Main/Header'
 import AdminNav from './components/parts/Main/AdminNav'
@@ -41,6 +42,12 @@ import Cart from "./components/pages/User/main/Cart"
 import Search from "./components/pages/User/main/Search"
 import NotFound from "./components/pages/User/main/Subs/NotFound"
 import Bookmark from "./components/pages/User/main/Bookmark"
+import Offers from "./components/pages/Admin/Config/Offers";
+import OfferManage from "./components/pages/Admin/Config/Offermanage";
+import { Tostify } from "./components/parts/Toast/Tostify";
+import Coupons from "./components/pages/Admin/Config/Coupons";
+import CouponManage from "./components/pages/Admin/Config/CouponManage";
+import CouponsList from "./components/pages/User/Profile/CouponsList";
 
 export default function App() {
 
@@ -56,6 +63,8 @@ export default function App() {
 
   return (
     <>
+      <Tostify title="Error" position="bottom-left" />
+      <Toaster position="top-center" />
       <div className="w-screen h-screen flex overflow-hidden">
         {location.pathname.startsWith('/user/') && !location.pathname.startsWith('/user/sign') && <UserProtecter><Navigator /></UserProtecter>}
         {location.pathname.startsWith('/admin/') && <AdminProtucter><Header /></AdminProtucter>}
@@ -66,9 +75,16 @@ export default function App() {
             <Route path="/admin/home" element={<AdminProtucter><DashHome /></AdminProtucter>} />
             <Route path="/admin/Customers" element={<AdminProtucter><Users /></AdminProtucter>} />
             <Route path="/admin/Customers/manage" element={<AdminProtucter><UserManage /></AdminProtucter>} />
+            <Route path="/admin/Products" element={<AdminProtucter><Productes /></AdminProtucter>} />
+            <Route path="/admin/Products/manage" element={<AdminProtucter><ProductManage /></AdminProtucter>} />
             <Route path="/admin/Category" element={<AdminProtucter><Categories /></AdminProtucter>} />
             <Route path="/admin/Category/manage" element={<AdminProtucter><CategoryManage /></AdminProtucter>} />
             <Route path="/admin/Collection" element={<AdminProtucter><Collections /></AdminProtucter>} />
+            <Route path="/admin/Offers/manage" element={<AdminProtucter><OfferManage /></AdminProtucter>} /> 
+            <Route path="/admin/Offers" element={<AdminProtucter><Offers /></AdminProtucter>} /> 
+            <Route path="/admin/Orders" element={<AdminProtucter><Orders /></AdminProtucter>} />
+            <Route path="/admin/Coupons" element={<AdminProtucter><Coupons /></AdminProtucter>} />
+            <Route path="/admin/Coupons/manage" element={<AdminProtucter><CouponManage /></AdminProtucter>} />
           <Route path="*" element={<NotFound />} />
           
           <Route path="/user/signup" element={ <UserProtecter><Signup /></UserProtecter> } />
@@ -91,6 +107,7 @@ export default function App() {
           <Route path="/user/OrderDetails" element={ <UserProtecter><OrderDetails/></UserProtecter> } />
           <Route path="/user/cart" element={ <UserProtecter><Cart/></UserProtecter> } />
           <Route path="/user/bookmarks" element={ <UserProtecter><Bookmark/></UserProtecter> } />
+          <Route path="/user/Coupons" element={ <UserProtecter><CouponsList/></UserProtecter> } />
           </Routes>
 
         <Routes>

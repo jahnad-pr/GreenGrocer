@@ -1,9 +1,10 @@
 const express = require('express');
 const { getCustomers, getAdmins, updateUserAccess,getAdmin,logoutAdmin } = require('../controllers/adminControllers');
 // const {  } = require('../controllers/userController')
-const { upsertProducts,getProducts,updateProduct } = require('../controllers/config/ProductController')
+const { upsertProducts,getProducts,updateProduct,updateOffer,getAllDiscounts } = require('../controllers/config/ProductController')
 const { upsertCollection,getCollections,updateCollection } = require('../controllers/config/collectionController')
 const { upsertCategory, getCategories, updateCategory, } = require('../controllers/config/categoryController')
+const { updateCoupon, getAllCoupons } = require('../controllers/config/couponControll')
 const { uploadImages,storage , upload } = require('../controllers/config/utilityController')
 const { updateOrderStatus,cancelOrder } = require('../controllers/config/orderController')
 const path = require('path');
@@ -27,10 +28,17 @@ router.put('/upsertCategory',adminAuthMiddleware,upsertCategory);
 router.put('/upsertCollection',adminAuthMiddleware,upsertCollection);
 router.put('/upsertProducts',adminAuthMiddleware,upsertProducts);
 
+router.get('/getAllDiscounts',adminAuthMiddleware,getAllDiscounts);
+router.put('/updateCoupon',adminAuthMiddleware,updateCoupon);
+router.get('/getAllCoupons',adminAuthMiddleware,getAllCoupons);
+
+
 router.patch('/updateUserAccess',adminAuthMiddleware,updateUserAccess);
 router.patch('/updateCategoryAccess',adminAuthMiddleware,updateCategory);
 router.patch('/updateCollection',adminAuthMiddleware,updateCollection);
 router.patch('/updateProduct',adminAuthMiddleware,updateProduct);
+router.patch('/updateProduct',adminAuthMiddleware,updateProduct);
+router.patch('/updateOffer',adminAuthMiddleware,updateOffer);
 
 router.post('/uploadImages',adminAuthMiddleware,upload.single('file'),uploadImages);
 router.post('/logoutAdmin',adminAuthMiddleware,logoutAdmin);

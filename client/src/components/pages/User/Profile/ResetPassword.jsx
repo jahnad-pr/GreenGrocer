@@ -3,9 +3,11 @@ import rpi from "../../../../assets/images/rpillu.png";
 import { useNavigate } from "react-router-dom";
 import { useLogoutUserMutation, useMatchPasswordMutation, useResetPasswordMutation } from "../../../../services/User/userApi";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
+// import { ToastContainer, toast } from "react-toastify";
 import { useUpdateProfileMutation } from "../../../../services/User/userApi";
 import DeletePopup from "../../../parts/popups/DeletePopup";
+import { showToast } from '../../../parts/Toast/Tostify'
+
 
 export default function ResetPassword({ userData }) {
 
@@ -25,15 +27,6 @@ export default function ResetPassword({ userData }) {
     const [success, setSuccess] = useState(false);
   const [popup, showPopup] = useState(false);
 
-
-
-  // Custom content component for the toast
-  const ToastContent = ({ title, message }) => (
-    <div>
-      <strong>{title}</strong>
-      <div>{message}</div>
-    </div>
-  );
 
       // Password validation
       // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=<>?{}~|/]).{8,}$/;
@@ -58,45 +51,13 @@ export default function ResetPassword({ userData }) {
       }
 
 
-  // Show toast notification function
-  const showToast = (message, type = "success") => {
-    if (type === "success" && message) {
-      toast.success(
-        type && <ToastContent title={"SUCCESS"} message={message} />,
-        {
-          icon: <FaCheckCircle className="text-[20px]" />,
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          className: "custom-toast-success",
-          bodyClassName: "custom-toast-body-success",
-          progressClassName: "custom-progress-bar-success",
-        }
-      );
-    } else if (message) {
-      toast.error(<ToastContent title={"ERROR"} message={message} />, {
-        icon: <FaExclamationTriangle className="text-[20px]" />,
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        className: "custom-toast",
-        bodyClassName: "custom-toast-body",
-        progressClassName: "custom-progress-bar",
-      });
-    }
-  };
-
 
   // to show the error and success
-  useEffect(() => { if(resetData){ navigaror(`/user/profile/${userData?._id}`,{ state:{ message:'resetData' } }) } } , [resetData]);
+  useEffect(() => { if(resetData){
+    navigaror(`/user/profile/${userData?._id}`,{ state:{ message:'resetData' } }) 
+    showToast(resetData,'seccess')
+    } 
+    } , [resetData]);
   useEffect(() => (showToast(data, "success"), setSuccess(true)), [data]);
 
   useEffect( () => (showToast(error?.data, "error"), setSuccess(false)), [error] );
@@ -115,7 +76,7 @@ export default function ResetPassword({ userData }) {
       return showToast(isNotValidPassword, "error")
     }
     // sending New password
-    const sendUserData = {_id: userData._id, password: newPassword }
+    const sendUserData = {_id: userData._id, password: newPassword,email:userData.email }
     return resetPassword(sendUserData).unwrap
 
   }
@@ -140,7 +101,6 @@ export default function ResetPassword({ userData }) {
       />
     )}
       {" "}
-      <ToastContainer title="Error" position="bottom-left" />
       <div className="w-[96%] h-full bg-prof">
         <div className="w-full h-full backdrop-blur-3xl">
           <span className="h-full px-40 flex flex-col justify-center items-center gap-5 w-full bg-[#ffffff69]">

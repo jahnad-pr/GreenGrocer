@@ -41,5 +41,24 @@ export const productEndpoints = (builder) => ({
       }),
     }),
 
+    updateOffer: builder.mutation({
+      query: (offerData) => ({
+        url: `admin/updateOffer`,
+        method: 'PATCH',
+        body: offerData,
+        credentials: 'include',
+      }),
+    }),
+
+    getAllDiscounts: builder.mutation({
+      query: () => ({
+        url: `admin/getAllDiscounts`,
+        method: 'GET',
+        // body: offerData,
+        credentials: 'include',
+      }),
+    }),
+
+
   });
   

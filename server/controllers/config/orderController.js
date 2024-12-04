@@ -1,5 +1,6 @@
 const Order = require('../../models/other/OrderModel')
 const Cart = require('../../models/other/cartModel')
+const User = require('../../models/Auth/userModel')
 const Product = require('../../models/other/productModel')
 
 
@@ -7,7 +8,7 @@ module.exports.placeOrder = async (req, res) => {
 
     const OrderData = req.body
 
-    console.log(OrderData);
+    // console.log(OrderData);
     
 
 
@@ -23,6 +24,17 @@ module.exports.placeOrder = async (req, res) => {
                 { $inc: { stock : -item.quantity } }
             );
         });
+
+        if(OrderData.coupon?.code){
+            // console.log(OrderData.coupon.usage);
+            
+            await User.updateOne(
+                { _id: OrderData.user },
+                { $set: { [`couponApplyed.${OrderData.coupon.code}`]: OrderData.coupon.usage+1 } }
+            );
+        }
+
+
 
         if(result){
 

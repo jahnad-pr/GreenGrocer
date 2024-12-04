@@ -1,5 +1,6 @@
 const Product = require('../../models/other/productModel')
 const Order = require('../../models/other/OrderModel')
+const Category = require('../../models/other/categoryModels')
 
 
 
@@ -68,7 +69,7 @@ module.exports.getProducts = async(req,res)=>{
 
     try {
 
-        const products = await Product.find({}).populate('category','name' ).populate('productCollection','name' )
+        const products = await Product.find({}).populate('category','name discount' ).populate('productCollection','name' )
 
         
         
@@ -103,7 +104,7 @@ module.exports.getCAtegoryProducts = async(req,res)=>{
     
     try {
         
-        const products = await Product.find({  category:id }).populate('category','name' )
+        const products = await Product.find({  category:id }).populate('category','name discount' )
         
         if(products.length<=0){
 
@@ -133,6 +134,7 @@ module.exports.getCAtegoryProducts = async(req,res)=>{
 module.exports.updateProduct = async(req,res)=>{
 
     
+    // console.log('adlfjkads');
     
     
     const { uniqeID,updateBool,action } = req.body
@@ -148,7 +150,7 @@ module.exports.updateProduct = async(req,res)=>{
                 return res.status(200).json({mission:true,message:'successfully updated',uniqeID:uniqeID,action})
             }
 
-            return res.status(500).json({mission:false,message:'nothing updated'}) 
+            
             
         }else if(action==='delete'){
             
@@ -173,7 +175,7 @@ module.exports.getProductDetails = async(req,res)=>{
     const _id = req.params.id
     
     try {
-            const productDetails = await Product.findOne({_id}).populate('category','name')
+            const productDetails = await Product.findOne({_id}).populate('category','name discount')
 
 
             if(productDetails){
@@ -292,7 +294,7 @@ module.exports.getAllProduct = async(req,res)=>{
     // const _id = req.params.id
     
     try {
-            const productDetails = await Product.find({}).populate('category','name')
+            const productDetails = await Product.find({}).populate('category','name discount')
 
             // console.log(productDetails);
             
@@ -304,6 +306,79 @@ module.exports.getAllProduct = async(req,res)=>{
             }
 
             return res.status(500).json('no product found') 
+
+    } catch (error) {
+
+        return res.status(500).json(error.message) 
+    }
+
+}
+
+
+
+module.exports.updateOffer = async(req,res)=>{
+
+
+    const { discountType, discountValue, minQuantity, maxAmount,offerType, productId,offerFor  } = req.body
+
+    const discountData = {
+        type:offerType,
+        isPercentage:discountType==="percentage"?true:false,
+        value:discountValue,
+        minQuantity, 
+        maxAmount,
+        updatedAt:Date.now()
+    }
+    
+    try {   
+        let productDetails = ''
+
+        console.log(discountData);
+        
+
+        if(offerFor==="Product"){
+        
+            productDetails = await Product.updateOne({_id:productId},{$set:{discount:{...discountData}}})
+        
+        }else{
+
+            productDetails = await Category.updateOne({_id:req.body.category},{$set:{discount:{...discountData}}})
+
+            }
+
+
+            if(productDetails){
+
+                console.log(productDetails);   
+
+                return res.status(200).json('Offer udated successfully')
+            }
+
+            return res.status(500).json('no product found') 
+
+    } catch (error) {
+
+        return res.status(500).json(error.message) 
+    }
+
+}
+
+module.exports.getAllDiscounts = async(req,res)=>{
+
+    // const id = req.user.id
+    
+    try {   
+    
+        
+    const descounts = await Product.find({},{discount:1,name:1,category:1,pics:1}).populate('category','name')
+    const descountCategory = await Category.find({},{discount:1,name:1})
+    descounts.push(...descountCategory)
+            if(descounts){;   
+
+                return res.status(200).json([...descounts])
+            }
+
+            return res.status(500).json('no Discounts') 
 
     } catch (error) {
 
