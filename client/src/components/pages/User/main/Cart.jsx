@@ -68,14 +68,15 @@ const showToast = (message, type = "success") => {
   useEffect(()=>{ if(data?.items){ setProductData(data?.items) } },[data])
 
   const EmptyState = () => (
-    <div className="w-full h-[60vh] mt-20 flex items-center pr-20 justify-center flex-col text-center gap-5">
-      <img className="h-[50%]" src={emptyStateImage} alt="No categories" />
+    <div className="w-full h-[60vh] flex items-center pr-20 justify-center flex-col text-center gap-5 relative">
+      <img className="h-[80%] filter-[brightness(0)]" src={emptyStateImage} alt="No categories" />
       <div className="flex flex-col gap-2">
         <h1 className="text-[30px] font-bold">Sorry, No Carts items</h1>
         <p className="opacity-45">
           Add your products to cart for buy the products,<br></br> You can buy many products in one order
         </p>
-        <p onClick={() => navigate("/user/products")} className="text-[20px] text-blue-600 font-medium">Let's add your product</p>
+        {/* <p onClick={() => navigate("/user/products")} className="text-[20px] text-blue-600 font-medium"></p> */}
+        <HoverKing event={() => navigate("/user/products")} styles={'fixed bottom-36 left-1/2 -translate-x-[65%] rounded-full font-medium shadow-2xl shadow-[#45855370] text-[16px] bg-white'} Icon={<i className="ri-arrow-drop-right-line text-[50px] text-white"></i>} >Let's add your product</HoverKing>
       </div>
     </div>
   );
@@ -84,8 +85,7 @@ const showToast = (message, type = "success") => {
   return (
     <>
     <ToastContainer title="Error" position="bottom-left" />
-    <div className="w-[96%] h-full bg-product">
-      <div className="bg-[#ffffff20] mix-blend-scree absolute w-full h-full backdrop-blur-3xl"></div>
+    <div className="w-[96%] h-full bg-[#f2f2f2]">
       <div className="w-full h-full backdrop-blur-3xl">
         <div className="w-full h-full  pt-16 overflow-y-scroll relative">
           {/* Main head */}
@@ -108,7 +108,7 @@ const showToast = (message, type = "success") => {
             }
 
             {/* <button className="absolute bottom-16 right-16 px-16 py-2 bg-[linear-gradient(to_left,#0bc175,#0f4586)] text-[20px] rounded-full text-white font-medium">Continue</button> */}
-            { productsData && <HoverKing event={()=>navigate("/user/ordersummery", { state: { items: [...productsData?.map( data=> data )], } })} styles={'fixed bottom-28 right-64 rounded-full font-medium '} Icon={<i className="ri-arrow-drop-right-line text-[50px] "></i>} >Continue</HoverKing>}
+            { productsData.length>0 && <HoverKing event={()=>navigate("/user/ordersummery", { state: { items: [...productsData?.map( data=> data )], } })} styles={'fixed bottom-28 right-64 rounded-full font-medium '} Icon={<i className="ri-arrow-drop-right-line text-[50px]  text-white"></i>} >Continue</HoverKing>}
 
         </div>
       </div>

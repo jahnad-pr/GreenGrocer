@@ -4,20 +4,11 @@ import netb from '../../../../../assets/images/netb.png'
 import code from '../../../../../assets/images/cod.png'
 import deb from '../../../../../assets/images/debo.png'
 import roz from '../../../../../assets/images/roz.png'
-import coin from '../../../../../assets/images/con.png'
+import coin from '../../../../../assets/images/gCoin.png'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePlaceOrderMutation } from '../../../../../services/User/userApi';
 import { toast } from 'react-hot-toast';
-
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
+import { loadRazorpayScript, createRazorpayOrder, initializeRazorpayPayment } from '../../../../../utils/razorpay';
 
 const OrderPayment = ({userData}) => {
   const [placeOrder, { error, data }] = usePlaceOrderMutation();
@@ -48,87 +39,41 @@ const OrderPayment = ({userData}) => {
         return;
       }
 
-      // Create order on server
-      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/user/razorpay/create-order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const orderData = await createRazorpayOrder(currentData.price);
+
+      initializeRazorpayPayment({
+        orderData,
+        keyId: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        userData,
+        onSuccess: async (paymentDetails) => {
+          const orderData = {
+            user: userData._id,
+            delivery_address: currentData.address,
+            payment_method: selectedMethod,
+            coupon: '',
+            items: currentData.items,
+            price: {
+              grandPrice: currentData.price,
+              discountPrice: 0
+            },
+            order_id: generateOrderId(),
+            time: Date.now(),
+            total_quantity: currentData.items?.reduce((acc, data) => acc += data.quantity, 0),
+            order_status: 'Processed',
+            payment_status: 'completed',
+            razorpay_payment_id: paymentDetails.razorpay_payment_id,
+            razorpay_order_id: paymentDetails.razorpay_order_id
+          };
+
+          await placeOrder(orderData).unwrap();
+          toast.success('Payment successful! Order placed.');
+          navigator('/user/success');
         },
-        body: JSON.stringify({
-          amount: currentData.price,
-        }),
+        onError: (error) => {
+          console.error('Payment error:', error);
+          toast.error('Payment failed');
+        }
       });
-      const orderData = await response.json();
-
-      // Configure Razorpay options
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: "Green Grocer",
-        description: "Payment for your order",
-        order_id: orderData.id,
-        handler: async function (response) {
-          try {
-            // Verify payment
-            const verifyResponse = await fetch(`${import.meta.env.VITE_SERVER_URL}/user/razorpay/verify-payment`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-            
-            const verifyData = await verifyResponse.json();
-            
-            if (verifyData.verified) {
-              // Create the order data
-              const orderData = {
-                user: userData._id,
-                delivery_address: currentData.address,
-                payment_method: selectedMethod,
-                coupon: '',
-                items: currentData.items,
-                price: {
-                  grandPrice: currentData.price,
-                  discountPrice: 0
-                },
-                order_id: generateOrderId(),
-                time: Date.now(),
-                total_quantity: currentData.items?.reduce((acc, data) => acc += data.quantity, 0),
-                order_status: 'Processed',
-                payment_status: 'completed',
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id
-              };
-
-              // Place the order directly
-              await placeOrder(orderData).unwrap();
-              toast.success('Payment successful! Order placed.');
-              navigator('/user/success');
-            } else {
-              toast.error('Payment verification failed');
-            }
-          } catch (error) {
-            console.error('Payment verification error:', error);
-            toast.error('Payment verification failed');
-          }
-        },
-        prefill: {
-          name: userData?.name || "",
-          email: userData?.email || "",
-        },
-        theme: {
-          color: "#0bc175",
-        },
-      };
-
-      const razorpayInstance = new window.Razorpay(options);
-      razorpayInstance.open();
     } catch (error) {
       console.error('Razorpay payment error:', error);
       toast.error('Payment failed');
@@ -180,21 +125,21 @@ const OrderPayment = ({userData}) => {
       name: 'UPI',
       icon: <img src={upi} alt="UPI" />,
     },
-    {
-      id: 'Net Banking',
-      name: 'Net Banking',
-      icon: <img src={netb} alt="Net Banking" />,
-    },
+    // {
+    //   id: 'Net Banking',
+    //   name: 'Net Banking',
+    //   icon: <img src={netb} alt="Net Banking" />,
+    // },
     {
       id: 'Razorpay',
       name: 'Razorpay',
       icon: <img src={roz} alt="Razorpay" />,
     },
-    {
-      id: 'Credit / Debit Card',
-      name: 'Credit / Debit Card',
-      icon: <img src={deb} alt="Card" />,
-    },
+    // {
+    //   id: 'Credit / Debit Card',
+    //   name: 'Credit / Debit Card',
+    //   icon: <img src={deb} alt="Card" />,
+    // },
     {
       id: 'Cash on Delivery',
       name: 'Cash on Delivery',
@@ -232,7 +177,7 @@ const OrderPayment = ({userData}) => {
         {/* Payment amount */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4"></h2>
-          <h1 className="text-[30px] font-bold my-16 mb-8">Payment Method</h1>
+          <h1 onClick={()=>console.log(currentData.price)} className="text-[30px] font-bold my-16 mb-8">Payment Method</h1>
 
           <div className="bg-[#e1e5f0] px-16 py-8 rounded-lg inline-block">
             <div className="text-3xl font-bold text-green-700 lemon-regular">₹ {currentData.price}</div>

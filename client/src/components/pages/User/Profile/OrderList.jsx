@@ -17,7 +17,18 @@ const OrderList = ({userData}) => {
 
   useEffect(()=>{ if(userData){ getOders(userData._id) } },[userData])
 
-  useEffect(()=>{ if(data){ setOrders(data) } },[data])
+  // initiate and sort the orders
+  useEffect(()=>{ 
+    if(data){ 
+    setOrders( datas =>
+      [...data].sort((a, b) => {
+        const dateA = new Date(a.time);
+        const dateB = new Date(b.time);
+        return dateB - dateA;
+      })
+    )  
+    }
+   },[data])
 
 
   const getStatusColor = (status) => {

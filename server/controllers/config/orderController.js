@@ -2,6 +2,7 @@ const Order = require('../../models/other/OrderModel')
 const Cart = require('../../models/other/cartModel')
 const User = require('../../models/Auth/userModel')
 const Product = require('../../models/other/productModel')
+const { addCoinToWallet } = require('./walletControll')
 
 
 module.exports.placeOrder = async (req, res) => {
@@ -82,9 +83,28 @@ module.exports.updateOrderStatus = async (req, res) => {
 
     const { id:_id, value:order_status } = req.body
 
+    
+    
     try {
+        
+        let result = ''
 
-        const result = await Order.updateOne({ _id },{ $set:{ order_status } })
+        if(order_status=='Delivered'){
+
+            // This line is not working as expected because it uses $set twice
+            // The second $set overwrites the first one, so only payment_status is updated
+            // To update both fields, we should use a single $set operation
+            result = await Order.updateOne(
+                { _id },
+                { $set: { order_status, payment_status: 'completed' } }
+            )
+
+        }else{
+            result = await Order.updateOne({ _id },{ $set:{ order_status } })
+            
+        }
+        
+        console.log(result);
 
         if(result.modifiedCount>0){
 
@@ -107,12 +127,13 @@ module.exports.cancelOrder = async (req, res) => {
 
     const { cancelId } = req.body
 
-    console.log(cancelId);
     
-
+    
     try {
-
-        const result = await Order.updateOne({ _id:cancelId },{ $set:{ order_status:'Cancelled' } })
+        
+        const result = await Order.updateOne({ _id:cancelId },{ $set:{ order_status:'Cancelled',payment_status:'cancelled' } })
+        
+        console.log(result);
 
         if(result.modifiedCount>0){
 
@@ -129,4 +150,63 @@ module.exports.cancelOrder = async (req, res) => {
         return res.status(400).json(error.message)
     }
     
+}
+
+module.exports.returnOrder = async (req, res) => {
+    try {
+        const { cancelId } = req.body;
+        
+        // Get order details
+        const order = await Order.findOne({ _id: cancelId });
+        if (!order) {
+            return res.status(404).json('Order not found');
+        }
+
+        // Update order status
+        const result = await Order.updateOne(
+            { _id: cancelId },
+            { $set: { order_status: 'Cancelled', payment_status: 'cancelled' } }
+        );
+
+        if (result.modifiedCount > 0) {
+            // Create a new request object for wallet update
+            if(order.payment_status==='completed'){
+
+                const walletReq = {
+                    body: {
+                        amount: order.price.grandPrice,
+                        status: 'cancelled',
+                        transaction_id: `REFUND-${order._id}`,
+                        type: 'credit',
+                        description: `Refund for order ${order._id}`
+                    },
+                    user: req.user
+                };
+
+                // Create a new response object
+                const walletRes = {
+                    status: function(code) {
+                        return {
+                            json: function(data) {
+                                if (code === 200) {
+                                    res.status(200).json('Order cancelled and amount refunded');
+                                } else {
+                                    res.status(code).json(data);
+                                }
+                            }
+                        };
+                    }
+            }
+            // Process wallet update
+            await addCoinToWallet(walletReq, walletRes);
+
+            };
+
+        } else {
+            return res.status(400).json('Something went wrong while cancelling order');
+        }
+    } catch (error) {
+        console.error('Return order error:', error);
+        return res.status(500).json(error.message);
+    }
 }

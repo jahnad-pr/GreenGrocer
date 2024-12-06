@@ -48,6 +48,20 @@ const userSchema = new mongoose.Schema({
     couponApplyed:{
         type:Object,
         default:{}
+    },
+    wallet:{
+        amount:{
+            type:Number,
+            default:0
+        },
+        createdAt:{
+            type:Date,
+            default:Date.now()
+        },
+        updatedAt:{
+            type:Date,
+            default:Date.now()
+        }
     }
 });
 

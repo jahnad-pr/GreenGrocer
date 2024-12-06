@@ -3,8 +3,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { userAuthApi } from './userAuthApi';
 import { userDetailsApi } from './userDetailsApi';
 import { couponEndpoints } from './couponEndPoit';
-import { userCategoriesApi } from './userCategoriesApi';
 import { userProductsApi } from './userProductsApi';
+import { userCategoriesApi } from './userCategoriesApi';
+import { walletEndpoints } from './WalletEndPoin';
 import { AdressMangeApi } from './AddressMange';
 import { userOrderApi } from './OrderManage'
 import { CartManage } from './CartMange'
@@ -16,6 +17,7 @@ export const userApiSlice = createApi({
     ...userAuthApi(builder),
     ...userDetailsApi(builder),
     ...couponEndpoints(builder),
+    ...walletEndpoints(builder),
     ...userCategoriesApi(builder),
     ...userProductsApi(builder),
     ...AdressMangeApi(builder),
@@ -58,6 +60,7 @@ export const {
   useGetOdersMutation,
   useUpdateOrderStatusMutation,
   useCancelOrderMutation,
+  useReturnOrderMutation,
 
   useAddtoCartMutation,
   useCheckPorductInCartMutation,
@@ -68,6 +71,9 @@ export const {
   useGetAllCollectionMutation,
 
   useGetAllCouponsMutation,
+
+  useAddCoinToWalletMutation,
+  useGetUserTransactionsMutation,
 
   useAddToBookmarkMutation,
   useCheckItemIntheBookmarkMutation,

@@ -48,6 +48,7 @@ import { Tostify } from "./components/parts/Toast/Tostify";
 import Coupons from "./components/pages/Admin/Config/Coupons";
 import CouponManage from "./components/pages/Admin/Config/CouponManage";
 import CouponsList from "./components/pages/User/Profile/CouponsList";
+import Wallet from "./components/pages/User/Profile/Wallet";
 
 export default function App() {
 
@@ -108,6 +109,7 @@ export default function App() {
           <Route path="/user/cart" element={ <UserProtecter><Cart/></UserProtecter> } />
           <Route path="/user/bookmarks" element={ <UserProtecter><Bookmark/></UserProtecter> } />
           <Route path="/user/Coupons" element={ <UserProtecter><CouponsList/></UserProtecter> } />
+          <Route path="/user/Wallet" element={ <UserProtecter><Wallet/></UserProtecter> } />
           </Routes>
 
         <Routes>

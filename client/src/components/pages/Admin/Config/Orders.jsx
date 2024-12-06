@@ -78,7 +78,11 @@ const Orders = () => {
   useEffect(() => {
     console.log(data);
     if (data) {
-      setOrdersData(data);
+      setOrdersData(()=>{
+        return [...data].sort((a, b) => {
+          return new Date(b.time) - new Date(a.time);
+        })
+      });
     }
   }, [data]);
 

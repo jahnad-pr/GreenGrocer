@@ -23,6 +23,7 @@ export default function Navigator({userData}) {
         <i onClick={()=>navigator('/user/bookmarks')} className="ri-bookmark-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>
         <span className='flex-1'></span>
         { location.pathname.startsWith('/user/profile') && <i onClick={()=>navigator('/user/profile/logout')} className="ri-logout-circle-r-line text-[30px] text-red-600 hover:scale-110 duration-500 cursor-pointer"></i>}
+        { location.pathname.startsWith('/user/profile') && <i onClick={()=>navigator('/user/Wallet')} className="ri-wallet-line text-[30px] text-green-600 hover:scale-110 duration-500 cursor-pointer"></i>}
         { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}`)} className="ri-user-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>}
         { userData && <i onClick={()=>navigator(`/user/Cart`)}  className="ri-shopping-cart-line text-[30px] cursor-pointer hover:text-green-600 transition-colors"></i>}
         </div>

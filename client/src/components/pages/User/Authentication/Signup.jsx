@@ -7,7 +7,7 @@ import { IoAdd } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 // import { ToastContainer, toast } from "react-toastify";
 import ForgotPassword from "./ForgotPassword";
-import { Tostify,showToast } from '../../../parts/Toast/Tostify'
+import { showToast } from '../../../parts/Toast/Tostify'
 
 import {
   useLoginMutation,
@@ -88,8 +88,9 @@ export default function Signup({ setSign }) {
   }, [loginError])
 
   useEffect(() => {
+    // console.log(googleError);
     if (googleError) {
-      showToast(googleError, 'error')
+      showToast(googleError.data, 'error')
     }
   }, [googleError])
 

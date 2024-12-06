@@ -7,7 +7,7 @@ import { Timeline } from "../main/ui/Timeline"
 import { motion } from 'framer-motion'
 import HoverKing from '../../../parts/buttons/HoverKing'
 import DeletePopup from '../../../parts/popups/DeletePopup'
-import { useCancelOrderMutation } from '../../../../services/User/userApi'
+import { useCancelOrderMutation, useReturnOrderMutation } from '../../../../services/User/userApi'
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@";
 const NUMBER_CHARS = "0123456789";
@@ -114,8 +114,12 @@ const formatDate = (dateString) => {
 };
 
 export default function OrderDetails() {
+
     const [cancelOrder, { data: cancelData }] = useCancelOrderMutation();
+    const [returnOrder, { data: returnData }] = useReturnOrderMutation();
+
     const [currentPosition, setCurrentPosition] = useState(1)
+    const [popOwner,setPopOwner] = useState('cancel')
     const [deleteData, setDeleteData] = useState(null);
     const [limit, setLimit] = useState(0)
     const [crrentOrder, setCreentOrder] = useState([])
@@ -141,6 +145,15 @@ export default function OrderDetails() {
 
     // cancel Order
     const handleCancel = (id, index) => {
+        setPopOwner('cancel')
+        setDeleteData({ id, index });
+        showPopup(true);
+    };
+
+
+    // return Order
+    const handleReturn = (id, index) => {
+        setPopOwner('return')
         setDeleteData({ id, index });
         showPopup(true);
       };
@@ -151,13 +164,13 @@ export default function OrderDetails() {
         <>
         {popup && (
         <DeletePopup
-          updater={cancelOrder}
-          deleteData={deleteData}
-          showPopup={showPopup}
-          action="Cancel order"
-          isUser={true}
+        updater={popOwner==='cancel'?cancelOrder:returnOrder}
+        deleteData={deleteData}
+        showPopup={showPopup}
+        action={popOwner==='cancel'?"Cancel order":"Return order"}
+        isUser={true}
         />
-      )}
+        )}
         <motion.div 
             initial={{ opacity: 1, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -324,6 +337,9 @@ export default function OrderDetails() {
                             { orderStatus!=='Cancelled' && orderStatus!=='Delivered' && orderStatus!=='Shipped' &&  
                             <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[white] rounded-full"></i>} >Cancell order</HoverKing>}
 
+                                {orderStatus === 'Shipped' &&
+                                    <HoverKing event={() => handleReturn(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-arrow-go-back-line text-[30px] text-[white] rounded-full"></i>} >Return order</HoverKing>}
+
                                 { orderStatus === 'Shipped' && 
                                 <div className='flex flex-col gap-2'>
                                     <h1 className='text-[25px] mt-5'>Delivery Alert</h1>
@@ -361,9 +377,12 @@ export default function OrderDetails() {
                             transition={{ delay: 0.8, duration: 0.5 }}
                             className='min-w-[300px]'
                         >
-                            <p className='opacity-50'>Order payment Method & Date</p>
+                            <p onClick={()=>alert(orderStatus)} className='opacity-50 '>Order payment Method & Date</p>
                             <span className='text-[20px] font-bold'>
-                                {crrentOrder?.payment_method} : 
+                                <span>
+                                    {crrentOrder?.payment_method} : <span className={`${crrentOrder?.payment_status === 'completed' ? 'text-green-600' : crrentOrder?.payment_status === 'pending' ? 'text-orange-500' : 'text-red-500'}`}>
+                                        {orderStatus==='cancelled' ? '':crrentOrder?.payment_status}</span>
+                                </span>
                                 <span className='opacity-75'>
                                 <br></br>
                                     {formatDate(crrentOrder?.time)}
