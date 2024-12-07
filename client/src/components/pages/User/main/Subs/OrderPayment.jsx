@@ -12,7 +12,7 @@ import { loadRazorpayScript, createRazorpayOrder, initializeRazorpayPayment } fr
 
 const OrderPayment = ({userData}) => {
   const [placeOrder, { error, data }] = usePlaceOrderMutation();
-  const [selectedMethod, setSelectedMethod] = useState('cash');
+  const [selectedMethod, setSelectedMethod] = useState('Razorpay');
   const [currentData, setCurrentData] = useState('cash');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,11 +50,11 @@ const OrderPayment = ({userData}) => {
             user: userData._id,
             delivery_address: currentData.address,
             payment_method: selectedMethod,
-            coupon: '',
+            coupon: currentData.coupon,
             items: currentData.items,
             price: {
               grandPrice: currentData.price,
-              discountPrice: 0
+              discountPrice: currentData.offerPrice
             },
             order_id: generateOrderId(),
             time: Date.now(),
@@ -99,7 +99,7 @@ const OrderPayment = ({userData}) => {
         items: currentData.items,
         price: {
           grandPrice: currentData.price,
-          discountPrice: 0
+          discountPrice: currentData.offerPrice
         },
         order_id: generateOrderId(),
         time: Date.now(),

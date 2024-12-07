@@ -6,9 +6,9 @@ import Recents from "../../../parts/Main/Recents";
 import { ToastContainer, toast } from "react-toastify";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import "react-toastify/dist/ReactToastify.css";
-import { useCancelOrderMutation } from "../../../../services/Admin/adminApi";
+import { useCancelOrderMutation, useGetAllOrdersMutation } from "../../../../services/Admin/adminApi";
 import {
-  useGetOdersMutation,
+  // usegetAllOrdersMutation,
   useUpdateOrderStatusMutation,
 } from "../../../../services/User/userApi";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
@@ -18,7 +18,7 @@ const Orders = () => {
   const location = useLocation();
 
   // API mutations
-  const [getOders, { data }] = useGetOdersMutation();
+  const [getAllOrders, { data }] = useGetAllOrdersMutation();
   const [updateOrderStatus, { data: statusData }] =
     useUpdateOrderStatusMutation();
   const [cancelOrder, { data: cancelData }] = useCancelOrderMutation();
@@ -121,7 +121,7 @@ const Orders = () => {
   // Fetch orders on component mount
   useEffect(() => {
     const fetchorders = async () => {
-      await getOders().unwrap();
+      await getAllOrders().unwrap();
     };
     fetchorders();
   }, []);
@@ -223,35 +223,42 @@ const Orders = () => {
         <div className="w-full h-full bg-[radial-gradient(circle_at_10%_10%,_#f1faeb,rgba(255,0,0,0)_100%);] rounded-tl-[65px] flex justify-center pb-60 overflow-hidden mb-20">
           <div className="w-full px-4 mt-5 pb-20">
             {/* Search and Filter Section */}
-            <div className="w-full h-16 flex items-center gap-4 mb-4 justify-center">
-              {/* Search Field */}
-              <div className="bg-[#00000008] py-[10px] px-4 flex gap-4 rounded-full items-center">
-                <input
-                  className="bg-transparent outline-none w-40"
-                  type="text"
-                  placeholder="Search here"
-                />
-                <i className="ri-search-2-line text-[20px] text-[#1fad63]"></i>
+            <div className="flex flex-col gap-4 mb-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Orders Management</h2>
+              
               </div>
 
-              {/* Sort Selector */}
-              <div className="bg-[#00000008] py-1 px-4 flex gap-4 rounded-full items-center">
-                <i className="ri-align-left text-[20px] text-[#1fad63]"></i>
-                <select className="bg-transparent outline-none custom-selecter">
-                  <option value="">Name</option>
-                  <option value="">Amount</option>
-                  <option value="">Latest</option>
-                  <option value="">Oldest</option>
-                </select>
-              </div>
+              <div className="w-full flex items-center gap-4 justify-center">
+                {/* Search Field */}
+                <div className="bg-[#00000008] py-[10px] px-4 flex gap-4 rounded-full items-center">
+                  <input
+                    className="bg-transparent outline-none w-40"
+                    type="text"
+                    placeholder="Search here"
+                  />
+                  <i className="ri-search-2-line text-[20px] text-[#1fad63]"></i>
+                </div>
 
-              {/* Order Selector */}
-              <div className="bg-[#00000008] py-1 px-4 flex gap-4 rounded-full items-center">
-                <i className="ri-align-justify text-[20px] text-[#1fad63]"></i>
-                <select className="bg-transparent outline-none custom-selecter">
-                  <option value="">Ascending</option>
-                  <option value="">Descending</option>
-                </select>
+                {/* Sort Selector */}
+                <div className="bg-[#00000008] py-1 px-4 flex gap-4 rounded-full items-center">
+                  <i className="ri-align-left text-[20px] text-[#1fad63]"></i>
+                  <select className="bg-transparent outline-none custom-selecter">
+                    <option value="">Name</option>
+                    <option value="">Amount</option>
+                    <option value="">Latest</option>
+                    <option value="">Oldest</option>
+                  </select>
+                </div>
+
+                {/* Order Selector */}
+                <div className="bg-[#00000008] py-1 px-4 flex gap-4 rounded-full items-center">
+                  <i className="ri-align-justify text-[20px] text-[#1fad63]"></i>
+                  <select className="bg-transparent outline-none custom-selecter">
+                    <option value="">Ascending</option>
+                    <option value="">Descending</option>
+                  </select>
+                </div>
               </div>
             </div>
 

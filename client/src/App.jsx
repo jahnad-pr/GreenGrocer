@@ -49,6 +49,7 @@ import Coupons from "./components/pages/Admin/Config/Coupons";
 import CouponManage from "./components/pages/Admin/Config/CouponManage";
 import CouponsList from "./components/pages/User/Profile/CouponsList";
 import Wallet from "./components/pages/User/Profile/Wallet";
+import SalesReport from "./components/pages/Admin/Config/SalesReport";
 
 export default function App() {
 
@@ -84,6 +85,7 @@ export default function App() {
             <Route path="/admin/Offers/manage" element={<AdminProtucter><OfferManage /></AdminProtucter>} /> 
             <Route path="/admin/Offers" element={<AdminProtucter><Offers /></AdminProtucter>} /> 
             <Route path="/admin/Orders" element={<AdminProtucter><Orders /></AdminProtucter>} />
+            <Route path="/admin/sales" element={<AdminProtucter><SalesReport /></AdminProtucter>} />
             <Route path="/admin/Coupons" element={<AdminProtucter><Coupons /></AdminProtucter>} />
             <Route path="/admin/Coupons/manage" element={<AdminProtucter><CouponManage /></AdminProtucter>} />
           <Route path="*" element={<NotFound />} />

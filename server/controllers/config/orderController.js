@@ -210,3 +210,17 @@ module.exports.returnOrder = async (req, res) => {
         return res.status(500).json(error.message);
     }
 }
+
+module.exports.getAllOrders = async (req, res) => {
+
+    try {
+        const orders = await Order.find({}).populate('items.product').populate('user','username')
+
+        return res.status(200).json(orders)
+
+    } catch (error) {
+
+        return res.status(400).json(error.message)
+        
+    }
+}

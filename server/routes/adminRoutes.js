@@ -6,7 +6,7 @@ const { upsertCollection,getCollections,updateCollection } = require('../control
 const { upsertCategory, getCategories, updateCategory, } = require('../controllers/config/categoryController')
 const { updateCoupon, getAllCoupons } = require('../controllers/config/couponControll')
 const { uploadImages,storage , upload } = require('../controllers/config/utilityController')
-const { updateOrderStatus,cancelOrder } = require('../controllers/config/orderController')
+const { updateOrderStatus,cancelOrder,getAllOrders } = require('../controllers/config/orderController')
 const path = require('path');
 const { adminAuthMiddleware } = require('../middlewares/checkAdmin');
 
@@ -31,6 +31,8 @@ router.put('/upsertProducts',adminAuthMiddleware,upsertProducts);
 router.get('/getAllDiscounts',adminAuthMiddleware,getAllDiscounts);
 router.put('/updateCoupon',adminAuthMiddleware,updateCoupon);
 router.get('/getAllCoupons',adminAuthMiddleware,getAllCoupons);
+
+router.get('/getAllOrders',adminAuthMiddleware,getAllOrders);
 
 
 router.patch('/updateUserAccess',adminAuthMiddleware,updateUserAccess);

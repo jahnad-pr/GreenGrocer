@@ -5,6 +5,7 @@ import { categoryEndpoints } from './categoryEndpoints';
 import { collectionEndpoints } from './collectionEndpoints';
 import { productEndpoints } from './productEndpoints';
 import { couponEndpoints } from './couponEndPoit';
+import { orderEndpoints } from './OrdersApi';
 
 export const adminApiSlice = createApi({
   reducerPath: 'adminApi',
@@ -16,6 +17,7 @@ export const adminApiSlice = createApi({
     ...collectionEndpoints(builder),
     ...productEndpoints(builder),
     ...couponEndpoints(builder),
+    ...orderEndpoints(builder),
   }),
 });
 
@@ -40,4 +42,7 @@ export const {
   useGetAllDiscountsMutation,
   useUpdateCouponMutation,
   useGetAllCouponsMutation,
+
+  useGetAllOrdersMutation,
+  
 } = adminApiSlice;

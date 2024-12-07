@@ -6,8 +6,15 @@ import MainChart from '../../../parts/Main/MainChart';
 import AngleCircle from '../../../parts/Main/AngleCircleChart';
 import LineChart from '../../../parts/Main/LineChart';
 import Recents from '../../../parts/Main/Recents';
+// import { downloadSalesReport } from '../../../../services/Admin/salesApi';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashHome() {
+
+  // const navigate = useNavigate();
+
+
+
   return (
     <>
     <div className='w-[75%] h-full pt-[86px] rounded-tl-3xl'>
@@ -18,9 +25,9 @@ export default function DashHome() {
 
           {/* profile deatail and message */}
           <div className="w-[50%] h-[35%]  flex ic justify-center px-40">
-           
-           <AngleCircle />
-           Totle sales and stats
+          
+          <AngleCircle />
+          Totle sales and stats
           
           </div>
 
@@ -65,6 +72,12 @@ export default function DashHome() {
             </div>
           </div>
           
+          {/* <div className="w-full h-60 flex items-center">
+            <button onClick={()=>navigate('/admin/sales')} className="bg-blue-500 text-white py-2 px-4 rounded">
+              Download Sales Report
+            </button>
+          </div>
+           */}
           </div>
 
 

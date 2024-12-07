@@ -38,7 +38,7 @@ export default function OrderSummary({userData}) {
     discount: 0,
     taxes: 5.3,
     deliveryFee: 40,
-    coupon: 15,
+    coupon:0,
   });
 
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -253,23 +253,24 @@ export default function OrderSummary({userData}) {
         <div className="mt-4 bg-[#ffffff60] p-4 rounded-[20px]">
           <div className="flex justify-between">
             <span>Items</span>
-            <span className="font-bold">₹{summary.items/2}</span>
+            <span className="font-bold">₹ {summary.items/2}</span>
           </div>
           <div className="flex justify-between">
             <span>Discount</span>
-            <span className="font-bold">-₹{summary.discount/2}</span>
+            <span className="font-bold">-₹ {summary.discount/2}</span>
           </div>
           <div className="flex justify-between">
             <span>Taxes</span>
-            <span className="font-bold">₹{summary.taxes}</span>
+            <span className="font-bold">₹ {summary.taxes}</span>
           </div>
           <div className="flex justify-between">
             <span>Delivery Fee</span>
-            <span className="font-bold">₹{summary.deliveryFee}</span>
+            <span className="font-bold">₹ {summary.deliveryFee}</span>
           </div>
           <div className="flex justify-between">
+            
             <span>Coupon</span>
-            <span className="font-bold">-₹{summary.coupon}</span>
+            <span className="font-bold">-₹ {counDiscount.toFixed(2)||0}</span>
           </div>
           <div className="flex justify-between mt-4 text-xl font-bold">
             <span>Grand Total</span>
@@ -398,7 +399,7 @@ export default function OrderSummary({userData}) {
           <div className="mt-8 flex justify-end">
             { adressData?.length > 0 ? (
               <HoverKing 
-                event={()=>navigate('/user/payment',{ state:{ order:{ address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt,coupon:{ code:applyCoupon.code, amount: counDiscount,usage:userData?.couponApplyed[applyCoupon?.code] || 0 } } } })} 
+                event={()=>navigate('/user/payment',{ state:{ order:{ offerPrice:summary.discount/2,address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt,coupon:{ code:applyCoupon.code, amount: counDiscount,usage:userData?.couponApplyed[applyCoupon?.code] || 0 } } } })} 
                 styles={'fixed bottom-12 border-0 right-20 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
                 Icon={<i className="ri-arrow-right-line text-[30px] rounded-full text-white"></i>}
               >
