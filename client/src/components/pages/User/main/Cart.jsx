@@ -108,7 +108,7 @@ const showToast = (message, type = "success") => {
             }
 
             {/* <button className="absolute bottom-16 right-16 px-16 py-2 bg-[linear-gradient(to_left,#0bc175,#0f4586)] text-[20px] rounded-full text-white font-medium">Continue</button> */}
-            { productsData.length>0 && <HoverKing event={()=>navigate("/user/ordersummery", { state: { items: [...productsData?.map( data=> data )], } })} styles={'fixed bottom-28 right-64 rounded-full font-medium '} Icon={<i className="ri-arrow-drop-right-line text-[50px]  text-white"></i>} >Continue</HoverKing>}
+            { productsData.length>0 && <HoverKing event={()=>navigate("/user/ordersummery", { state: { items: [...productsData?.map( data=> data )], } })} styles={'fixed bg-[red] bottom-28 right-64 rounded-full font-medium '} Icon={<i className="ri-arrow-drop-right-line text-[50px]  text-white"></i>} >Continue</HoverKing>}
 
         </div>
       </div>

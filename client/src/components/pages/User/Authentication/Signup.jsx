@@ -32,7 +32,7 @@ export default function Signup({ setSign }) {
     confirmPassword: "",
   });
   const [upData, setUpData] = useState({ email: "", password: "" });
-  const [mission, setMission] = useState(true); // Toggle between signup and login screens
+  const [mission, setMission] = useState(false); // Toggle between signup and login screens
   const [showPassword, setShowPassword] = useState(false);
   const [popup, showPopup] = useState(false);
   const [dataForm, setData] = useState(false);
@@ -78,6 +78,7 @@ export default function Signup({ setSign }) {
       showToast(signUpError?.data?.message, 'error')
     }
   }, [signUpError])
+
 
   useEffect(() => {
     console.log(loginError);

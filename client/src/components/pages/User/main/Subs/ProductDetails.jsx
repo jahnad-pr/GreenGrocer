@@ -518,11 +518,11 @@ useEffect(() => {
                                                 
                                                 // Use the discount with higher percentage
                                                 if (productPercent > categoryPercent) {
-                                                    return product?.regularPrice - (product?.discount?.isPercentage ? 
-                                                        (product?.regularPrice * productVal / 100) : productVal);
+                                                    return (product?.regularPrice - (product?.discount?.isPercentage ? 
+                                                        (product?.regularPrice * productVal / 100) : productVal)).toFixed(2);
                                                 } else {
-                                                    return product?.regularPrice - (product?.category?.discount?.isPercentage ? 
-                                                        (product?.regularPrice * categoryVal / 100) : categoryVal);
+                                                    return (product?.regularPrice - (product?.category?.discount?.isPercentage ? 
+                                                        (product?.regularPrice * categoryVal / 100) : categoryVal)).toFixed(2);
                                                 }
                                             })()}</h1>
                                             <p className="opacity-55">With inc tax</p>
@@ -553,11 +553,11 @@ useEffect(() => {
                                                     
                                                     // Use the discount with higher percentage
                                                     if (productPercent > categoryPercent) {
-                                                        return product?.regularPrice - (product?.discount?.isPercentage ? 
-                                                            (product?.regularPrice * productVal / 100) : productVal);
+                                                        return (product?.regularPrice - (product?.discount?.isPercentage ? 
+                                                            (product?.regularPrice * productVal / 100) : productVal)).toFixed(2);
                                                     } else {
-                                                        return product?.regularPrice - (product?.category?.discount?.isPercentage ? 
-                                                            (product?.regularPrice * categoryVal / 100) : categoryVal);
+                                                        return (product?.regularPrice - (product?.category?.discount?.isPercentage ? 
+                                                            (product?.regularPrice * categoryVal / 100) : categoryVal)).toFixed(2);
                                                     }
                                                 })()}</p>&nbsp;&nbsp;&nbsp;
                                                 <s>

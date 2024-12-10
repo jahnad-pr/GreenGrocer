@@ -20,12 +20,15 @@ const OrderPayment = ({userData}) => {
   const [selectedMethod, setSelectedMethod] = useState('Razorpay');
   const [currentData, setCurrentData] = useState('cash');
   const [isLoading, setIsLoading] = useState(false);
+  const [orderData, setOrderData] = useState(false);
 
   const location = useLocation()
   const navigator = useNavigate()
 
   useEffect(() => {
-    if(data){ navigator('/user/success') } 
+    if(data){
+      navigator('/user/success',{ state: { data:{...data,...location.state.add} } }) 
+    } 
   }, [data])
 
   useEffect(() =>{
@@ -68,7 +71,12 @@ const OrderPayment = ({userData}) => {
               items: currentData.items,
               price: {
                 grandPrice: currentData.price,
-                discountPrice: currentData.offerPrice
+                discountPrice: currentData.offerPrice,
+                others:{
+                  tax:location.state.add.taxes,
+                  delivery:location.state.add.deliveryFee,
+                  totel:location.state.add.totelProducts,
+                }
               },
               order_id: generateOrderId(),
               time: Date.now(),
@@ -78,6 +86,8 @@ const OrderPayment = ({userData}) => {
               razorpay_payment_id: paymentDetails.razorpay_payment_id,
               razorpay_order_id: paymentDetails.razorpay_order_id
             };
+
+            setOrderData(orderData)
   
             await placeOrder(orderData).unwrap();
             toast.success('Payment successful! Order placed.');
@@ -104,7 +114,12 @@ const OrderPayment = ({userData}) => {
             items: currentData.items,
             price: {
               grandPrice: currentData.price,
-              discountPrice: currentData.offerPrice
+              discountPrice: currentData.offerPrice,
+              others:{
+                tax:location.state.add.taxes,
+                delivery:location.state.add.deliveryFee,
+                totel:location.state.add.totelProducts,
+              }
             },
             order_id: generateOrderId(),
             time: Date.now(),
@@ -114,6 +129,7 @@ const OrderPayment = ({userData}) => {
             razorpay_payment_id: error?.metadata?.payment_id,
             razorpay_order_id: error?.metadata?.payment_id
           };
+          setOrderData(orderData)
           await placeOrder(orderData).unwrap();
           toast.success('Payment filed! Order placed.');
           }else{
@@ -146,7 +162,12 @@ const OrderPayment = ({userData}) => {
         items: currentData.items,
         price: {
           grandPrice: currentData.price,
-          discountPrice: currentData.offerPrice
+          discountPrice: currentData.offerPrice,
+          others:{
+            tax:location.state.add.taxes,
+            delivery:location.state.add.deliveryFee,
+            totel:location.state.add.totelProducts,
+          }
         },
         order_id: generateOrderId(),
         time: Date.now(),
@@ -155,6 +176,7 @@ const OrderPayment = ({userData}) => {
         payment_status: selectedMethod === 'Cash on Delivery' ? 'pending' : 'completed',
       };
 
+      setOrderData(orderData)
       await placeOrder(orderData).unwrap();
       toast.success('Order placed successfully!');
       navigator('/user/success');

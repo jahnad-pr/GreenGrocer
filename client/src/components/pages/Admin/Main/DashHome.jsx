@@ -10,6 +10,7 @@ import Recents from '../../../parts/Main/Recents';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllOrdersMutation, useGetChartsDetailsMutation } from '../../../../services/Admin/adminApi';
 import { motion, AnimatePresence } from 'framer-motion';
+import StatisticPopup from '../../../parts/popups/StatisticPopup';
 
 export default function DashHome() {
 
@@ -670,117 +671,117 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
     { value: 'last30Days', label: "Last 30 Days" }
   ];
 
-  const StatisticPopup = ({ type, onClose }) => {
-    // Function to format field names and values
-    const formatFieldName = (key) => {
-      // Remove camelCase and convert to Title Case
-      return key
-        .replace(/([A-Z])/g, ' $1')  // Insert space before capital letters
-        .replace(/^./, function(str){ return str.toUpperCase(); })  // Capitalize first letter
-    };
+  // const StatisticPopup = ({ type, onClose }) => {
+  //   // Function to format field names and values
+  //   const formatFieldName = (key) => {
+  //     // Remove camelCase and convert to Title Case
+  //     return key
+  //       .replace(/([A-Z])/g, ' $1')  // Insert space before capital letters
+  //       .replace(/^./, function(str){ return str.toUpperCase(); })  // Capitalize first letter
+  //   };
 
-    // Function to format values (add currency, percentage, etc.)
-    const formatValue = (key, value) => {
-      // Check for specific formatting based on key
-      if (key.toLowerCase().includes('revenue') || key.toLowerCase().includes('price')) {
-        return `₹${value}`;
-      }
-      if (key.toLowerCase().includes('percentage') || key.toLowerCase().includes('percent')) {
-        return `${value}%`;
-      }
-      return value;
-    };
+  //   // Function to format values (add currency, percentage, etc.)
+  //   const formatValue = (key, value) => {
+  //     // Check for specific formatting based on key
+  //     if (key.toLowerCase().includes('revenue') || key.toLowerCase().includes('price')) {
+  //       return `₹${value}`;
+  //     }
+  //     if (key.toLowerCase().includes('percentage') || key.toLowerCase().includes('percent')) {
+  //       return `${value}%`;
+  //     }
+  //     return value;
+  //   };
 
-    // Filter out unwanted keys and create formatted list
-    const formattedFields = Object.entries(type || {})
-      .filter(([key]) => {
-        // Exclude these keys from display
-        const excludedKeys = [
-          'id', 
-          'createdAt', 
-          'updatedAt', 
-          'deletedAt', 
-          '__v', 
-          '_id'
-        ];
-        return !excludedKeys.some(excluded => key.toLowerCase().includes(excluded));
-      })
-      .map(([key, value]) => ({
-        label: formatFieldName(key),
-        value: formatValue(key, value)
-      }));
+  //   // Filter out unwanted keys and create formatted list
+  //   const formattedFields = Object.entries(type || {})
+  //     .filter(([key]) => {
+  //       // Exclude these keys from display
+  //       const excludedKeys = [
+  //         'id', 
+  //         'createdAt', 
+  //         'updatedAt', 
+  //         'deletedAt', 
+  //         '__v', 
+  //         '_id'
+  //       ];
+  //       return !excludedKeys.some(excluded => key.toLowerCase().includes(excluded));
+  //     })
+  //     .map(([key, value]) => ({
+  //       label: formatFieldName(key),
+  //       value: formatValue(key, value)
+  //     }));
 
-    return (
-      <AnimatePresence>
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className='w-screen h-screen absolute left-0 top-0 bg-[#00000083] backdrop-blur-sm z-20 grid place-items-center text-white'
-        >
-          <motion.div
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ opacity: 1, backdropFilter: "blur(16px)" }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0"
-            onClick={onClose}
-          />
+  //   return (
+  //     <AnimatePresence>
+  //       <motion.div 
+  //         initial={{ opacity: 0 }}
+  //         animate={{ opacity: 1 }}
+  //         exit={{ opacity: 0 }}
+  //         className='w-screen h-screen absolute left-0 top-0 bg-[#00000083] backdrop-blur-sm z-20 grid place-items-center text-white'
+  //       >
+  //         <motion.div
+  //           initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+  //           animate={{ opacity: 1, backdropFilter: "blur(16px)" }}
+  //           exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+  //           transition={{ duration: 0.5 }}
+  //           className="absolute inset-0"
+  //           onClick={onClose}
+  //         />
 
-          <motion.div 
-            initial={{ 
-              scale: 0.4,
-              opacity: 0,
-              rotateX: 90,
-              y: -60
-            }}
-            animate={{ 
-              scale: 1,
-              opacity: 1,
-              rotateX: 0,
-              y: 0
-            }}
-            exit={{ 
-              scale: 0.4,
-              opacity: 0,
-              rotateX: 90,
-              y: -60
-            }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 300, 
-              damping: 20 
-            }}
-            className="bg-white rounded-3xl p-8 w-[600px] shadow-2xl relative z-30"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
-                {formattedFields.length > 0 ? `${formattedFields[0].label.split(' ')[0]} Details` : 'Details'}
-              </h2>
-              <button 
-                onClick={onClose}
-                className="text-gray-500 hover:text-gray-800 transition-colors"
-              >
-                ✕
-              </button>
-            </div>
+  //         <motion.div 
+  //           initial={{ 
+  //             scale: 0.4,
+  //             opacity: 0,
+  //             rotateX: 90,
+  //             y: -60
+  //           }}
+  //           animate={{ 
+  //             scale: 1,
+  //             opacity: 1,
+  //             rotateX: 0,
+  //             y: 0
+  //           }}
+  //           exit={{ 
+  //             scale: 0.4,
+  //             opacity: 0,
+  //             rotateX: 90,
+  //             y: -60
+  //           }}
+  //           transition={{ 
+  //             type: "spring", 
+  //             stiffness: 300, 
+  //             damping: 20 
+  //           }}
+  //           className="bg-white rounded-3xl p-8 w-[600px] shadow-2xl relative z-30"
+  //         >
+  //           <div className="flex justify-between items-center mb-6">
+  //             <h2 className="text-2xl font-bold text-gray-800">
+  //               {formattedFields.length > 0 ? `${formattedFields[0].label.split(' ')[0]} Details` : 'Details'}
+  //             </h2>
+  //             <button 
+  //               onClick={onClose}
+  //               className="text-gray-500 hover:text-gray-800 transition-colors"
+  //             >
+  //               ✕
+  //             </button>
+  //           </div>
             
-            <div className="space-y-4">
-              {formattedFields.map((item, index) => (
-                <div 
-                  key={index} 
-                  className="flex justify-between items-center bg-gray-100 p-4 rounded-xl"
-                >
-                  <span className="text-gray-700 font-medium">{item.label}</span>
-                  <span className="text-gray-900 font-bold">{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-    );
-  };
+  //           <div className="space-y-4">
+  //             {formattedFields.map((item, index) => (
+  //               <div 
+  //                 key={index} 
+  //                 className="flex justify-between items-center bg-gray-100 p-4 rounded-xl"
+  //               >
+  //                 <span className="text-gray-700 font-medium">{item.label}</span>
+  //                 <span className="text-gray-900 font-bold">{item.value}</span>
+  //               </div>
+  //             ))}
+  //           </div>
+  //         </motion.div>
+  //       </motion.div>
+  //     </AnimatePresence>
+  //   );
+  // };
 
   const handleStatisticClick = (type) => {
     setSelectedStatistic(type);

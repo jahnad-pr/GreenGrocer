@@ -73,10 +73,10 @@ export default function Home({ userData }) {
         <div className="w-full h-full flex flex-col md:flex-row">
           <div className="flex-1 justify-center flex flex-col px-4 md:px-40 gap-5 py-8 md:py-0">
             <img className="w-[60%] md:w-[40%]" src={greenGrocerLogo} alt="" />
-            <p className="text-[16px] md:text-[20px] text-[#555721] opacity-50">
+            <p className="text-[16px] md:text-[20px] text-[#555721] opacity-50 font-['lufga']">
               Eat Fresh, Stay Healthy
             </p>
-            <h1 className="text-[40px] md:text-[70px] font-bold leading-none text-[#52AA57]">
+            <h1 className="text-[40px] md:text-[70px] font-bold leading-none text-[#52AA57] font-['lufga']">
               Fresh Fruits &<br />
               <span className="text-[#3C6E51]">
                 {text.map((el, i) => (

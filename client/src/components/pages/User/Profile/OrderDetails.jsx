@@ -157,7 +157,7 @@ export default function OrderDetails({userData}) {
         setPopOwner('return')
         setDeleteData({ id, index });
         showPopup(true);
-      };
+    };
 
 
 
@@ -336,10 +336,10 @@ export default function OrderDetails({userData}) {
                                 <p>{crrentOrder?.delivery_address?.city?.toUpperCase()}, {'KERALA'}, {crrentOrder?.delivery_address?.pincode}</p>
                                 </span>
                             { orderStatus!=='Cancelled' && orderStatus!=='Delivered' && orderStatus!=='Shipped' &&  
-                            <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[white] rounded-full"></i>} >Cancell order</HoverKing>}
+                            <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute -bottom-8 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[white] rounded-full"></i>} >Cancell order</HoverKing>}
 
                                 {orderStatus === 'Delivered' &&
-                                    <HoverKing event={() => handleReturn(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-arrow-go-back-line text-[30px] text-[white] rounded-full"></i>} >Return order</HoverKing>}
+                                    <HoverKing event={() => handleReturn(crrentOrder?._id, currentPosition)} styles={'absolute bottom-8 rounded-full border-0'} redish={true} Icon={<i className="ri-arrow-go-back-line text-[30px] text-[white] rounded-full"></i>} >Return order</HoverKing>}
 
                                 { orderStatus === 'Shipped' && 
                                 <div className='flex flex-col gap-2'>
@@ -357,6 +357,15 @@ export default function OrderDetails({userData}) {
                                     </p>
                                 </div>
                                 }
+
+                                <span className='flex items-center gap-6'>
+                                <button onClick={() => navigate('/user/Order/Invoice', { state: { norma:true, data: crrentOrder } })} className=' flex justify-start group items-center font-bold rounded-full text-white my-4 bottom-0 right-3 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group'>
+                                    <i className="ri-article-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
+                                    <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+                                </button>
+                                <p className='text-[20px] leading-none font-["lufga"]'>See the <br /> Invoice</p>
+                                </span>
+
                             <span className='flex-1'></span>
                             
 

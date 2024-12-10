@@ -30,16 +30,23 @@ module.exports.placeOrder = async (req, res) => {
             // console.log(OrderData.coupon.usage);
             
             await User.updateOne(
-                { _id: OrderData.user },
+                { _id: OrderData.userusername },
                 { $set: { [`couponApplyed.${OrderData.coupon.code}`]: OrderData.coupon.usage+1 } }
-            );
+            )
         }
 
 
 
         if(result){
 
-            return res.status(200).json('Order succsffuly')
+            const insertesData = await Order.findById(result._id).populate('items.product')
+            .populate('items.product.category','name')
+            .populate('user')
+
+            // console.log(insertesData);
+            
+
+            return res.status(200).json(insertesData)
         }
             return res.status(400).json('Order Not confirmed')
 

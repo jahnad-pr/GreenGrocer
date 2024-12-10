@@ -1,41 +1,99 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import coin from "../../../../../assets/images/con.png";
 import past from '../../../../../assets/images/ane.gif'
-import { useNavigate } from 'react-router-dom';
+import tick from '../../../../../assets/images/tick.webp'
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 export default function OrderSuccess() {
 
+  const [data, setData] = useState({});
+
   const navigator = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    setData(location?.state?.data);
+  }, [location])
 
 
   return (
-    <div className='w-[96%] h-ful'>
-        <div className="w-full h-full px-80 pl-0 justify-center flex items-center gap-5">
-            <img className='bg-blend-darken aspect-square w-[45%] object-cover' src="https://cdn.dribbble.com/users/1751799/screenshots/5512482/check02.gif" alt="" />
-          <span className=' flex flex-col items-center gap-8'>
-            <span className='leading-[32px]'>
-            <p className='text-[40px] font-bold text-[#00d34f]'>Order Success</p>
-            <p className='text-[20px] opacity-35 text-center'>Your Order is Being Prepared</p>
-
-            </span>
-            <p className='text-[30px] font-bold'>Order id  -   <span className='opacity-45'>1768567DF</span></p>
-            <div className="flex items-center gap-5 relative">
-              <p className='text-[200px] absolute opacity-[3%] right-0'>+</p>
-              <img className='w-28' src={coin} alt="" />
-              <p className='text-[24px] text-gray-400'><span className='font-bold text-yellow-700'>8</span> Coin added</p>
-            </div>
-            <div className="flex gap-3 mt-10">
-            <button onClick={()=>navigator('/user/OrderList')} className='text-[18px] px-6 py-2 bg-[linear-gradient(to_left,#179931,#00d34f)] rounded-xl text-white'>View Oders</button>
-            <button className='text-[18px] font-medium bg-[linear-gradient(to_left,#179931,#18b437)] p-[2px] rounded-xl'>
-              <p className='text-[#179931] bg-white w-full h-full px-5 text-center flex items-center rounded-[10px] font-bold'>View Wallet</p></button>
-
-            </div>
-
+    <div className='w-[96%] h-full bg-[#f5f5f5] mx-auto'>
+      <div className="w-full h-full px-4 md:px-20 lg:px-80 flexitems-center gap-5 fade-in">
+        <img className='bg-blend-darken mx-auto mt-32 mb-12 rounded-lg w-28 h-28' src={tick} alt="" />
+        <span className='flex flex-col items-center gap-4'>
+          <span className='leading-[32px] text-center'>
+            <p className='text-[40px] mb-8 font-["lufga"]'>Thank you for your purchase</p>
+            <p className='text-[20px] opacity-75 ["lufga"]'>We've received your order will ship in 3-4 hours.<br />
+              Your order ID is <span className=''>{data?.order_id}</span></p>
           </span>
 
-            <img className='w-50%' src={'past'} alt="" />
-        </div>
+          {/* <div className="flex items-center gap-5 relative">
+                    <p className='text-[200px] absolute opacity-[3%] right-0'>+</p>
+                    <img className='w-28' src={coin} alt="" />
+                    <p className='text-[24px] text-gray-400'><span className='font-bold text-yellow-700'>8</span> Coin added</p>
+                </div> */}
+
+          <div className="mt-8 max-w-[700px] bg-white p-6 px-10 rounded-[30px] rounded-br-[120px] w-full relative">
+            <p className="text-[32px] mb-6 font-['lufga']">Order Summary</p>
+            <span className='flex gap-8 pb-6'>
+
+              <div className="flex-1 text-[16px] flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <span className="opacity-65">Total for Products</span>
+                  <span className="font-medium">₹{data?.price?.others.totel.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="opacity-65">Delivery charge</span>
+                  <span className="font-medium">₹{location.state?.data?.price.others.delivery.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="opacity-65">Tax amount</span>
+                  <span className="font-medium">₹{location.state?.data?.price.others.tax.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="opacity-65">Discount amount</span>
+                  <span className="font-medium">₹{location.state?.data?.price?.discountPrice.toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="flex-1 text-[16px]">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="opacity-75">Shipping address</span>
+                </div>
+                <div className="opacity-50">
+                  <span className="font-medium">{location?.state?.data?.delivery_address?.FirstName}</span>
+                  <br />
+                  <span className="font-medium text-wrap">{location?.state?.data?.delivery_address?.exactAddress}</span>
+                  <span className="font-medium text-wrap">{location?.state?.data?.delivery_address?.streetAddress}</span>
+                  <br />
+                  <span className="font-medium text-wrap">{location?.state?.data?.delivery_address?.city}, </span>
+                  <span className="font-medium text-wrap">{location?.state?.data?.delivery_address?.state}</span>
+                  <span> ,INDIA</span>
+                  <span className="font-medium text-wrap">  {location?.state?.data?.delivery_address?.pincode}</span>
+                </div>
+              </div>
+            </span>
+
+            <button onClick={() => navigator('/user/Order/Invoice', { state: { data: data } })}  className='flex justify-start group items-center font-bold rounded-full text-white absolute bottom-0 right-3 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group'>
+              <i className="ri-article-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
+              <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+            </button>
+
+          </div>
+
+          {/* <span className='flex items-center justify-center cursor-pointer group text-blue-500'>
+            <p className='text-[20px] font-bold'>See The Invoice Page</p>
+            <i className='ri-arrow-right-s-fill inline-block text-[28px] relative left-0 group-hover:left-8 duration-500 group-hover:text-[35px]'></i>
+          </span> */}
+
+          <div className="flex gap-3 mt-5 ['lufga']">
+            <button onClick={() => navigator('/user/OrderList')} className='group text-[18px] px-14 py-4 bg-[#85a290] rounded-full text-white'>View Orders</button>
+            <button className='text-[18px] font-medium bg-[#85a290] rounded-full p-[2px]'>
+              <p className='text-[#85a290] bg-white w-full h-full px-12 text-center flex items-center rounded-full font-medium'>View Wallet</p>
+            </button>
+          </div>
+        </span>
+      </div>
     </div>
   )
 }

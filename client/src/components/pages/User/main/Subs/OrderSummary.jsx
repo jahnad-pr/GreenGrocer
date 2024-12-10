@@ -399,7 +399,7 @@ export default function OrderSummary({userData}) {
           <div className="mt-8 flex justify-end">
             { adressData?.length > 0 ? (
               <HoverKing 
-                event={()=>navigate('/user/payment',{ state:{ order:{ offerPrice:summary.discount/2,address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt,coupon:{ code:applyCoupon.code, amount: counDiscount,usage:userData?.couponApplyed[applyCoupon?.code] || 0 } } } })} 
+                event={()=>navigate('/user/payment',{ state:{ add:{ totelProducts:summary.items/2,taxes:summary.taxes,deliveryFee:summary.deliveryFee }, order:{ offerPrice:summary.discount/2,address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt,coupon:{ code:applyCoupon.code, amount: counDiscount,usage:userData?.couponApplyed[applyCoupon?.code] || 0 } } } })} 
                 styles={'fixed bottom-12 border-0 right-20 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
                 Icon={<i className="ri-arrow-right-line text-[30px] rounded-full text-white"></i>}
               >

@@ -50,6 +50,7 @@ import CouponManage from "./components/pages/Admin/Config/CouponManage";
 import CouponsList from "./components/pages/User/Profile/CouponsList";
 import Wallet from "./components/pages/User/Profile/Wallet";
 import SalesReport from "./components/pages/Admin/Config/SalesReport";
+import Invoice from "./components/pages/User/main/Subs/Invoice";
 
 export default function App() {
 
@@ -112,6 +113,7 @@ export default function App() {
           <Route path="/user/bookmarks" element={ <UserProtecter><Bookmark/></UserProtecter> } />
           <Route path="/user/Coupons" element={ <UserProtecter><CouponsList/></UserProtecter> } />
           <Route path="/user/Wallet" element={ <UserProtecter><Wallet/></UserProtecter> } />
+          <Route path="/user/Order/Invoice" element={ <UserProtecter><Invoice /></UserProtecter> } />
           </Routes>
 
         <Routes>

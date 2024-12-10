@@ -37,18 +37,6 @@ const orderSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
-    // totalPrice: {
-    //   type: Number,
-    //   required: true,
-    // },
-    // discount: {
-    //   type: Number,
-    //   default: 0,
-    // },
-    // pic: {
-    //   type: String,
-    //   default: 0,
-    // },
   }],
   price: {
     grandPrice: {
@@ -59,6 +47,10 @@ const orderSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
+    others:{
+      type: Object,
+      default:{ tax:0 , delivery:0, totel:0 }
+    }
   },
   order_id: {
     type: String,

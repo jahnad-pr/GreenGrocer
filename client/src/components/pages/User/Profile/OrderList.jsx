@@ -68,15 +68,15 @@ const OrderList = ({userData}) => {
   const getStatusColor = (status) => {
     switch (status.toUpperCase()) {
       case "PROCESSED":
-        return "bg-[linear-gradient(45deg,#c7ccd660_30%,#d3d3d190_70%)]";
+        return "bg-[linear-gradient(45deg,#7082b4_30%,#738c7c)]";
         case "SHIPPED":
-        return "bg-[linear-gradient(45deg,#ebaf8a35_30%,#ffffff20_70%)]";
+        return "bg-[linear-gradient(45deg,#ebaf8a,#738c7c)]";
       case "PENDING":
-        return "bg-[linear-gradient(45deg,#ebe88a35_30%,#ffffff20_70%)]";
+        return "bg-[linear-gradient(45deg,#ebe88a,#738c7c)]";
       case "DELIVERED":
-        return "bg-[linear-gradient(45deg,#99eb8a35_30%,#ffffff20_70%)]";
+        return "bg-[linear-gradient(45deg,#99eb8a,#738c7c)]";
       case "CANCELLED":
-        return "bg-[linear-gradient(45deg,#eb8ab935_30%,#ffffff20_70%)]";
+        return "bg-[linear-gradient(45deg,#eb8ab9,#738c7c)]";
       default:
         return "bg-gray-50";
     }
@@ -154,7 +154,7 @@ const OrderList = ({userData}) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="h-full w-full max-w-[96%] flex"
+      className="h-full w-full max-w-[96%] flex bg-[#f2f2f2]"
     >
       <motion.div 
         initial={{ backdropFilter: "blur(0px)" }}
@@ -171,7 +171,7 @@ const OrderList = ({userData}) => {
           >
             <motion.h1 
               variants={headerVariants}
-              className="text-[30px] font-bold mb-8 top-0 backdrop-blur-md p-4 z-10"
+              className="text-[30px] font-bold mb-8 top-0 backdrop-blur-md p-4 z-10 font-[lufga]"
             >
               Manage your orders
             </motion.h1>
