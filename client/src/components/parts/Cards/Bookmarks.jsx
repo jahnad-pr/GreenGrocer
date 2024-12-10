@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import aplle from "../../../assets/images/aplle.png";
-import { Tostify, showToast } from "../Toast/Tostify";
+import {  Tostify,showToast } from "../Toast/Tostify";
 import { useAddtoCartMutation, useCheckPorductInCartMutation, useRemoveBookmarkItmeMutation } from "../../../services/User/userApi";
 import DeletePopup from "../popups/DeletePopup";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +21,8 @@ export default function BookmarkCard({ data,userData,setBookData }) {
         quantity: data?.product?.stock>1000?1000:500,
         product: id,
     }
+    console.log();
+    
     addtoCart({ cartData, userId })
   }
 
@@ -29,6 +31,7 @@ export default function BookmarkCard({ data,userData,setBookData }) {
   useEffect(()=>{
     checkPorductInCart(data.product._id)
   },[])
+
 
   useEffect(() => {
     if (checkData) {
@@ -50,8 +53,10 @@ export default function BookmarkCard({ data,userData,setBookData }) {
     }
   }, [addData]);
 
+
   return (
     <> 
+    <Tostify />
     {dPopup && (
         <DeletePopup
         action={'remove from bookmark'}

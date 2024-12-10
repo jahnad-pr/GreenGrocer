@@ -12,7 +12,7 @@ export default function Main({ userData}) {
 
   return (
       <> 
-    <div className="w-[96%] duration-500 h-full">
+    <div className="w-[96%] duration-500 h-full bg-[#f2f2f2]">
       <div className="h-full duration-500 w-full backdrop-blur-3xl">
           
          {/* container root */}
@@ -48,7 +48,7 @@ export default function Main({ userData}) {
           {/* bottom config container */}
           <div className="w-full  py-0 gap-5 flex items-start justify-center">
             {/* user order list btn */}
-            <div onClick={()=>navigator('/user/OrderList')} className="w-80 bg-[linear-gradient(#ffffff70,#ffffff20)] hover:translate-y-10 duration-500 rounded-[65px] order-2">
+            <div onClick={()=>navigator('/user/OrderList')} className="w-80 bg-[linear-gradient(45deg,#00000020,#00000010)] hover:translate-y-10 duration-500 rounded-[65px] order-2">
               <div className="w-full flex justify-center items-center">
                 <p className="text-[35px] font-bold ">
                   Your
@@ -65,7 +65,7 @@ export default function Main({ userData}) {
             </div>
             
             {/* user coupon list btn */}
-            <div onClick={()=>navigator('/user/Coupons')} className="w-72 h- bg-[linear-gradient(#ffffff70,#ffffff20)] hover:-translate-y-10 duration-500 rounded-[65px] order-3 translate-y-[19%]">
+            <div onClick={()=>navigator('/user/Coupons')} className="w-72 h- bg-[linear-gradient(#00000015,#00000005)] hover:-translate-y-10 duration-500 rounded-[65px] order-3 translate-y-[19%]">
               <div className="w-full grid place-items-center  mb-5">
                 <p className="text-[35px] font-bold translate-y-[30px]">
                   Coupons

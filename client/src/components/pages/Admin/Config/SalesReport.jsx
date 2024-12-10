@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import OrderDetailsPopup from '../../../parts/popups/OrderDetailsPopup';
+import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 
 const SalesReport = () => {
   const [getAllOrders, { data }] = useGetAllOrdersMutation();
@@ -340,6 +341,16 @@ const SalesReport = () => {
     doc.save('sales_report.pdf');
   };
 
+  const EmptyState = () => (
+    <div className="w-full h-[60vh] flex items-center justify-center flex-col text-center gap-5">
+      <img className="h-[70%]" src={emptyStateImage} alt="No orders" />
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[30px] font-bold">No Orders</h1>
+        <p className="opacity-45">No orders found for the selected criteria</p>
+      </div>
+    </div>
+  );
+
   return (
     <>
     <div className='w-[100%] bg-[#f2f2f2] rounded-tl-[50px] h-full mt-[100px] overflow-scroll'>
@@ -540,138 +551,135 @@ const SalesReport = () => {
               </div>
 
               <div className="h-[calc(100vh-250px)] overflow-auto relative">
-                <div className="relative">
-                  <table className="w-full border-collapse">
-                    <thead className="sticky top-0 z-10">
-                      <tr className="bg-[linear-gradient(to_right,#1111,#f1f5f9)] backdrop-blur-xl">
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600 rounded-l-full">Order ID</th>
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Time</th>
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Payment Method</th>
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Items Qty</th>
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Regular Price</th>
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Discount</th>
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Status</th>
-                        <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600 rounded-r-full">Total Payment</th>
-                      </tr>
-                    </thead>
-                    <tr><th>&nbsp;</th></tr>
-                    <tbody className="overflow-scroll">
-                      {currentItems.map((order) => (
-                        <tr 
-                          key={order.order_id} 
-                          className="hover:bg-gray-200 cursor-pointer transition-all duration-200"
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setShowPopup(true);
-                          }}
-                        >
-                          <td className="px-3 py-2">
-                            <p className="font-medium text-[15px]">{order.order_id}</p>
-                          </td>
-                          <td className="px-3 py-2">{formatDate(order.time)}</td>
-                          <td className="px-3 py-2">{order.payment_method}</td>
-                          <td className="px-3 py-2">{order.total_quantity/1000}Kg</td>
-                          <td className="px-3 py-2 font-medium">{formatCurrency(order.price.grandPrice + (order.price.discountPrice+(order.coupon?.amount||0)))}</td>
-                          <td className="px-3 py-2 text-red-500 font-bold">
-                            {formatCurrency(order.price.discountPrice+(order.coupon?.amount||0))}</td>
-                          <td className="px-3 py-2">
-                            <div className="flex flex-col">
-                              <span className="text-sm">Order: {order.order_status}</span>
-                              <span className="text-sm text-gray-500">Payment: {order.payment_status}</span>
-                            </div>
-                          </td>
-                          <td className="px-3 py-2 font-bold">{formatCurrency(order.price.grandPrice)}</td>
+                {currentItems.length > 0 ? (
+                  <div className="relative">
+                    <table className="w-full border-collapse">
+                      <thead className="sticky top-0 z-10">
+                        <tr className="bg-[linear-gradient(to_right,#1111,#f1f5f9)] backdrop-blur-xl">
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600 rounded-l-full">Order ID</th>
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Time</th>
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Payment Method</th>
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Items Qty</th>
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Regular Price</th>
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Discount</th>
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600">Status</th>
+                          <th className="px-3 py-2 text-left text-[16px] font-medium text-gray-600 rounded-r-full">Total Payment</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-
-                    <span className='flex gap-8 absolute -bottom-24 border-2 border-gray-300 backdrop-blur-3xl items-center justify-center left-[45%] -translate-x-1/2 px-14 rounded-full py-2'>
-
-                   {/* Pagination */}
-                  {filteredData.length > 0 && (
-                    <div className="flex gap-10 justify-between items-center mt-4 pb-4">
-                      
-                      <div className="text-sm text-gray-600 text-nowrap">
-                        Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
-                      </div>
-
-                      { [...Array(Math.ceil(filteredData.length / itemsPerPage))].length>1 &&
-                      <div className="flex gap-2">
-                        
-                        <button
-                          onClick={() => paginate(currentPage - 1)}
-                          disabled={currentPage === 1}
-                          className={`px-3 py-1 rounded-full ${
-                            currentPage === 1
-                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-white text-gray-700 hover:bg-gray-50'
-                          }`}
-                        >
-                          Previous
-                        </button>
-                        {[...Array(Math.ceil(filteredData.length / itemsPerPage))].map((_, index) => (
-                          <button
-                            key={index + 1}
-                            onClick={() => paginate(index + 1)}
-                            className={`px-3 py-1 rounded-full ${
-                              currentPage === index + 1
-                                ? 'bg-[#1fad631a] text-black'
-                                : 'bg-white text-gray-700 hover:bg-gray-50'
-                            }`}
+                      </thead>
+                      <tr><th>&nbsp;</th></tr>
+                      <tbody className="overflow-scroll">
+                        {currentItems.map((order) => (
+                          <tr 
+                            key={order.order_id} 
+                            className="hover:bg-gray-200 cursor-pointer transition-all duration-200"
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setShowPopup(true);
+                            }}
                           >
-                            {index + 1}
-                          </button>
+                            <td className="px-3 py-2">
+                              <p className="font-medium text-[15px]">{order.order_id}</p>
+                            </td>
+                            <td className="px-3 py-2">{formatDate(order.time)}</td>
+                            <td className="px-3 py-2">{order.payment_method}</td>
+                            <td className="px-3 py-2">{order.total_quantity/1000}Kg</td>
+                            <td className="px-3 py-2 font-medium">{formatCurrency(order.price.grandPrice + (order.price.discountPrice+(order.coupon?.amount||0)))}</td>
+                            <td className="px-3 py-2 text-red-500 font-bold">
+                              {formatCurrency(order.price.discountPrice+(order.coupon?.amount||0))}</td>
+                            <td className="px-3 py-2">
+                              <div className="flex flex-col">
+                                <span className="text-sm">Order: {order.order_status}</span>
+                                <span className="text-sm text-gray-500">Payment: {order.payment_status}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 font-bold">{formatCurrency(order.price.grandPrice)}</td>
+                          </tr>
                         ))}
-                        <button
-                          onClick={() => paginate(currentPage + 1)}
-                          disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
-                          className={`px-3 py-1 rounded-full ${
-                            currentPage === Math.ceil(filteredData.length / itemsPerPage)
-                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-white text-gray-700 hover:bg-gray-50'
-                          }`}
-                        >
-                          Next
-                        </button>
+                      </tbody>
+                    </table>
 
-                      </div>
+                    {/* Pagination and Download Options */}
+                    <span className='flex gap-8 absolute -bottom-24 border-2 border-gray-300 backdrop-blur-3xl items-center justify-center left-[45%] -translate-x-1/2 px-14 rounded-full py-2'>
+                      {/* Pagination */}
+                      {filteredData.length > 0 && (
+                        <div className="flex gap-10 justify-between items-center mt-4 pb-4">
+                          <div className="text-sm text-gray-600 text-nowrap">
+                            Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
+                          </div>
 
-                      }
-                    </div>
-                  )}
-                  {/* Download Options */}
-                  {filteredData.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={downloadExcel}
-                        className="px-4 py-2 bg-[#00000010] text-green-700 rounded-full hover:bg-green-200 flex items-center gap-2"
-                      >
-                        <i className="ri-file-excel-2-line"></i>
-                        Excel
-                      </button>
-                      <button
-                        onClick={downloadCSV}
-                        className="px-4 py-2 bg-[#00000010] text-blue-700 rounded-full hover:bg-blue-200 flex items-center gap-2"
-                      >
-                        <i className="ri-file-text-line"></i>
-                        CSV
-                      </button>
-                      <button
-                        onClick={downloadPDF}
-                        className="px-4 py-2 bg-[#00000010] text-red-700 rounded-full hover:bg-red-200 flex items-center gap-2"
-                      >
-                        <i className="ri-file-pdf-line"></i>
-                        PDF
-                      </button>
-                    </div>
-                  )}
-            
-                  
+                          {[...Array(Math.ceil(filteredData.length / itemsPerPage))].length > 1 && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className={`px-3 py-1 rounded-full ${
+                                  currentPage === 1
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                Previous
+                              </button>
+                              {[...Array(Math.ceil(filteredData.length / itemsPerPage))].map((_, index) => (
+                                <button
+                                  key={index + 1}
+                                  onClick={() => paginate(index + 1)}
+                                  className={`px-3 py-1 rounded-full ${
+                                    currentPage === index + 1
+                                      ? 'bg-[#1fad631a] text-black'
+                                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  {index + 1}
+                                </button>
+                              ))}
+                              <button
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
+                                className={`px-3 py-1 rounded-full ${
+                                  currentPage === Math.ceil(filteredData.length / itemsPerPage)
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                Next
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Download Options */}
+                      {filteredData.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={downloadExcel}
+                            className="px-4 py-2 bg-[#00000010] text-green-700 rounded-full hover:bg-green-200 flex items-center gap-2"
+                          >
+                            <i className="ri-file-excel-2-line"></i>
+                            Excel
+                          </button>
+                          <button
+                            onClick={downloadCSV}
+                            className="px-4 py-2 bg-[#00000010] text-blue-700 rounded-full hover:bg-blue-200 flex items-center gap-2"
+                          >
+                            <i className="ri-file-text-line"></i>
+                            CSV
+                          </button>
+                          <button
+                            onClick={downloadPDF}
+                            className="px-4 py-2 bg-[#00000010] text-red-700 rounded-full hover:bg-red-200 flex items-center gap-2"
+                          >
+                            <i className="ri-file-pdf-line"></i>
+                            PDF
+                          </button>
+                        </div>
+                      )}
                     </span>
-
-                
-                </div>
+                  </div>
+                ) : (
+                  <EmptyState />
+                )}
               </div>
             </div>
           </span>

@@ -133,7 +133,7 @@ export default function Carts({ data,setProductData,index,showToast }) {
       setDefaultQnt(formattedQnt);
     }
     // alert(deconvertToGrams(data.quantity))
-    const quantity = data.product.stock;
+    const quantity = data.product?.stock;
     const thresholds = [
       { value: 100, option: "100g" },
       { value: 250, option: "250g" },
@@ -188,7 +188,7 @@ export default function Carts({ data,setProductData,index,showToast }) {
     if (deleteData === data?.product?._id) {
       setDPopup(false)
       setProductData((prevData) =>
-        prevData.filter((s) => s.product._id !== data?.product?._id)
+        prevData.filter((s) => s.product?._id !== data?.product?._id)
     )
     setDeleteData()
     // showToast('hsflkj','success')

@@ -38,33 +38,69 @@ export default function Login() {
     <div className="w-full h-full">
       <div className="flex w-full h-full">
         {/* Left panel with background image */}
-        <div className="bg-gray-100 flex-[2] rounded-l-[555px] order-2 relative">
-          <img
-            className="h-full absolute object-cover aspect-square scale-110 translate-y-[20px]"
+        <motion.div 
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="bg-gray-100 flex-[2] min-w-[50%] rounded-l-[555px] order-2 relative"
+        >
+          <motion.img
+            initial={{ rotate: -180, scale: 0.5, opacity: 0 }}
+            animate={{ rotate: 0, scale: 1.1, opacity: 1 }}
+            transition={{ 
+              duration: 1.2,
+              type: "spring",
+              stiffness: 60,
+              damping: 12
+            }}
+            className="h-full w-full object-cover translate-y-[20px]"
             src={profileImage}
             alt="Profile Background"
           />
-        </div>
+        </motion.div>
 
         {/* Right panel with form */}
         <div className="flex-[3] relative order-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-5 w-full max-w-[50%] mx-auto">
+          <motion.div 
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="flex flex-col items-center gap-5 w-full max-w-[50%] mx-auto"
+          >
             {/* App logo */}
-            <img
-              className="w-[80%] brightness-0 opacity-60"
+            <motion.img
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 0.6 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="w-[80%] brightness-0"
               src={grocerLogo}
               alt="App Logo"
             />
 
             {/* Welcome message */}
-            <p className="text-[18px] opacity-35 translate-y-[-10px]">
+            <motion.p 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: -10, opacity: 0.35 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="text-[18px]"
+            >
               Welcome Back, Admin! Login to continue
-            </p>
+            </motion.p>
 
             {/* Input Fields */}
-            <div className="flex flex-col gap-5 w-full max-w-[80%]">
+            <motion.div 
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              className="flex flex-col gap-5 w-full max-w-[80%]"
+            >
               {/* Email input */}
-              <div className="flex items-center bg-[linear-gradient(45deg,#f5efef,#f5efef)] py-2 px-5 gap-5 rounded-full">
+              <motion.div 
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.9, duration: 0.5 }}
+                className="flex items-center bg-[linear-gradient(45deg,#f5efef,#f5efef)] py-2 px-5 gap-5 rounded-full"
+              >
                 <i className="ri-at-line text-[28px] opacity-20"></i>
                 <input
                   placeholder="Email"
@@ -73,10 +109,15 @@ export default function Login() {
                   name="email"
                   onChange={handleInputChange}
                 />
-              </div>
+              </motion.div>
 
               {/* Password input */}
-              <div className="flex items-center bg-[linear-gradient(45deg,#f5efef,#f5efef)] py-2 px-5 gap-5 rounded-full">
+              <motion.div 
+                initial={{ x: 30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 1.1, duration: 0.5 }}
+                className="flex items-center bg-[linear-gradient(45deg,#f5efef,#f5efef)] py-2 px-5 gap-5 rounded-full"
+              >
                 <i className="ri-key-line text-[28px] opacity-20"></i>
                 <input
                   placeholder="Password"
@@ -85,22 +126,21 @@ export default function Login() {
                   name="password"
                   onChange={handleInputChange}
                 />
-              </div>
-            </div>
-
-            {/* Show Password toggle (placeholder for functionality)
-            <div className="flex items-center gap-5 max-w-[70%] w-full py-3">
-              <div className="w-4 h-4 bg-black rounded-full opacity-25"></div>
-              <p className="opacity-45">Show password</p>
-            </div> */}
+              </motion.div>
+            </motion.div>
 
             {/* Sign-in button */}
-            <button
+            <motion.button
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 1.3, duration: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleSubmit}
               className="bg-[linear-gradient(to_left,#333399,#FF00CC)] py-5 text-white w-[80%] text-[20px] rounded-full font-bold shadow-[6px_6px_10px_#00000080_inset]"
             >
               Sign In
-            </button>
+            </motion.button>
 
             {/* Error and success messages */}
             <AnimatePresence>
@@ -119,8 +159,7 @@ export default function Login() {
             </AnimatePresence>
 
             {data && <p>Signed in successfully!</p>}
-
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

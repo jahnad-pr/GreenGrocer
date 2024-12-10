@@ -37,6 +37,10 @@ const transactionModel = new mongoose.Schema({
         transaction_id: {
             type: String,
             required: true
+        },
+        payment_method: {
+            type: String,
+            required: true
         }
     }]
 });

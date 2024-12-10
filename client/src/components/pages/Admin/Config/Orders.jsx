@@ -6,11 +6,7 @@ import Recents from "../../../parts/Main/Recents";
 import { ToastContainer, toast } from "react-toastify";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import "react-toastify/dist/ReactToastify.css";
-import { useCancelOrderMutation, useGetAllOrdersMutation } from "../../../../services/Admin/adminApi";
-import {
-  // usegetAllOrdersMutation,
-  useUpdateOrderStatusMutation,
-} from "../../../../services/User/userApi";
+import { useCancelOrderMutation, useGetAllOrdersMutation,useUpdateOrderStatusMutation } from "../../../../services/Admin/adminApi";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 
 const Orders = () => {
@@ -351,7 +347,7 @@ const Orders = () => {
                               </p>
                               {/* <p>{order.delivery_address.exactAddress}</p> */}
                               <p>
-                                {order.delivery_address.state.toUpperCase()},
+                                {order.delivery_address.state?.toUpperCase()},
                                 {order.delivery_address.pincode}
                               </p>
                             </span>

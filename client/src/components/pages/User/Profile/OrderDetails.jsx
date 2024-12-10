@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import apple from '../../../../assets/images/aplle.png'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { current } from '@reduxjs/toolkit'
 import { AnimatedTooltip } from '../main/ui/AnimatedTooltip'
 import { Timeline } from "../main/ui/Timeline"
@@ -113,7 +113,7 @@ const formatDate = (dateString) => {
     }
 };
 
-export default function OrderDetails() {
+export default function OrderDetails({userData}) {
 
     const [cancelOrder, { data: cancelData }] = useCancelOrderMutation();
     const [returnOrder, { data: returnData }] = useReturnOrderMutation();
@@ -128,6 +128,7 @@ export default function OrderDetails() {
 
 
     const location = useLocation()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (location.state) {
@@ -332,12 +333,12 @@ export default function OrderDetails() {
 
                                 <p>{crrentOrder?.delivery_address?.locationType} {crrentOrder?.delivery_address?.exactAddress}</p>
                                 <p>{crrentOrder?.delivery_address?.streetAddress}</p>
-                                <p>{crrentOrder?.delivery_address?.city.toUpperCase()}, {'KERALA'}, {crrentOrder?.delivery_address?.pincode}</p>
+                                <p>{crrentOrder?.delivery_address?.city?.toUpperCase()}, {'KERALA'}, {crrentOrder?.delivery_address?.pincode}</p>
                                 </span>
                             { orderStatus!=='Cancelled' && orderStatus!=='Delivered' && orderStatus!=='Shipped' &&  
                             <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[white] rounded-full"></i>} >Cancell order</HoverKing>}
 
-                                {orderStatus === 'Shipped' &&
+                                {orderStatus === 'Delivered' &&
                                     <HoverKing event={() => handleReturn(crrentOrder?._id, currentPosition)} styles={'absolute bottom-0 rounded-full border-0'} redish={true} Icon={<i className="ri-arrow-go-back-line text-[30px] text-[white] rounded-full"></i>} >Return order</HoverKing>}
 
                                 { orderStatus === 'Shipped' && 
@@ -375,7 +376,7 @@ export default function OrderDetails() {
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: 0.8, duration: 0.5 }}
-                            className='min-w-[300px]'
+                            className={`min-w-[300px] relative ${orderStatus === 'Pending' ?'pb-16':''} `}
                         >
                             <p onClick={()=>alert(orderStatus)} className='opacity-50 '>Order payment Method & Date</p>
                             <span className='text-[20px] font-bold'>
@@ -392,6 +393,13 @@ export default function OrderDetails() {
                             <span className='text-[20px] font-bold'>
                                 {crrentOrder?.delivery_address?.FirstName} {crrentOrder?.delivery_address?.LastName}
                             </span>
+                            
+                            { orderStatus === 'Pending' &&
+                                // <p className='bg-green-500 px-10 py-2 mt-7 inline-block rounded-full text-[22px] hover:opacity-75 cursor-pointer'>Continue payment</p>
+                                <HoverKing event={()=>navigate('/user/payment',{ state:{ retry:true, _id:crrentOrder._id, order:{ offerPrice:crrentOrder.price.discountPrice,address:crrentOrder.delivery_address,price:crrentOrder.price.grandPrice,deliveryMethod:crrentOrder.payment_method,items:crrentOrder.items,qnt:location?.state?.qnt,coupon:{ code:crrentOrder.coupon.code, amount: crrentOrder.coupon.amount,usage:userData?.couponApplyed[crrentOrder.coupon.code] || 0 } } } })} 
+                                styles={'absolute -bottom-3 -left-3 rounded-full border-0 py-0'} Icon={<i className="ri-refund-2-fill text-[30px] text-[white] rounded-full"></i>} >Continue payment</HoverKing>
+                            }
+
                         </motion.span>
                         <span className='w-20'></span>
                         <motion.span 

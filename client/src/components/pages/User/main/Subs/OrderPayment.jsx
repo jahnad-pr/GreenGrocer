@@ -6,12 +6,17 @@ import deb from '../../../../../assets/images/debo.png'
 import roz from '../../../../../assets/images/roz.png'
 import coin from '../../../../../assets/images/gCoin.png'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { usePlaceOrderMutation } from '../../../../../services/User/userApi';
+import { usePlaceOrderMutation, useUpdateOrderStatusMutation } from '../../../../../services/User/userApi';
 import { toast } from 'react-hot-toast';
 import { loadRazorpayScript, createRazorpayOrder, initializeRazorpayPayment } from '../../../../../utils/razorpay';
+import { showToast,Tostify } from '../../../../parts/Toast/Tostify';
 
 const OrderPayment = ({userData}) => {
+  
+  const [updateOrderStatus, { data: statusData }] =
+  useUpdateOrderStatusMutation();
   const [placeOrder, { error, data }] = usePlaceOrderMutation();
+
   const [selectedMethod, setSelectedMethod] = useState('Razorpay');
   const [currentData, setCurrentData] = useState('cash');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,12 +28,20 @@ const OrderPayment = ({userData}) => {
     if(data){ navigator('/user/success') } 
   }, [data])
 
+  useEffect(() =>{
+    if(statusData){ navigator('/user/success') } 
+  }, [statusData])
+
   useEffect(() => {
     if(location?.state?.order){
       console.log("Order data:", location.state.order);
       setCurrentData(location.state.order)
     }
   }, [location])
+
+  const updateOrdersStatus = (statusData) => {
+    updateOrderStatus(statusData).unwrap();
+  };
 
   const handleRazorpayPayment = async () => {
     try {
@@ -46,6 +59,43 @@ const OrderPayment = ({userData}) => {
         keyId: import.meta.env.VITE_RAZORPAY_KEY_ID,
         userData,
         onSuccess: async (paymentDetails) => {
+          if(!location?.state?.retry){
+            const orderData = {
+              user: userData._id,
+              delivery_address: currentData.address,
+              payment_method: selectedMethod,
+              coupon: currentData.coupon,
+              items: currentData.items,
+              price: {
+                grandPrice: currentData.price,
+                discountPrice: currentData.offerPrice
+              },
+              order_id: generateOrderId(),
+              time: Date.now(),
+              total_quantity: currentData.items?.reduce((acc, data) => acc += data.quantity, 0),
+              order_status: 'Processed',
+              payment_status: 'completed',
+              razorpay_payment_id: paymentDetails.razorpay_payment_id,
+              razorpay_order_id: paymentDetails.razorpay_order_id
+            };
+  
+            await placeOrder(orderData).unwrap();
+            toast.success('Payment successful! Order placed.');
+            navigator('/user/success');
+
+          }else{
+            updateOrdersStatus({
+              id: location.state._id,
+              value: 'Processed',
+              // index,
+            })
+            // alert('payment success')
+          }
+        },
+        onError: async(error) => {
+          if(!location?.state?.retry){
+          console.error('Payment error:', error);
+          toast.error('Payment failed');
           const orderData = {
             user: userData._id,
             delivery_address: currentData.address,
@@ -59,19 +109,16 @@ const OrderPayment = ({userData}) => {
             order_id: generateOrderId(),
             time: Date.now(),
             total_quantity: currentData.items?.reduce((acc, data) => acc += data.quantity, 0),
-            order_status: 'Processed',
-            payment_status: 'completed',
-            razorpay_payment_id: paymentDetails.razorpay_payment_id,
-            razorpay_order_id: paymentDetails.razorpay_order_id
+            order_status: 'Pending',
+            payment_status: 'pending',
+            razorpay_payment_id: error?.metadata?.payment_id,
+            razorpay_order_id: error?.metadata?.payment_id
           };
-
           await placeOrder(orderData).unwrap();
-          toast.success('Payment successful! Order placed.');
-          navigator('/user/success');
-        },
-        onError: (error) => {
-          console.error('Payment error:', error);
-          toast.error('Payment failed');
+          toast.success('Payment filed! Order placed.');
+          }else{
+            showToast('payment failed','error')
+          }
         }
       });
     } catch (error) {
@@ -120,11 +167,11 @@ const OrderPayment = ({userData}) => {
   };
 
   const paymentMethods = [
-    {
-      id: 'UPI',
-      name: 'UPI',
-      icon: <img src={upi} alt="UPI" />,
-    },
+    // {
+    //   id: 'UPI',
+    //   name: 'UPI',
+    //   icon: <img src={upi} alt="UPI" />,
+    // },
     // {
     //   id: 'Net Banking',
     //   name: 'Net Banking',
@@ -172,6 +219,8 @@ const OrderPayment = ({userData}) => {
   }
 
   return (
+    <>
+    <Tostify />
     <div className="max-w-[96%] w-full mx-auto p-6">
       <div className="w-full h-full px-40">
         {/* Payment amount */}
@@ -190,6 +239,8 @@ const OrderPayment = ({userData}) => {
           <h3 className="text-gray-600 mb-4">Choose Your Payment Method</h3>
           <div className="grid grid-cols-6 md:grid-cols-6 gap-4">
             {paymentMethods.map((method) => (
+              (method.name !== 'Cash on Delivery' || currentData.price <= 1000) && 
+              (!location?.state?.retry || method.name === 'Razorpay') &&
               <div
                 key={method.id}
                 className={`
@@ -242,6 +293,7 @@ const OrderPayment = ({userData}) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

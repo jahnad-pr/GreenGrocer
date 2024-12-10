@@ -83,6 +83,9 @@ module.exports.updateOrderStatus = async (req, res) => {
 
     const { id:_id, value:order_status } = req.body
 
+    console.log('jkasdhfksalh');
+    
+
     
     
     try {
@@ -104,7 +107,7 @@ module.exports.updateOrderStatus = async (req, res) => {
             
         }
         
-        console.log(result);
+        // console.log(result);
 
         if(result.modifiedCount>0){
 
@@ -130,12 +133,48 @@ module.exports.cancelOrder = async (req, res) => {
     
     
     try {
+
+        const order = await Order.findOne({ _id: cancelId });
         
         const result = await Order.updateOne({ _id:cancelId },{ $set:{ order_status:'Cancelled',payment_status:'cancelled' } })
         
         console.log(result);
 
         if(result.modifiedCount>0){
+
+            // Create a new request object for wallet update
+            if(order.payment_status==='completed'){
+
+                const walletReq = {
+                    body: {
+                        amount: order.price.grandPrice,
+                        status: 'cancelled',
+                        transaction_id: `REFUND-${order._id}`,
+                        type: 'credit',
+                        description: `Refund for order ${order._id}`,
+                        payment_method:order.payment_method
+                    },
+                    user: req.user
+                };
+
+                // Create a new response object
+                const walletRes = {
+                    status: function(code) {
+                        return {
+                            json: function(data) {
+                                if (code === 200) {
+                                    return res.status(200).json('Order cancelled and amount refunded');
+                                } else {
+                                    return res.status(code).json(data);
+                                }
+                            }
+                        };
+                    }
+            }
+            // Process wallet update
+            await addCoinToWallet(walletReq, walletRes);
+
+            };
 
             return res.status(200).json('Successfully Cancelled')
 
@@ -151,6 +190,25 @@ module.exports.cancelOrder = async (req, res) => {
     }
     
 }
+
+
+// module.exports.updateOrderStatus = async (req, res) => {
+
+//     const { orderId,status,paymentStatus } = req.body
+
+//     try {
+
+//         const result = await Order.updateOne({_id:orderId},{ $set:{ order_status:status,payment_status:paymentStatus } })
+
+//         if(result.modifiedCount>0){
+//             return res.status(200).json('Successfully updated')
+//         }
+
+//     } catch (error) {
+
+//         return res.status(400).json(error.message)
+//     }
+// }
 
 module.exports.returnOrder = async (req, res) => {
     try {
@@ -178,7 +236,8 @@ module.exports.returnOrder = async (req, res) => {
                         status: 'cancelled',
                         transaction_id: `REFUND-${order._id}`,
                         type: 'credit',
-                        description: `Refund for order ${order._id}`
+                        description: `Refund for order ${order._id}`,
+                        payment_method:order.payment_method
                     },
                     user: req.user
                 };
@@ -224,3 +283,4 @@ module.exports.getAllOrders = async (req, res) => {
         
     }
 }
+

@@ -63,14 +63,14 @@ export default function Wallet({userData}) {
             <img className="h-1/2 absolute top-0 left-0 rotate-in" src={coin} alt="" />
             <div className="">
               <p className="text-[35px] font-bold leading-none">
-                {String((amount.toFixed(2) || 0) * 10).padStart(2, '0')}
+                {String((amount?.toFixed(2) || 0) * 10).padStart(2, '0')}
               </p>
               <p className="translate-y-[-10px] opacity-45">Coins</p>
             </div>
             {/* indian conversion */}
             <div className="flex gap-5 items-center">
               <p className="text-[35px] text-gray-500">
-                ₹<span className="font-bold text-black">{amount.toFixed(2)||0}</span>
+                ₹<span className="font-bold text-black">{amount?.toFixed(2)||0}</span>
               </p>
               <p className="leading-none font-medium opacity-45">
                 Indian
@@ -126,7 +126,7 @@ export default function Wallet({userData}) {
                   onClick={() => setSelectedTransaction(transaction)}
                   className={`grid grid-cols-6 gap-4 p-4 text-sm hover:bg-gray-50/50 rounded-lg transition-colors table-row-animate delay-${index % 10} cursor-pointer`}
                 >
-                  <div className="text-gray-500 text-[16px] font-mono">
+                  <div className="text-gray-500 text-[16px] font-mono text-ellipsis overflow-hidden">
                     {transaction.transaction_id || 'N/A'}
                   </div>
                   <div className="text-gray-500 text-[16px]">
@@ -144,7 +144,7 @@ export default function Wallet({userData}) {
                     {transaction.status}
                   </div>
                   <div className="text-gray-500 text-[16px] text-center">
-                    {transaction.payment_method?.name || 'Razorpay'}
+                    {transaction?.payment_method || 'Razorpay'}
                   </div>
                 </div>
               ))}

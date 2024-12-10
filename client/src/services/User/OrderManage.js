@@ -20,8 +20,8 @@ export const userOrderApi = (builder) => ({
 
     updateOrderStatus: builder.mutation({
       query: (statusData) => ({
-        url: `admin/updateOrderStatus`,
-        method: 'POST',
+        url: `user/updateOrderStatus`,
+        method: 'PUT',
         body:statusData,
         credentials: 'include',
       }),
@@ -45,7 +45,6 @@ export const userOrderApi = (builder) => ({
       }),
     }),
 
-
-
+   
   });
   

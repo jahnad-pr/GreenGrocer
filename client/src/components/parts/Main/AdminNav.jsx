@@ -24,7 +24,7 @@ export default function AdminNav(){
   }
 
   const menuItems = [
-    { icon: (<i className="ri-dashboard-fill text-[24px]"></i>), label: 'Dashboard' },
+    { icon: (<i className="ri-dashboard-fill text-[24px]"></i>), label: 'home' },
     { icon: (<i className={`ri-user-line text-[24px]`}></i>), label: 'Customers',colors:['#fbdcc9','#d7d6d8'] },
     { icon: (<i className="ri-box-3-line text-[24px]"></i>), label: 'Products' },
     { icon: (<i className="ri-shopping-cart-2-line text-[24px]"></i>), label: 'Orders' },

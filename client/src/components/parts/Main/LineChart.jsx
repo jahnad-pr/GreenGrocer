@@ -1,63 +1,163 @@
-import React, { useState } from 'react';
-import ReactApexChart from 'react-apexcharts'; // Ensure you have this import
-import ReactDOM from 'react-dom';
+import React, { useMemo, useState } from 'react';
+import ReactApexChart from 'react-apexcharts';
 
-const LineChart = () => {
-  const [series] = useState([{
-    name: 'Sales',
-    data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13, 9, 17, 2, 7, 5]
-  }]);
+const LineChart = ({ 
+  data = [], 
+  viewMode = 'category',
+  activeSeries = {
+    'Fruits Sales': true,
+    'Vegetables Sales': true
+  },
+
+}) => {
+  const chartData = useMemo(() => {
+    if (!data || data.length === 0) return [{ name: 'Daily Sales', data: [] }];
+
+    if (viewMode === 'total') {
+      // Total sales across all categories
+      const processedData = data.map(item => ({
+        x: new Date(item.date).getTime(),
+        y: item.dailyTotal
+      }));
+
+      return [{
+        name: 'Total Sales',
+        data: processedData
+      }];
+    } else {
+      // Category-based sales
+      const fruitsData = data.map(item => ({
+        x: new Date(item.date).getTime(),
+        y: item.categories.find(cat => cat.categoryName === "Fruits")?.totalAmount || 0
+      }));
+
+      const vegetablesData = data.map(item => ({
+        x: new Date(item.date).getTime(),
+        y: item.categories.find(cat => cat.categoryName === "Vegetables")?.totalAmount || 0
+      }));
+
+      return [
+        { 
+          name: 'Fruits Sales', 
+          data: activeSeries['Fruits Sales'] ? fruitsData : [],
+          type: 'line'
+        },
+        { 
+          name: 'Vegetables Sales', 
+          data: activeSeries['Vegetables Sales'] ? vegetablesData : [],
+          type: 'line'
+        }
+      ];
+    }
+  }, [data, viewMode, activeSeries]);
 
   const options = {
     chart: {
-      height: 350,
       type: 'line',
+      height: 380,
       toolbar: {
-        show: false // Hide the toolbar
+        show: false
+      },
+      animations: {
+        enabled: true
       }
     },
     stroke: {
-      width: 5,
+      width: 3,
       curve: 'smooth'
     },
     xaxis: {
-      show: false, // Hide x-axis
+      type: 'datetime',
       labels: {
-        show: false // Also hide x-axis labels
+        datetimeFormatter: {
+          year: 'yyyy',
+          month: 'MMM',
+          day: 'dd'
+        },
+        style: {
+          colors: '#00000060',
+          fontSize: '14px'
+        },
+        formatter: function(value, timestamp) {
+          const date = new Date(timestamp);
+          return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        }
       },
       axisTicks: {
-        show: false // Hide x-axis ticks
+        show: false
       },
       axisBorder: {
-        show: false // Hide x-axis border
+        show: false
       }
     },
     yaxis: {
-      show: false // Hide y-axis
+      labels: {
+        style: {
+          colors: '#00000060',
+          fontSize: '14px'
+        },
+        formatter: (value) => `₹${value.toFixed(2)}`
+      }
     },
     grid: {
-      show: false // Hide grid lines
+      show: false
     },
     fill: {
       type: 'gradient',
       gradient: {
         shade: 'dark',
-        gradientToColors: ['#FDD835'],
+        gradientToColors: viewMode === 'total' 
+          ? ['#22C55E']  // Green for total
+          : ['#FF7E5C', '#3549F8'],  // Red for Fruits, Blue for Vegetables
         shadeIntensity: 1,
         type: 'horizontal',
         opacityFrom: 1,
         opacityTo: 1,
         stops: [0, 100, 100, 100]
+      }
+    },
+    tooltip: {
+      x: {
+        format: 'dd MMM'
       },
+      y: {
+        formatter: (value) => `₹${value.toFixed(2)}`
+      }
+    },
+    markers: {
+      size: 4,
+      colors: viewMode === 'total' 
+        ? ['#22C55E']  // Green for total
+        : ['#FF7E5C', '#3549F8'],  // Red for Fruits, Blue for Vegetables
+      strokeColors: '#fff',
+      strokeWidth: 2,
+      hover: {
+        size: 8
+      }
+    },
+    legend: {
+      show: true,
+      position: 'top',
+      horizontalAlign: 'left',
+      fontSize: '14px',
+    
+      labels: {
+        colors: '#00000060'
+      }
     }
   };
 
   return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={options} series={series} type="line" />
+    <div className='rounded-3xl w-full h-[450px] p-4'>
+      <div className='w-full h-full -z-10'>
+        <ReactApexChart 
+          options={options} 
+          series={chartData} 
+          type="line" 
+        height={400}
+          width="100%"
+        />
       </div>
-      <div id="html-dist"></div>
     </div>
   );
 }

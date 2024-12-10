@@ -18,4 +18,21 @@ export const couponEndpoints = (builder) => ({
         }),
     }),
 
+    deleteCoupon: builder.mutation({
+        query: (id) => ({
+            url: `admin/deleteCoupon/${id}`,
+            method: 'DELETE',
+            credentials: 'include',
+        }),
+    }),
+
+    updateCouponAccess: builder.mutation({
+        query: (formData) => ({
+            url: `admin/updateCouponAccess`,
+            method: 'PATCH',
+            body: formData,
+            credentials: 'include',
+        }),
+    }),
+
 });

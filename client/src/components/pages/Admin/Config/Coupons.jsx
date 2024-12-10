@@ -4,26 +4,77 @@ import { showToast } from "../../../parts/Toast/Tostify";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import "react-toastify/dist/ReactToastify.css";
 import Recents from "../../../parts/Main/Recents";
-import { useGetAllCouponsMutation } from "../../../../services/Admin/adminApi";
+import { useDeleteCouponMutation, useGetAllCouponsMutation, useUpdateCouponAccessMutation } from "../../../../services/Admin/adminApi";
+import DeletePopup from "../../../parts/popups/DeletePopup";
 
 const Coupons = () => {
-
-
     const navigate = useNavigate();
     const location = useLocation();
 
     // API mutations
+    const [togglor,setToggler] = useState(
+        { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 9: false, 10: false }
+      )
     const [getAllCoupons, { data: couponData }] = useGetAllCouponsMutation();
+    const [deleteCoupon, { data: deleteData }] = useDeleteCouponMutation();
+    const [updateCouponAccess, { data: updatedData }] = useUpdateCouponAccessMutation();
 
     // Local state
     const [searchTerm, setSearchTerm] = useState("");
-    const [sortField, setSortField] = useState("code");
+    const [sortField, setSortField] = useState(0);
+    const [couponsData, setCouponDatas] = useState([]);
+    const [updateData, setUpdateData] = useState({ id: '' });
+    const [popup, showPopup] = useState(false);
     // const [couponData, setCD] = useState([]);
     const [sortOrder, setSortOrder] = useState("ascending");
 
+    useEffect(() => { if (updateData.id) { showPopup(true); } }, [updateData]);
+    useEffect(() => { getAllCoupons(); }, []);
+    useEffect(() => { if (updatedData) { showToast(updatedData.message, 'success') } }, [updatedData]);
+
+    useEffect(() => { if (deleteData) { 
+        showToast(deleteData, 'success')
+        setCouponDatas((prevData)=>prevData.filter((item) => item._id !== updateData.id)) 
+    } }, [deleteData]);
+
+      // to prevent reload
+    useEffect(()=>{
+    if(couponsData){
+        const toggleState = couponsData.reduce((acc, cat) => ({
+        ...acc,
+        [cat._id]: cat.isActive
+        }), {});
+        setToggler(toggleState);
+    }
+    },[couponsData])
+
+    // if access updated
+    useEffect(()=>{
+        if(updatedData?.mission){
+        setToggler((prevData)=>({...prevData,  [updatedData?.uniqeID]:!togglor[updatedData?.uniqeID]}))
+        }
+    },[updatedData])
+
+
     useEffect(() => {
-        getAllCoupons();
-    }, []);
+        if (couponData) {
+            setCouponDatas(() => {
+                const sortedData = [...couponData];
+                sortedData.sort((a, b) => {
+                    const dateA = new Date(a.startDate);
+                    const dateB = new Date(b.startDate);
+                    if (sortOrder === "ascending") {
+                        return dateA.getTime() - dateB.getTime();
+                    } else {
+                        return dateB.getTime() - dateA.getTime();
+                    }
+                });
+                return sortedData;
+            });
+        }
+    }, [couponData, sortOrder]);
+
+
 
     const EmptyState = () => (
         <div className="w-full h-[60vh] flex items-center justify-center flex-col text-center gap-5">
@@ -37,13 +88,21 @@ const Coupons = () => {
 
     return (
         <>
+            {popup && (
+                <DeletePopup
+                    updater={deleteCoupon}
+                    deleteData={updateData}
+                    showPopup={showPopup}
+                    action="Remove the Coupon"
+                    isUser={true}
+                />
+            )}
             <div className="container w-[75%] h-full pt-[60px] my-6">
                 <div className="w-full h-full bg-[radial-gradient(circle_at_10%_10%,_#fffde8,rgba(255,0,0,0)_100%);] rounded-tl-[65px] flex justify-center pb-60 overflow-hidden mb-20">
                     <div className="w-full px-4 mt-5 pb-20">
                         {/* Header with Add Button */}
                         <div className="flex justify-between items-center mb-6 px-20">
                             {/* <h1 className="text-2xl font-bold">Manage Coupons</h1> */}
-                           
                         </div>
 
                         {/* Search and Filter Section */}
@@ -88,7 +147,7 @@ const Coupons = () => {
 
                         {/* Coupons Table */}
                         <div className="h-[calc(100vh-250px)] overflow-auto px-20">
-                            {couponData?.length > 0 ? (
+                            {couponsData?.length > 0 ? (
                                 <div className="relative">
                                     <table className="w-full border-collapse">
                                         {/* Table Header */}
@@ -126,7 +185,7 @@ const Coupons = () => {
 
                                         {/* Table Body */}
                                         <tbody className="overflow-scroll">
-                                            {couponData?.map((coupon) => (
+                                            {couponsData?.map((coupon) => (
                                                 <tr key={coupon._id} className="group">
                                                     <td className="px-3 py-2">
                                                         <p className="text-[18px] group-hover:text-green-700 text-gray-500">
@@ -167,14 +226,13 @@ const Coupons = () => {
                                                         <div className="absolute top-1/2 right-2 w-7 h-7 bg-gray-700 rounded-full transform -translate-y-1/2"></div>
                                                        </div> */}
                                                         {
-                                                            <div  className="relative w-20 h-10 bg-gray-800 rounded-full shadow-lg">
-                                                                <div className={`absolute top-1/2 w-5 h-5 ${true ? 'left-[calc(100%_-_28px)]' : 'left-2'} bg-gray-700  rounded-full transform -translate-y-1/2 transition-all duration-300`}></div>
-                                                                <div className={`absolute top-1/2 w-7 ${true ? 'bg-teal-400 h-5 right-[calc(100%_-_36px)]' : 'bg-red-700 h-2 right-2'}  rounded-full transform -translate-y-1/2 duration-500`}></div>
+                                                            <div onClick={()=>(updateCouponAccess({id:coupon._id,state:!togglor[coupon._id]}))} className="relative w-20 h-10 bg-gray-800 rounded-full shadow-lg">
+                                                                <div className={`absolute top-1/2 w-5 h-5 ${togglor[coupon._id] ? 'left-[calc(100%_-_28px)]' : 'left-2'} bg-gray-700  rounded-full transform -translate-y-1/2 transition-all duration-300`}></div>
+                                                                <div className={`absolute top-1/2 w-7 ${togglor[coupon._id] ? 'bg-teal-400 h-5 right-[calc(100%_-_36px)]' : 'bg-red-700 h-2 right-2'}  rounded-full transform -translate-y-1/2 duration-500`}></div>
                                                             </div>
                                                         }
                                                     </td>
 
-                                                
                                                     <td className="px-3 py-2">
                                                         <div className="flex gap-2">
                                                             <i
@@ -182,6 +240,9 @@ const Coupons = () => {
                                                                 className="ri-pencil-line text-[28px] hover:scale-125 duration-300 text-gray-500 cursor-pointer"
                                                             ></i>
                                                             <i
+                                                                onClick={() => {
+                                                                    setUpdateData({ id: coupon._id });
+                                                                }}
                                                                 className="ri-delete-bin-line text-[28px] hover:scale-125 duration-300 text-red-500 cursor-pointer"
                                                             ></i>
                                                         </div>

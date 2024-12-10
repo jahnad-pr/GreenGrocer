@@ -6,7 +6,7 @@ const { upsertAddress,getAdresses,deleteAddress } = require('../controllers/conf
 const { getCategories } = require('../controllers/config/categoryController');
 const { addToBookmark,checkItemIntheBookmark,removeBookmarkItme,getBookmarkItems } = require('../controllers/config/bookmarkController');
 const { addtoCart,checkPorductInCart,getCartItems,updateCartITem } = require('../controllers/config/cartController');
-const { placeOrder,getOders,cancelOrder,returnOrder } = require('../controllers/config/orderController');
+const { placeOrder,getOders,cancelOrder,returnOrder,updateOrderStatus } = require('../controllers/config/orderController');
 const { getCollections,getCAtegoryCollection,getAllCollection } = require('../controllers/config/collectionController');
 const { authMiddleware } = require('../middlewares/checkUser');
 const { createOrder, verifyPayment } = require('../controllers/config/razorpayController');
@@ -66,8 +66,8 @@ router.get('/getCAtegoryCollctiions/:id',getCAtegoryCollection);
 router.get('/getAllCoupons',authMiddleware,getAllCoupons);
 
 router.put('/addCoinToWallet',authMiddleware,addCoinToWallet);
-router.get('/getUserTransactions',authMiddleware,getUserTransactions);
 
+router.put('/updateOrderStatus',authMiddleware,updateOrderStatus);
 
 // Razorpay routes
 router.post('/razorpay/create-order', createOrder);

@@ -42,7 +42,13 @@ export const {
   useGetAllDiscountsMutation,
   useUpdateCouponMutation,
   useGetAllCouponsMutation,
+  useDeleteCouponMutation,
+  useUpdateCouponAccessMutation,
+  useGetChartsDetailsMutation,
 
   useGetAllOrdersMutation,
+
+  useUpdateOrderStatusMutation,
+
   
 } = adminApiSlice;
