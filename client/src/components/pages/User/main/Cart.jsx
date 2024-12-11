@@ -13,6 +13,15 @@ export default function Cart() {
   const [ getCartItems, { data } ] = useGetCartItemsMutation()
   const navigate = useNavigate()
   const [productsData,setProductData] = useState([])
+  const [totelAmount,setTotelAmount] = useState([])
+
+  useEffect(()=>{
+    setTotelAmount(
+      productsData.reduce((acc, item) => {
+        return acc + item.product.regularPrice * item.quantity/1000;
+      }, 0)
+    )
+  },[productsData])
 
     // Custom content component for the toast
     const ToastContent = ({ title, message }) => (
@@ -89,12 +98,13 @@ const showToast = (message, type = "success") => {
       <div className="w-full h-full backdrop-blur-3xl">
         <div className="w-full h-full  pt-16 overflow-y-scroll relative">
           {/* Main head */}
+          <p className="absolute right-48 text-[60px] top-28 font-bold leading-none text-center font-mono"> ₹{totelAmount} <br /> <span className="text-[20px] relative top-[-20px]">Totel amount</span> </p>
           <h1 className="text-[35px] font-bold px-40 ">Carts</h1>
-          { productsData?.length>0 && <p className="opacity-45 translate-y-[-5px] px-40 ">{productsData?.length} totel items</p>}
+          { productsData?.length>0 && <p className="opacity-45 text-[20px] font-mono translate-y-[-5px] px-40 ">{productsData?.length} totel items</p>}
 
           {/* the list of bookmarks */}
             { productsData?.length>0?
-            <div className="w-full px-40  0 mt-12 flex gap-5">
+            <div className="w-full px-40  0 mt-12 flex gap-8">
 
               {
                 productsData?.map((item,index) => {

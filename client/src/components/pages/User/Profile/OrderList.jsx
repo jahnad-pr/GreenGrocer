@@ -171,10 +171,38 @@ const OrderList = ({userData}) => {
           >
             <motion.h1 
               variants={headerVariants}
-              className="text-[30px] font-bold mb-8 top-0 backdrop-blur-md p-4 z-10 font-[lufga]"
+              className="text-[42px] font-bold top-0 backdrop-blur-md p-4 z-10 font-[lufga]"
             >
               Manage your orders
             </motion.h1>
+            <p className='pr-96 text-[18px] mb-8 ml-5 opacity-55'>Effortlessly track and manage your orders in one place.
+              Stay updated with real-time order status and notifications.
+              Access your order history and easily reorder items.
+              Enjoy a seamless shopping experience with Green Grocer!</p>
+
+            <div className="mb-8 flex gap-4 ml-4 text-[16px] absolute bottom-0 right-20">
+              <span className='flex gap-3 items-center'>
+              <div className="h-4 w-4 bg-[#c9ce86] rounded-full"></div>
+              <p>Pending</p>
+              </span>
+              <span className='flex gap-3 items-center'>
+              <div className="h-4 w-4 bg-[#7082b4] rounded-full"></div>
+              <p>Processed</p>
+              </span>
+              <span className='flex gap-3 items-center'>
+              <div className="h-4 w-4 bg-[#cda686] rounded-full"></div>
+              <p>Shipped</p>
+              </span>
+              <span className='flex gap-3 items-center'>
+              <div className="h-4 w-4 bg-[#8ecf86] rounded-full"></div>
+              <p>Delivered</p>
+              </span>
+              <span className='flex gap-3 items-center'>
+              <div className="h-4 w-4 bg-[#cc8ba9] rounded-full"></div>
+              <p>Cancelled</p>
+              </span>
+            </div>
+
             <motion.div 
               variants={containerVariants}
               className="flex flex-wrap gap-4"

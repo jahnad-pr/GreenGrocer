@@ -8,7 +8,7 @@ import {
 import Recents from "../../../parts/Main/Recents";
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import DeletePopup from "../../../parts/popups/DeletePopup";
-import { ToastContainer, toast } from "react-toastify";
+import { showToast } from "../../../parts/Toast/Tostify"; // Import the showToast
 
 // Constants
 const SORT_OPTIONS = {
@@ -69,31 +69,6 @@ const Categories = () => {
       showToast(updateResponse?.message,'success')
     }
   },[updateResponse])
-
-      // Show toast notification
-      const showToast = (message, type = "success") => {
-        if (type === "success") {
-          toast.success(message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        } else {
-          toast.error(message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
-      };
 
   // Handle category updates
   useEffect(() => {
@@ -242,7 +217,6 @@ const Categories = () => {
   return (
     <>
         {/* Delete Confirmation Popup */}
-      <ToastContainer position="bottom-left" />
           {popup && (
         <DeletePopup
           updater={updateCategory} 

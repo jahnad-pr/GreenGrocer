@@ -8,19 +8,53 @@ module.exports.upsertCategory = async(req,res)=>{
 
     const { name,_id,items } = req.body
 
-    const filter = _id ? { _id } : { name }    
-
-    const isListed = req.body.isListed || true
-    const updatedAt = Date.now()
-    const createdAt = req.body.createdAt || Date.now()
-
+    
+    
     try {
-        const result = await Category.updateOne( filter, { $set: { name,createdAt,updatedAt,isListed,items } }, { upsert: true, new: true })
+
+        let result = []
         
-        return res.status(200).json({mission:true,message:'successfully updated'})
+        if(_id){
+            const filter = _id ? { _id } : { name }    
+        
+            const isListed = req.body.isListed || true
+            const updatedAt = Date.now()
+            const createdAt = req.body.createdAt || Date.now()
+    
+    
+            result = await Category.updateOne( filter, { $set: { name,createdAt,updatedAt,isListed,items } }, { upsert: true, new: true })
+
+        }else{
+
+            console.log('Creating new category with name:', name);
+            
+
+            const categoryData = {
+                name: name,
+                isListed: true,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                items: items || { collections: [], products: [] },
+                discount:{}
+            };
+
+            // console.log('Category data:', categoryData);
+            result = await Category.create(categoryData);
+            // console.log('Created category:', result);
+        }
+
+        if(result){
+
+            return res.status(200).json({mission:true,message:'successfully updated'})
+        }
+        
     } catch (error) {
-          return res.status(500).json({mission:false,message: error.message })
-      }
+        console.log('Category creation error:', error);
+        return res.status(error.status || 500).json({
+            mission: false,
+            message: error.message
+        });
+    }
     
 }
 
@@ -44,7 +78,11 @@ module.exports.updateCategory = async(req,res)=>{
         }
 
     } catch (error) {
-        return res.status(500).json({mission:false,message: error.messgae }) 
+        console.log('Category update error:', error);
+        return res.status(error.status || 500).json({
+            mission: false,
+            message: error.message
+        });
     }
 
 }
@@ -63,11 +101,11 @@ module.exports.getCategories = async(req,res)=>{
         }
         
     } catch (error) {
-        return res.status(500).json({mission:false,message: error.messgae }) 
+        console.log('Category retrieval error:', error);
+        return res.status(error.status || 500).json({
+            mission: false,
+            message: error.message
+        });
     }
 
 }
-
-
-
-

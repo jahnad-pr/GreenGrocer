@@ -60,19 +60,14 @@ const ToastContent = ({ title, message }) =>
 
   return (  userData &&
     <> 
-      <div className="w-[96%] h-full">
+      <div className="w-[96%] h-full bg-[#f2f2f2]">
         <div className="w-full h-full flex flex-col items-center gap-5">
           <span className="w-full h-full px-64 ">
             {/* Head */}
             <div className="flex justify-between items-center my-16 mb-5">
-              <h1 className="text-[30px] font-bold">Profile</h1>
+              <h1 className="text-[40px] font-bold font-['lufga']">Profile</h1>
               {!isEditMode && (
-                <button
-                  onClick={() => setIsEditMode(true)}
-                  className="px-6 py-2 bg-[linear-gradient(45deg,#3c6e51,#53aa58)] text-white rounded-full"
-                >
-                  Edit Profile
-                </button>
+                <button onClick={() => setIsEditMode(true)} className="px-6 py-2 bg-[#84a190] text-white rounded-full" > Edit Profile </button>
               )}
             </div>
             <div className="flex w-[80%] items-center justify-center mx-auto ml-60 mb-3">
@@ -100,8 +95,11 @@ const ToastContent = ({ title, message }) =>
             </div>
 
             {/* editer */}
-            <div className="flex-1 h-10 w-full flex flex-col items-center  gap-5">
+            <div className="flex-1 h-10 w-full flex flex-col items-center  gap-8">
               {/* Name */}
+              
+              {/* tag name and phone */}
+              <div className="flex gap-8">
               <div className="flex-col flex gap-1">
                 <label
                   className="font-bold opacity-35 w-full max-w-[410px] ml-2"
@@ -110,7 +108,7 @@ const ToastContent = ({ title, message }) =>
                   User Name
                 </label>
                 <input
-                  className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px] "
+                  className="w-full max-w-[450px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px] "
                   type="text"
                   placeholder="shalu"
                   name="username"
@@ -119,24 +117,6 @@ const ToastContent = ({ title, message }) =>
                   disabled={!isEditMode}
                 />
               </div>
-              {/* tag name and phone */}
-              <div className="flex gap-8">
-                <span className="flex flex-col gap-1">
-                  <label
-                    className="font-bold opacity-35 w-full max-w-[200px] ml-2"
-                    htmlFor=""
-                  >
-                    &nbsp;&nbsp;Tag Name
-                  </label>
-                  <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
-                    type="text"
-                    name=""
-                    onChange={inputHandler}
-                    placeholder="@shalu"
-                    disabled={!isEditMode}
-                  />
-                </span>
                 {/* phone */}
                 <span className="flex flex-col flex-1 gap-1">
                   <label
@@ -147,7 +127,7 @@ const ToastContent = ({ title, message }) =>
                   </label>
 
                   <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
+                    className="w-full max-w-[200px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px]"
                     value={formData?.phone}
                     name="phone"
                     onChange={inputHandler}
@@ -166,13 +146,13 @@ const ToastContent = ({ title, message }) =>
                   Email
                 </label>
                 <input
-                  className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
+                  className="w-full max-w-[450px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px]"
                   value={formData?.email.replace(/\.gmail$/, "")}
                   type="text"
                   name="email"
                   onChange={inputHandler}
                   placeholder="shalu@gmail.com"
-                  disabled={!isEditMode}
+                  disabled={true}
                 />
               </div>
 
@@ -186,7 +166,7 @@ const ToastContent = ({ title, message }) =>
                     &nbsp;&nbsp;Place
                   </label>
                   <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef50,#f5efef50)] rounded-full text-[18px]"
+                    className="w-full max-w-[200px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px]"
                     type="text"
                     onChange={inputHandler}
                     name="place"
@@ -196,16 +176,16 @@ const ToastContent = ({ title, message }) =>
                   />
                 </span>
                 {/* Gender */}
-                <span className="flex flex-col flex-1 gap-1">
+                <span className="flex flex-col flex-1 gap-">
                   <label
                     className="font-bold opacity-35 w-full max-w-[420px] ml-2"
                     htmlFor=""
                   >
                     &nbsp;&nbsp;Gender
-                   </label>
+                  </label>
                   <select
                     value={formData?.gender}
-                    className="w-52 py-3 px-5 rounded-full text-[18px] custom-select"
+                    className="w-52 py-3 px-5 rounded-full text-[18px] bg-[#84a19030] custom-selecter"
                     name="gender"
                     onChange={inputHandler}
                     disabled={!isEditMode}
@@ -227,7 +207,7 @@ const ToastContent = ({ title, message }) =>
                   <HoverKing
                     event={updateProfileSumbmit}
                     Icon={<FaSave className="text-[20px]" />}
-                    styles="w-[140px] rounded-full mt-5 absolute"
+                    styles="w-[260px] rounded-full mt-5 absolute"
                   >
                     Save
                   </HoverKing>

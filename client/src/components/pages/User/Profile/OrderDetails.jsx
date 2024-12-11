@@ -315,15 +315,15 @@ export default function OrderDetails({userData}) {
                             </span>
                                 <span className='h-'></span>
 
-                                <p className='text-[25px] mt-5 '>{crrentOrder?.items[currentPosition - 1]?.product?.freshness}</p>
+                                <p className='text-[25px] mt-5 capitalize'>{crrentOrder?.items[currentPosition - 1]?.product?.freshness}</p>
                                 {  crrentOrder?.items[currentPosition - 1]?.product?.freshness==='Harvested' &&
                                 <>
-                                <p className='opacity-45'>Harvested on:</p>
-                                <p className=''>{formatDate(crrentOrder?.items[currentPosition - 1]?.product?.harvestedTime)}</p>
+                                <p className='opacity-45 leading-none'>Harvested on:</p>
+                                <p className='leading-none'>{formatDate(crrentOrder?.items[currentPosition - 1]?.product?.harvestedTime)}</p>
                                 </>
                                 
                                 }
-                                { crrentOrder?.items[currentPosition - 1]?.product?.freshness==='fresh' &&
+                                { crrentOrder?.items[currentPosition - 1]?.product?.freshness.toLowerCase()==='fresh' &&
                                     <p className='leading-none opacity-45 mt-2'>Once the customer confirms their order, the wood is cut specifically for that piece. This approach minimizes waste and ensures fresh, custom-prepared material for every order.</p>
                                     
                                 }
@@ -336,10 +336,10 @@ export default function OrderDetails({userData}) {
                                 <p>{crrentOrder?.delivery_address?.city?.toUpperCase()}, {'KERALA'}, {crrentOrder?.delivery_address?.pincode}</p>
                                 </span>
                             { orderStatus!=='Cancelled' && orderStatus!=='Delivered' && orderStatus!=='Shipped' &&  
-                            <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute -bottom-8 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[white] rounded-full"></i>} >Cancell order</HoverKing>}
+                            <HoverKing event={()=>handleCancel(crrentOrder?._id, currentPosition)} styles={'absolute -bottom-24 rounded-full border-0'} redish={true} Icon={<i className="ri-close-circle-line text-[30px] text-[white] rounded-full"></i>} >Cancell order</HoverKing>}
 
                                 {orderStatus === 'Delivered' &&
-                                    <HoverKing event={() => handleReturn(crrentOrder?._id, currentPosition)} styles={'absolute bottom-8 rounded-full border-0'} redish={true} Icon={<i className="ri-arrow-go-back-line text-[30px] text-[white] rounded-full"></i>} >Return order</HoverKing>}
+                                    <HoverKing event={() => handleReturn(crrentOrder?._id, currentPosition)} styles={'absolute bottom-24 rounded-full border-0'} redish={true} Icon={<i className="ri-arrow-go-back-line text-[30px] text-[white] rounded-full"></i>} >Return order</HoverKing>}
 
                                 { orderStatus === 'Shipped' && 
                                 <div className='flex flex-col gap-2'>

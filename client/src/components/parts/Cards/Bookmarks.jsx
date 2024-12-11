@@ -69,14 +69,14 @@ export default function BookmarkCard({ data,userData,setBookData }) {
         />
       )}
 
-    <div className="h-60 min-w-60 max-w-48 relative">
+    <div className="h-60 min-w-60 max-w-48 relative ">
 
       <button onClick={() =>addData||goToCart?navigate('/user/cart'):addToCartItem(data.product._id)} className={`flex justify-start items-center font-bold rounded-full group text-white absolute ${!data.is_collection?'-left-4':'-right-4'} bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 bottom-0 z-10`}>
         <i className="ri-shopping-cart-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
         <i className={`${addData||goToCart?'ri-arrow-right-line':'ri-add-large-fill'} rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500`}></i>
       </button>
 
-      <div className={`w-60 h-60 overflow-hidden bg-gradient-to-br from-[#ffffff20] to-[#ffffff40] rounded-[30px] ${data.is_collection?'rounded-tr-[120px]':'rounded-bl-[120px]'} -z-10`}>
+      <div className={`w-60 h-60 overflow-hidden bg-[#e6e9e7] rounded-[30px] ${data.is_collection?'rounded-tr-[120px]':'rounded-bl-[120px]'} -z-10`}>
 
       <div className=" h-auto w-auto pl-8 relative py-2 z-10 leading-none">
 
@@ -86,7 +86,7 @@ export default function BookmarkCard({ data,userData,setBookData }) {
           !data.is_collection &&
           <i onClick={()=>(navigate('/user/productPage',{ state:{ id:data.product._id } }))} className="ri-shopping-bag-fill absolute top-0 right-0 rounded-full p-5 text-[30px] hover:scale-125 duration-500"></i>
         }
-        <i onClick={() => setDPopup(true)} className="ri-bookmark-fill absolute top-12 right-0 rounded-full p-5 text-[30px] hover:scale-125 duration-500"></i>
+        <i onClick={() => setDPopup(true)} className="ri-bookmark-fill absolute top-12 right-0 rounded-full p-5 text-[30px] hover:scale-150 duration-500"></i>
 
         </div>
 

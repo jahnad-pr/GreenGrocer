@@ -46,7 +46,7 @@ export default function Bookmark({userData}) {
           </div>
 
             {/* the list of bookmarks */}
-            <div className="w-full h-full flex flex-wrap gap-6">
+            <div className="w-full mt-10 h-full flex flex-wrap gap-6">
               {
                 bookData?.map((item, index) => {
                   return <BookmarkCard userData={userData} setBookData={setBookData} data={item} key={index} col={true} />;

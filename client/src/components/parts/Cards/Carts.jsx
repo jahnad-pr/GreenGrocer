@@ -219,28 +219,23 @@ export default function Carts({ data,setProductData,index,showToast }) {
         showPopup={showPopup}
       />
     }
-    <div className="p-8 hover:scale-[1.1] duration-500 min-w-72 max-w-72 bg-[linear-gradient(27deg,#f6d3df90,#ffffff50)] rounded-[50px] relative overflow-hidden">
-      <div className="w-full h-full flex items-center flex-col">
-      <i onClick={()=>removeItem(data?.product?._id)} className="ri-close-line p-[2px] bg-[#00000040] rounded-full absolute left-8 top-8 px-[5px]"></i>
-        <img className="w-[50%] h-[50%] object-cover" src={data?.product?.pics?.one} alt="" />
-        <h1 className="text-[18px] font-bold">{data?.product?.name}</h1>
-        <p className="text-green-700 mb-3">{data?.product?.category?.name}</p>
-        {/* <div className=" h-8 w-[calc(100%_-_64px)] flex gap-3 mb-3 justify-center items-center">
-            <div className="h-full w-12 border-gray-400 border-2 flex justify-center items-center rounded-l-full">
-            <i className="ri-add-fill text-[20px] opacity-40"></i>
-            </div>
-            <div className="h-full w-12 border-gray-400 border-[2px]  flex justify-center items-center rounded-r-full">
-            <i className="ri-subtract-line text-[20px] opacity-40"></i> 
-            </div>
-        </div> */}
+    <div className="py-8 hover:scale-[1.1] duration-500 max-w-64 min-w-56 relative ">
+        <img className="w-24 h-24 object-cover mx-auto translate-y-[30%]" src={data?.product?.pics?.one} alt="" />
+
+      <div className="w-full justify-center pb-10 flex items-center flex-col leading-none rounded-[30px] rounded-br-[120px]  bg-[linear-gradient(27deg,#00000010,#00000005)] pt-8 overflow-hidden">
+
+      <i onClick={()=>removeItem(data?.product?._id)} className="ri-close-line p-[2px] py-1 bg-[#00000040] rounded-full absolute left-8 top-8 px-[5px]"></i>
+        <p className="text-green-700 text-[24px] font-bold opacity-20 absolute w-0 rotate-90 left-4 top-32">{data?.product?.category?.name.toUpperCase()}</p>
+        <h1 className="text-[23px] font-bold font-['lufga'] leading-none py-2">{data?.product?.name}</h1>
+      
         <p className="w-[calc(100%_-_64px)] text-center bg-[#00000010] font-bold py-[6px] my-2 mt-3 rounded-full">
           { defaultQnt &&
-          <span>
+          <span className="ml-">
             <select 
               onChange={(e)=>onQuantityChange(e,data?.product?._id)}
               value={qnt || ''}
               defaultValue={convertToGrams(data?.quantity)}
-              className="outline-none bg-transparent rounded-full max-w-20"
+              className="outline-none bg-transparent rounded-full custom-selectero font-thin text-black ml-"
             >
               {
                 options.map((opt, idx) => (
@@ -251,8 +246,12 @@ export default function Carts({ data,setProductData,index,showToast }) {
           </span>
           }
         </p>
-        <p onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:data?.product,quantity:convertToGrams(qnt) }], qnt: qnt } })} className="w-[calc(100%_-_64px)] text-center py-[6px] bg-[#ffffff50] my-2 rounded-full">Buy now</p>
- 
+        {/* <p  className="w-[calc(100%_-_64px)] text-center py-[6px] bg-[#ffffff50] my-2 rounded-full">Buy now</p> */}
+        
+        <button onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:data?.product,quantity:convertToGrams(qnt) }], qnt: qnt } })} className='flex justify-start items-center font-bold rounded-full text-white absolute bottom-3 -right-3 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group'>
+        <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
+        <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+        </button>
       </div>
     </div>
     </>
