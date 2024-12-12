@@ -51,6 +51,7 @@ import CouponsList from "./components/pages/User/Profile/CouponsList";
 import Wallet from "./components/pages/User/Profile/Wallet";
 import SalesReport from "./components/pages/Admin/Config/SalesReport";
 import Invoice from "./components/pages/User/main/Subs/Invoice";
+import Map from "./components/pages/User/main/Map";
 
 export default function App() {
 
@@ -114,6 +115,7 @@ export default function App() {
           <Route path="/user/Coupons" element={ <UserProtecter><CouponsList/></UserProtecter> } />
           <Route path="/user/Wallet" element={ <UserProtecter><Wallet/></UserProtecter> } />
           <Route path="/user/Order/Invoice" element={ <UserProtecter><Invoice /></UserProtecter> } />
+          <Route path="/user/map" element={ <UserProtecter><Map /></UserProtecter> } />
           </Routes>
 
         <Routes>

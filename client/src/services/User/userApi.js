@@ -80,5 +80,7 @@ export const {
   useRemoveBookmarkItmeMutation,
   useGetBookmarkItemsMutation,
 
+  useAddLocationMutation,
+
 
 } = userApiSlice;

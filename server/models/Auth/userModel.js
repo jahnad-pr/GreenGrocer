@@ -62,7 +62,21 @@ const userSchema = new mongoose.Schema({
             type:Date,
             default:Date.now()
         }
-    }
+    },
+    location: {
+        first: {
+            type: Object,
+            default: {}
+        },
+        second: {
+            type: Object,
+            default: {}
+        },
+        third: {
+            type: Object,
+            default: {}
+        },
+    },
 });
 
 module.exports = mongoose.model('User', userSchema);

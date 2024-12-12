@@ -70,5 +70,14 @@ export const userAuthApi = (builder) => ({
       }),
     }),
 
+    addLocation: builder.mutation({
+      query: (data) => ({
+        url: 'user/addLocation',
+        method: 'POST',
+        body: data,
+        credentials: 'include',
+      }),
+    }),
+
   });
   

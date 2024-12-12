@@ -343,3 +343,46 @@ module.exports.resetPassword = async (req, res) => {
   
 
 };
+
+
+
+// add the location
+module.exports.addLocation = async (req, res) => {
+
+  const { locationData,position,_id } = req.body;
+
+  
+  
+
+  
+  try {
+    
+    const updateData = await User.updateOne(
+      { _id },
+      { $set: position === 'first' 
+          ? { 'location.first': locationData }
+          : position === 'second'
+          ? { 'location.second': locationData }
+          : { 'location.third': locationData }
+      }
+    );
+    
+    if(updateData.modifiedCount){
+      
+      return res.status(200).json('Location Updated successfully');
+      
+    }else if(updateData.upsertedCount){
+      
+    return  res.status(200).json('Location added successfully');
+      
+    }
+    
+    return res.status(400).json('Somthing went wrong');
+
+  } catch (error) {
+    console.log(error.message);
+
+    return res.status(400).json({ message: error.message });
+
+  }
+};

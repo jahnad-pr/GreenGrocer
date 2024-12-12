@@ -1,6 +1,6 @@
 const express = require('express');
 const {createAUser,loginUser,googleLog, getUserData, 
-    getOTP, conformOTP, updateVerification, isUerExist, logoutUser, updateProfile, matchPassword,resetPassword } = require('../controllers/userController');
+    getOTP, conformOTP, updateVerification, isUerExist, logoutUser, updateProfile, matchPassword,resetPassword,addLocation } = require('../controllers/userController');
 const { getProducts,getCAtegoryProducts,getProductDetails,getAllProduct } = require('../controllers/config/ProductController')
 const { upsertAddress,getAdresses,deleteAddress } = require('../controllers/config/AdressController')
 const { getCategories } = require('../controllers/config/categoryController');
@@ -64,6 +64,8 @@ router.get('/getCAtegoryCollctiions/:id',getCAtegoryCollection);
 // router.get('/getCollectionProducts/:id',getCollectionProducts);
 
 router.get('/getAllCoupons',authMiddleware,getAllCoupons);
+
+router.post('/addLocation',authMiddleware,addLocation);
 
 router.put('/addCoinToWallet',authMiddleware,addCoinToWallet);
 

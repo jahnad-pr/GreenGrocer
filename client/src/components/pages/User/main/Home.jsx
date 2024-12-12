@@ -109,6 +109,8 @@ export default function Home({ userData }) {
                 </p>
               </div>
             )}
+            <span className="flex gap-5">
+
             <button
               onClick={() =>
                 !userData
@@ -123,6 +125,13 @@ export default function Home({ userData }) {
               {!userData && <i className="ri-user-line text-[22px]"></i>}
               <p className="font-medium">{userData ? "Shop" : "sign now"}</p>
             </button>
+            {  !userData?.location?.one &&
+              <button onClick={() => navigator("/user/map") } className="bg-[#6b8274] self-start px-8 py-3 flex gap-5 rounded-full text-white items-center shadow-2xl" >
+                <i className="ri-focus-3-line text-[22px]"></i>
+              <p className="font-medium">Add your current location</p>
+            </button>
+            }
+            </span>
           </div>
           <div className="flex-1 rounded-t-full md:rounded-l-full relative min-w-[100%] md:min-w-[50%] h-[300px] md:h-auto mt-8 md:mt-0">
             <img

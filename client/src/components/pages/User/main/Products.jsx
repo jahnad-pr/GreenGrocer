@@ -9,11 +9,13 @@ import {
 import Product from "../../../parts/Cards/Product";
 import { useNavigate } from "react-router-dom";
 import CollectionCard from "../../../parts/Cards/Collection";
+import DeletePopup from '../../../parts/popups/DeletePopup';
 
 export default function Products({ userData }) {
   const [cPosition, setPosition] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [showPopup, setShowPopup] = useState(true); // State for the popup
   const navigator = useNavigate();
 
   const [getCategories, { isLoading: catLoading, data: catData }] = useGetCategoriesMutation();
@@ -54,11 +56,34 @@ export default function Products({ userData }) {
     }
   }, [catData, cPosition]);
 
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
+  const handleGetLocation = () => {
+    // Logic to get current location
+    handleClosePopup(); // Close the popup after getting the location
+  };
+
+  useEffect(() => {
+    setShowPopup(true);
+  }, []);
+
   return (
     <div className="w-[96%] h-full bg-[#f2f2f2]">
       <div className="w-full h-full backdrop-blur-3xl pl-40">
         <div className="w-full h-full pt-16 overflow-y-scroll">
           <h1 className="text-[30px] font-bold">Shop</h1>
+
+          {/* Popup for getting current location */}
+          {showPopup && (
+            <DeletePopup
+              title="Get Current Location"
+              description="It's important to get your current location for accurate delivery. Would you like to proceed?"
+              onCancel={handleClosePopup}
+              onConfirm={handleGetLocation}
+            />
+          )}
 
           {/* menu navigator */}
           <div className="flex text-[20px] my-10 font-[500] relative py-3">
@@ -93,9 +118,7 @@ export default function Products({ userData }) {
           >
             {CollData?.data?.length > 0 && (
               <>
-                <h1 className={`text-[30px] font-semibold mt-20`}>
-                  Collections
-                </h1>
+                <h1 className={`text-[30px] font-semibold mt-20`}>Collections</h1>
                 <div className="w-full h-auto flex my-5 mt-12 gap-5 relative">
                   {productsData?.data?.length > 14 && (
                     <div
@@ -126,9 +149,7 @@ export default function Products({ userData }) {
             {/* Products Section */}
             {productsData?.data?.length > 0 && (
               <>
-                <h1 className={`text-[30px] font-semibold mt-20`}>
-                  Products
-                </h1>
+                <h1 className={`text-[30px] font-semibold mt-20`}>Products</h1>
                 <div className="w-full h-auto flex my-5 mt-8 gap-5 mb-80 relative flex-wrap">
                   {productsData?.data?.length > 14 && (
                     <div
