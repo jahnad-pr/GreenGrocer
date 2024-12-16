@@ -54,13 +54,14 @@ export default function Product({pos,data,type,userData}) {
         <s><p className='opacity-30' >₹ {data?.regularPrice}</p></s>
         <p className='opacity-60 text-[25px] font-bold text-[#14532d]' >₹ {(data?.regularPrice - (data?.discount?.isPercentage ? (data?.regularPrice * data?.discount?.value / 100) : (data?.discount?.value || 0))).toFixed(2)}</p>
 
-        <i onClick={()=>isMared?bookmarkHandler(data._id,'remove'):bookmarkHandler(data._id,'add')} className={` ri-bookmark-${isMared?'fill':'line'} absolute top-28 right-0 rounded-full p-5 text-[30px] hover:scale-125 duration-500 `}></i>
-
+        {userData?._id && <img src={isMared?'/hearted.svg':'/heart.svg'} onClick={()=>isMared?bookmarkHandler(data._id,'remove'):bookmarkHandler(data._id,'add')} className={`w-20 h-20 opacity-45 absolute top-28 right-0 rounded-full p-5 hover:scale-125 duration-500 `}></img>}
+        
         </span>
           </span>
         <button onClick={()=>type==='product'?(navigate('/user/productPage',{ state:{ id:data._id } })):navigate(`/user/collection/${data.name}/products`,{ state:{products:data?.products,action:'collection'} })} className='flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group'>
-        <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
-        <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+        <img className='group-hover:-translate-x-full min-w-[70px] p-4 brightness-[100]  duration-500' src="/bag-2-1.svg" alt="" />
+        {/* <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i> */}
+        <img className='group-hover:-translate-x-full min-w-[70px] p-5 brightness-[100]  duration-500' src="/arrow-right.svg" alt="" />
         </button>
 
 

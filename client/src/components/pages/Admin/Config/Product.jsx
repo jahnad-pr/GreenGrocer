@@ -180,16 +180,16 @@ const Products = () => {
               <table className="w-full border-collapse">
                 {/* Table Header */}
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-[linear-gradient(to_right,#498CFF24,#CBD8EE23)]">
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600 rounded-l-full">#</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Product</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Category</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Price</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">From</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Qty</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Image</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Status</th>
-                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-600 rounded-r-full">Actions</th>
+                  <tr className="bg-[linear-gradient(to_right,#498CFF24,#CBD8EE23)] font-mono text-[18px]">
+                    <th className="px-3 pl-4 10 py-2 text-left font-medium text-gray-600 rounded-l-full">S.num</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600">Product</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600">Category</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600">Price</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600">From</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600">Qty</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600">Image</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600">Status</th>
+                    <th className="px-3 py-2 text-left  font-medium text-gray-600 rounded-r-full">Actions</th>
                   </tr>
                 </thead>
                 <tr><th>&nbsp;</th></tr>
@@ -198,22 +198,23 @@ const Products = () => {
                 
                 <tbody>
                   {productsData?.map((product, index) => (
-                    <tr key={product._id} className="hover:bg-gray-50">
+                    <tr key={product._id} className="hover:bg-gray-50 font-['lufga']">
                       <td className="px-3 py-2 font-bold text-gray-900 text-[20px]">{index + 1}</td>
                       <td className="px-3 py-2">
-                        <div className="font-medium text-gray-900 text-[18px]">{product.name}</div>
-                        <div className="text-xs text-gray-500">{product.description}</div>
+                        <div className=" text-gray-900 text-[20px] font-['lufga']">{product.name}</div>
+                        <div className="text-xs text-gray-400 font-normal">{product.description||'No description'}</div>
                       </td>
                       <td className="px-3 py-2">
-                        <div className="font-medium text-gray-900">{product?.category?.name}</div>
-                        <div className="text-xs text-gray-500">{product?.productCollection?.name}</div>
+                        <div className="text-gray-900 text-[20px] ">{product?.category?.name}</div>
+                        <div className="text-xs text-gray-400 font-normal ">{product?.productCollection?.name||'No collection'}</div>
                       </td>
                       <td className="px-3 py-2">
-                        <div className="text-[14px] text-gray-500 line-through">₹{product.regularPrice}</div>
-                        <div className="font-bold text-gray-600">₹{product.salePrice}</div>
+                        <div className="text-gray-500 text-[20px] font-medium font-mono">₹{product.regularPrice}</div>
+                        {/* <div className="font-bold text-gray-600">₹{product.salePrice}</div> */}
                       </td>
                       <td className="px-3 py-2 text-sm text-gray-500">{product.from}</td>
-                      <td className="px-3 py-2 text-gray-900 font-bold">{product.stock/1000} <span className="opacity-45">Kg</span></td>
+                      <td className={`px-3 py-2 ${product.stock<=0?'text-red-600 text-[16px] font-medium':'text-gray-600 text-[20px]'}`}>{product.stock<=0?'Out of Stock':product.stock<=1000?(product.stock).toFixed(2):(product.stock/1000).toFixed(2)} 
+                      { product.stock> 0 &&<span className="">{product.stock>=1000? ' Kg':'Gram'}</span>}</td>
                       <td className="px-3 py-2">
                         <img src={product?.pics?.one} alt={product.name} className="w-8 h-8 rounded-full object-cover" />
                       </td>
@@ -272,7 +273,7 @@ const Products = () => {
           </div>
         </div>
       </div>
-      <Recents />
+      <Recents page="products" />
     </>
   );
 };

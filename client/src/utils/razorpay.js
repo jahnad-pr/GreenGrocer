@@ -10,14 +10,14 @@ export const loadRazorpayScript = () => {
 
 export const createRazorpayOrder = async (amount) => {
   // Convert amount to paise (multiply by 100)
-  const amountInPaise = Math.round(amount * 1);
+  // const amountInPaise = Math.round(amount);
   
   const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/user/razorpay/create-order`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ amount: amountInPaise }),
+    body: JSON.stringify({ amount: amount }),
   });
   return response.json();
 };

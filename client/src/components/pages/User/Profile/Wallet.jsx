@@ -6,6 +6,7 @@ import TransactionDetailsPopup from "../../../parts/popups/TransactionDetailsPop
 import "./Wallet.css";
 import { useGetUserTransactionsMutation } from "../../../../services/User/userApi";
 import emptyWallet from "../../../../assets/images/notransaction.png";
+import HoverKing from "../../../parts/buttons/HoverKing";
 
 export default function Wallet({userData}) {
 
@@ -53,11 +54,12 @@ export default function Wallet({userData}) {
     <div className="w-[96%] min-h-screen bg-[#f2f2f2] overflow-x-hidden">
       <div className="w-full h-full px-4 md:px-20 lg:px-80 flex flex-col items-center gap-5 fade-in">
         {/* Head */}
-        <h1 className="text-[30px] font-bold my-10 mt-16 slide-down">Wallet and Coin </h1>
+        {transactions?.length > 0 &&<h1 className="text-[35px] font-bold my-10 mt-16 slide-down">Wallet and Coin </h1>}
 
         {/* coin config */}
         <div className="w-full h-56 flex py-10 gap-10 items-center justify-center duration-500">
           {/* statics */}
+          {transactions?.length > 0 &&
           <div className="h-full w-[50%] pl-28 bg-[linear-gradient(45deg,#ffde97,#eae4e3)] rounded-[30px] rounded-tl-[120px] duration-500 hover:mx-10 scale-125 hover:scale-[140%] flex gap-10 items-center py-5 px-10 relative slide-right">
             {/* coin count */}
             <img className="h-1/2 absolute top-0 left-0 rotate-in" src={coin} alt="" />
@@ -77,11 +79,12 @@ export default function Wallet({userData}) {
                 <br />amo
                 rupees
               </p>
-              <p className="absolute text-[130px] right-10 opacity-15">₹</p>
+              <p className="absolute text-[130px] right-10 opacity-5">₹</p>
             </div>
-          </div>
+          </div>}
 
           {/* add coin */}
+          {transactions?.length > 0 &&
           <div 
             onClick={() =>( setPopData({}) , setShowPaymentPopup(true))}
             className="h-full w-[30%] bg-[linear-gradient(45deg,#d1811f80,#eae4e3)] hover:mx-28 duration-500 ml-16 hover:scale-125 relative overflow-hidden py-3 flex items-center rounded-[30px] cursor-pointer slide-left">
@@ -91,7 +94,7 @@ export default function Wallet({userData}) {
               <p className="text-[35px] font-bold">Add Coin</p>
               <p className="translate-y-[-10px] opacity-45">buy coins by purchase</p>
             </div>
-          </div>
+          </div>}
         </div>
 
         {/* History of transaction */}
@@ -107,18 +110,19 @@ export default function Wallet({userData}) {
             {/* Head row */}
             {transactions?.length > 0 && (
               <div className="sticky top-0 z-10 bg-[#f2f2f2]">
-                <div className="grid grid-cols-6 gap-4 p-4 text-sm text-gray-900 mb-6 bg-gradient-to-r from-[#d1811f13] to-[#c9c1c031] px-10 rounded-[30px]">
-                  <div className="text-[20px] font-thin">Transaction ID</div>
-                  <div className="text-[20px] font-thin">Date</div>
-                  <div className="text-[20px] font-thin">Description</div>
-                  <div className="text-[20px] font-thin">Amount</div>
-                  <div className="text-[20px] font-thin">Status</div>
-                  <div className="text-[20px] font-thin">Payment Method</div>
+                <div className="grid grid-cols-6 gap-4 font-mono p-4 text-sm text-gray-900 mb-6 bg-gradient-to-r from-[#d1811f13] to-[#c9c1c031] px-10 rounded-[30px]">
+                  <div className="text-[20px]">ID</div>
+                  <div className="text-[20px]">Date</div>
+                  <div className="text-[20px]">Description</div>
+                  <div className="text-[20px]">Amount</div>
+                  <div className="text-[20px]">Status</div>
+                  <div className="text-[20px]">Method</div>
                 </div>
               </div>
             )}
 
             {/* Items / rows */}
+            {transactions?.length > 0 &&
             <div className="divide-y px-10 overflow-y-auto custom-scrollbar" style={{ maxHeight: 'calc(100vh - 450px)', minHeight: '300px' }}>
               {transactions?.map((transaction, index) => (
                 <div
@@ -150,29 +154,32 @@ export default function Wallet({userData}) {
               ))}
 
               {/* Empty state with illustration */}
-              {!data && (
-                <div className="col-span-6 min-h-[60vh] text-center flex flex-col items-center justify-center">
+            </div>}
+
+              {!transactions?.length > 0 && (
+                <div className="col-span-6 min-h-[10vh] text-center pb-16 flex flex-col items-center justify-center">
                   <img 
-                    src={emptyWallet} 
+                    src={'/empty-wallet-remove.svg'} 
                     alt="Empty Wallet" 
-                    className="w-64 h-64 mb-6 opacity-80 object-cover"
+                    className="w-96 h-96 mb-6 opacity-80 object-cover"
                   />
                   <h3 className="text-[30px] text-gray-800 mb-2">
-                    No Transactions Yet
+                    No transactions yet!
                   </h3>
-                  <p className="text-gray-600 text-[16px] opacity-55 mb-4 max-w-md mx-auto">
+                  <p className="text-gray-600 opacity-55 mb-4 max-w-md mx-auto text-[18px]">
                     Start your journey by adding coins to your wallet. Purchase coins to unlock exclusive deals and make seamless transactions.
                   </p>
-                  <button 
-                    onClick={() => setShowPaymentPopup(true)}
+                  <HoverKing  event={() => setShowPaymentPopup(true)} styles={'fixed bottom-36 left-1/2 -translate-x-[15%] rounded-full border-0 font-medium text-[16px] bg-white'} Icon={<i className="ri-money-euro-circle-line text-[30px] "></i>} >Add coin now</HoverKing>
+
+                  {/* <button 
+                    onClick=
                     className="text-blue-600 font-bold text-lg hover:text-blue-700 transition-colors flex items-center gap-2"
                   >
                     <img src={coin} alt="coin" className="w-6 h-6" />
                     Add Coins Now
-                  </button>
+                  </button> */}
                 </div>
               )}
-            </div>
           </div>
         </div>
       </div>

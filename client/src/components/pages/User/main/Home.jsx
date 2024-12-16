@@ -4,6 +4,7 @@ import siginImg from "../../../../assets/images/leftPlate.png";
 import fru from "../../../../assets/images/fru.png";
 import veg from "../../../../assets/images/veg.png";
 import homi from "../../../../assets/images/homi.jpeg";
+import farm from "../../../../assets/images/farmer.jpeg";
 import List from "../../../parts/Main/List";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -100,7 +101,7 @@ export default function Home({ userData }) {
               healthier while making it easy to eat fresh every day. Start your
               wellness journey with the convenience of farm-to-table produce.
             </p>
-            <div className="h-[2px] w-full md:w-[70%] bg-[#CEBC81] md:mr-60" />
+            <div className="h-[2px] w-full mt-12 md:w-[70%] bg-[#e3dbc2] md:mr-60" />
             {!userData && location?.state?.message && (
               <div className="mb-4 px-4 md:px-10 md:mr-60 rounded-3xl mt-8 border-[2px] border-gray-300 py-3">
                 <p className="text-[18px] text-red-500 font-medium">
@@ -120,9 +121,9 @@ export default function Home({ userData }) {
               className="bg-[#3a8049] self-start px-8 py-3 flex gap-5 rounded-full text-white items-center shadow-2xl"
             >
               {userData && (
-                <i className="ri-shopping-cart-line text-[22px]"></i>
-              )}
-              {!userData && <i className="ri-user-line text-[22px]"></i>}
+                <img src="/bag-2-1.svg" className="ri-shopping-cart-line brightness-[100] h-[32px]"></img>
+              )} 
+              {!userData && <img src="/user-add.svg" className="h-[32px] brightness-[100]" />}
               <p className="font-medium">{userData ? "Shop" : "sign now"}</p>
             </button>
             {  !userData?.location?.one &&
@@ -143,14 +144,14 @@ export default function Home({ userData }) {
         </div>
 
         {/* Banners */}
-        <div className="w-full h-40 md:h-60 bg-gray-700"></div>
+        {/* <div className="w-full h-40 md:h-60 bg-gray-700"></div> */}
         {/* fruit collection */}
-        <h1
+        { fruits?.length>0 && <h1
           onClick={() => console.log(fruits)}
-          className={`text-[30px] $'ml-40':''} font-semibold mt-20 pl-20`}
+          className={`$'ml-40':''} font-semibold mt-20 pl-20 text-[35px] font-['lufga']`}
         >
           Fruits
-        </h1>
+        </h1>}
         <div className="w-full h-auto flex my-5 mt-8 gap-5  mb-10 relative flex-wrap pl-20">
           {/* <p className="px-8 inline absolute right-0 top-[-65px] py-2 bg-green-900 text-white tex-[20px] rounded-l-full">
             View all
@@ -249,7 +250,7 @@ export default function Home({ userData }) {
           <>
             <h1
               onClick={() => console.log(CollData?.data)}
-              className={`text-[30px] $'ml-40':''} font-semibold mt-20 pl-20`}
+              className={`$'ml-40':''} font-semibold mt-20 pl-20 text-[35px] font-['lufga']`}
             >
               Vegetables
             </h1>
@@ -351,6 +352,17 @@ export default function Home({ userData }) {
             </span>
           </div>
         </div>
+
+          {/* awairness of farmerse */}
+          <div className="w-full h-80 relative">
+            <img className="w-full mix-blend-multiply object-cover bg-red-500" src={farm} alt="" />
+            <div className="w-[35%] absolute left-[40%] top-20">
+              <h1 className="mb-8 leading-none">Empowering Local Farmers for a Sustainable Future</h1>
+              <p className="opacity-65 text-[18px]">We believe in supporting our local farmers by sourcing fresh vegetables and fruits directly from their fields. This initiative not only ensures the quality of produce but also strengthens the community's economy. By connecting consumers with farmers, we promote sustainable practices that benefit both parties. Our commitment to transparency and fairness helps farmers thrive while providing you with the freshest ingredients. Join us in making a positive impact on the agricultural landscape and enjoy the taste of locally grown produce</p>
+            </div>
+          </div>
+
+
       </div>
     </div>
   );

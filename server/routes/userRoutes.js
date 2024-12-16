@@ -67,6 +67,8 @@ router.get('/getAllCoupons',authMiddleware,getAllCoupons);
 
 router.post('/addLocation',authMiddleware,addLocation);
 
+router.get('/getUserTransactions',authMiddleware,getUserTransactions);
+
 router.put('/addCoinToWallet',authMiddleware,addCoinToWallet);
 
 router.put('/updateOrderStatus',authMiddleware,updateOrderStatus);

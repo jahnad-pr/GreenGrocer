@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 const LineChart = ({ 
@@ -8,48 +8,43 @@ const LineChart = ({
     'Fruits Sales': true,
     'Vegetables Sales': true
   },
-
+  chartRef
 }) => {
-  const chartData = useMemo(() => {
-    if (!data || data.length === 0) return [{ name: 'Daily Sales', data: [] }];
+  const processChartData = (data, mode) => {
+    if (!data || data === 0) return null;
 
-    if (viewMode === 'total') {
-      // Total sales across all categories
-      const processedData = data.map(item => ({
+    if (mode === 'total') {
+      const totalData = data?.map(item => ({
         x: new Date(item.date).getTime(),
-        y: item.dailyTotal
+        y: item?.categories?.reduce((sum, cat) => sum + (cat.totalAmount || 0), 0)
       }));
 
       return [{
         name: 'Total Sales',
-        data: processedData
+        data: totalData
       }];
     } else {
-      // Category-based sales
-      const fruitsData = data.map(item => ({
-        x: new Date(item.date).getTime(),
-        y: item.categories.find(cat => cat.categoryName === "Fruits")?.totalAmount || 0
-      }));
+      const uniqueCategories = [...new Set(data.flatMap(day => 
+        day.categories.map(cat => cat.categoryName)
+      ))];
 
-      const vegetablesData = data.map(item => ({
-        x: new Date(item.date).getTime(),
-        y: item.categories.find(cat => cat.categoryName === "Vegetables")?.totalAmount || 0
-      }));
+      return uniqueCategories.map(categoryName => {
+        const categoryData = data.map(item => ({
+          x: new Date(item.date).getTime(),
+          y: item.categories.find(cat => 
+            cat.categoryName?.toLowerCase() === categoryName?.toLowerCase()
+          )?.totalAmount || 0
+        }));
 
-      return [
-        { 
-          name: 'Fruits Sales', 
-          data: activeSeries['Fruits Sales'] ? fruitsData : [],
-          type: 'line'
-        },
-        { 
-          name: 'Vegetables Sales', 
-          data: activeSeries['Vegetables Sales'] ? vegetablesData : [],
-          type: 'line'
-        }
-      ];
+        return {
+          // name: categoryName?.charAt(0).toUpperCase() + categoryName?.slice(1),
+          data: categoryData
+        };
+      });
     }
-  }, [data, viewMode, activeSeries]);
+  };
+
+  const chartData = useMemo(() => processChartData(data, viewMode), [data, viewMode]);
 
   const options = {
     chart: {
@@ -107,8 +102,8 @@ const LineChart = ({
       gradient: {
         shade: 'dark',
         gradientToColors: viewMode === 'total' 
-          ? ['#22C55E']  // Green for total
-          : ['#FF7E5C', '#3549F8'],  // Red for Fruits, Blue for Vegetables
+          ? ['#22C55E']
+          : ['#FF7E5C', '#3549F8'],
         shadeIntensity: 1,
         type: 'horizontal',
         opacityFrom: 1,
@@ -127,8 +122,8 @@ const LineChart = ({
     markers: {
       size: 4,
       colors: viewMode === 'total' 
-        ? ['#22C55E']  // Green for total
-        : ['#FF7E5C', '#3549F8'],  // Red for Fruits, Blue for Vegetables
+        ? ['#22C55E']
+        : ['#FF7E5C', '#3549F8'],
       strokeColors: '#fff',
       strokeWidth: 2,
       hover: {
@@ -140,7 +135,6 @@ const LineChart = ({
       position: 'top',
       horizontalAlign: 'left',
       fontSize: '14px',
-    
       labels: {
         colors: '#00000060'
       }
@@ -149,12 +143,12 @@ const LineChart = ({
 
   return (
     <div className='rounded-3xl w-full h-[450px] p-4'>
-      <div className='w-full h-full -z-10'>
+      <div className='w-full h-full -z-10' ref={chartRef}>
         <ReactApexChart 
           options={options} 
           series={chartData} 
           type="line" 
-        height={400}
+          height={400}
           width="100%"
         />
       </div>

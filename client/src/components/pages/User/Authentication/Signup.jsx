@@ -22,6 +22,7 @@ import { auth, googleProvider } from "../../../../config/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import SignDetails from "./signDetails";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import ImageUploadPopup from "../../../parts/popups/ImageUploadPopup";
 
 export default function Signup({ setSign }) {
   // Form data state for signup and login
@@ -35,6 +36,7 @@ export default function Signup({ setSign }) {
   const [mission, setMission] = useState(false); // Toggle between signup and login screens
   const [showPassword, setShowPassword] = useState(false);
   const [popup, showPopup] = useState(false);
+  const [profileUrl,setProfileUrl] = useState('')
   const [dataForm, setData] = useState(false);
   const [method, setMethode] = useState("");
   const [verifiedData, setVerifyData] = useState(false);
@@ -44,6 +46,13 @@ export default function Signup({ setSign }) {
   const scroller = useRef();
   const [errors, setErrors] = useState({}); // Error state
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+
+  const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
+
+const handleImageSave = (blob) => {
+  setProfileUrl(blob[0])
+};
 
   // data form etk query api
   const [
@@ -131,6 +140,7 @@ export default function Signup({ setSign }) {
         email: data.email,
         password: import.meta.env.VITE_GOOGLE_PASSWORD,
         confirmPassword: import.meta.env.VITE_GOOGLE_PASSWORD,
+
       };
       await googleLog(dataForm).unwrap();
 
@@ -176,7 +186,7 @@ export default function Signup({ setSign }) {
           await isUerExist(formData).unwrap()
 
         } else {
-          await login(upData).unwrap();
+          await login({...upData,profileUrl:profileUrl}).unwrap();
         }
       } catch (err) {
         showToast(err.message, "error");
@@ -197,8 +207,10 @@ export default function Signup({ setSign }) {
 
       // showToast("account created successfully", "success");
       if (method === "google") {
+        
         (async () => {
           const data = googleDATA;
+          console.log(data);
           const dataForm = {
             username: data.displayName,
             email: data.email,
@@ -208,6 +220,7 @@ export default function Signup({ setSign }) {
             gender: verifiedData.gender,
             phone: verifiedData.phone,
             place: verifiedData.place,
+            profileUrl: data.photoURL
           };
           await googleLog(dataForm).unwrap();
 
@@ -226,6 +239,7 @@ export default function Signup({ setSign }) {
             nder: verifiedData.gender,
             phone: verifiedData.phone,
             place: verifiedData.place,
+            profileUrl:profileUrl
           };
           await signUp(dataForm).unwrap();
           // setSign(true);
@@ -250,6 +264,12 @@ export default function Signup({ setSign }) {
 
   return (
     <>
+      <ImageUploadPopup
+        isOpen={isImagePopupOpen}
+        onClose={() => setIsImagePopupOpen(false)}
+        onSave={handleImageSave}
+        maxImages={1}
+      />
       {popup && (
         <SignDetails
           method={method}
@@ -268,7 +288,7 @@ export default function Signup({ setSign }) {
       bg-[linear-gradient(#d2d2d0,#d1d1cf,#cecece,#c6c8c7,#c6c7c6,#c3c4c3,#b5b9b8)] h-full flex`}>
         <div
           onClick={() => navigator("/user/home")}
-          className={`bg-gray-200 font-medium absolute ${mission ? "right-10" : "right-[39%]"
+          className={`bg-gray-200/40 font-medium absolute ${mission ? "right-10" : "right-[39%]"
             } duration-700 top-10 px-5 py-2 rounded-full flex gap-3 items-center justify-center z-10`}
         >
           <i className="ri-user-4-line text-[20px]"></i>
@@ -317,13 +337,13 @@ export default function Signup({ setSign }) {
                     animate={{ scale: 1, rotate: 0, height: "auto" }}
                     exit={{ scale: 0, height: 0, rotate: 180 }}
                   >
-                    <span className="relative">
-                      <div className="w-8 h-8 bg-orange-300 rounded-full flex items-center justify-center absolute bottom-0 right-0">
+                    <span onClick={() => setIsImagePopupOpen(true)} className="relative group">
+                      <div className="w-8 h-8 z-10 bg-orange-300 rounded-full group-hover:scale-110 group-hover:shadow-lg duration-300  flex items-center justify-center absolute bottom-0 right-0">
                         <IoAdd size={28} />
                       </div>
                       <img
-                        className="max-w-[8rem] min-w-[8rem] min-h-[8rem] rounded-full bg-slate-200"
-                        src={placeholder}
+                        className="max-w-[8rem] min-w-[8rem] min-h-[8rem] group-hover:scale-125 rounded-full cursor-pointer duration-300 bg-slate-200"
+                        src={profileUrl||placeholder}
                         alt="Profile Placeholder"
                       />
                     </span>
@@ -404,11 +424,7 @@ export default function Signup({ setSign }) {
                   </button>
                 </div>
                 
-                {  !mission &&
-                <p className="text-[16px] text-blue-500 cursor-pointer ml-3" onClick={() => setShowForgotPassword(true)}>
-                  Forgot password?
-                </p>
-                }
+              
 
                 {/* Confirm Password Input */}
                 <AnimatePresence>
@@ -471,6 +487,12 @@ export default function Signup({ setSign }) {
                 )}
               </AnimatePresence>
 
+                {  !mission &&
+                  <p className="text-[16px] text-blue-900 cursor-pointer w-[80%] ml-3" onClick={() => setShowForgotPassword(true)}>
+                    Forgot password?
+                  </p>
+                  }
+
               {/* Sign Up Button */}
               <button
                 onClick={signUpUser}
@@ -480,13 +502,13 @@ export default function Signup({ setSign }) {
               </button>
 
               {/* Switch to Login */}
-              <p className="text-[18px] text-gray-400 my-10 cursor-pointer">
+              <p className="text-[18px] text-gray-500 my-10 cursor-pointer">
                 Already a member?{" "}
                 <span
                   onClick={() => (setMission(!mission), setErrors({}))}
                   className="text-blue-900"
                 >
-                  Click to Login
+                  Click to { mission ? "login" : "signup" }
                 </span>
               </p>
               <FcGoogle onClick={loginWithGoogle} size={45} />

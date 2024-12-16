@@ -3,74 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Define the custom font */
-/* @font-face {
-    font-family: 'MyCustomFont';
-    src: url('../../green-grocer/src/assets/Font/SFPRODISPLAYBLACKITALIC.OTF') ,
-         url(''),
-         url(''),
-         url('../../green-grocer/src/assets/Font/SFPRODISPLAYLIGHTITALIC.OTF'),
-         url(''),
-         url(''),
-         url('../../green-grocer/src/assets/Font/SFPRODISPLAYSEMIBOLDITALIC.OTF'),
-         url(''),
-         ;
-    font-weight: normal;
-    font-style: normal;
-} */
 
-/* Regular */
-@font-face {
-  font-family: "MyCustomFont";
-  src: url("./assets/Font/SFPRODISPLAYREGULAR.OTF") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  transform: translateX(20vh);
-}
-
-/* Regular */
-@font-face {
-  font-family: "MyCustomFont";
-  src: url("./assets/Font/SFPRODISPLAYMEDIUM.OTF") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-}
-
-/* Bold */
-@font-face {
-  font-family: "MyCustomFont";
-  src: url("./assets/Font/SFPRODISPLAYBOLD.OTF") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-}
-
-/* Italic */
-@font-face {
-  font-family: "MyCustomFont";
-  src: url("./assets/Font/SFPRODISPLAYTHINITALIC.OTF") format("truetype");
-  font-weight: 400;
-  font-style: italic;
-}
-
-/* Bold Italic */
-@font-face {
-  font-family: "MyCustomFont";
-  src: url("./assets/Font/SFPRODISPLAYHEAVYITALIC.OTF") format("truetype");
-  font-weight: 700;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "mo";
-  src: url("./assets/Font/Sansation_Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-/* Apply the font to elements */
-body {
-  font-family: "MyCustomFont", sans-serif;
-}
 .Sansation-font {
   font-family: 'mo', sans-serif;
 }

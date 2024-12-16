@@ -50,7 +50,7 @@ import CouponManage from "./components/pages/Admin/Config/CouponManage";
 import CouponsList from "./components/pages/User/Profile/CouponsList";
 import Wallet from "./components/pages/User/Profile/Wallet";
 import SalesReport from "./components/pages/Admin/Config/SalesReport";
-import Invoice from "./components/pages/User/main/Subs/Invoice";
+import InvoicePage from "./components/pages/User/main/Subs/InvoicePage";
 import Map from "./components/pages/User/main/Map";
 
 export default function App() {
@@ -69,7 +69,7 @@ export default function App() {
     <>
       <Tostify title="Error" position="bottom-left" />
       <Toaster position="top-center" />
-      <div className="w-screen h-screen flex overflow-hidden">
+      <div className="w-screen h-screen flex overflow-hidden font-['lufga']">
         {location.pathname.startsWith('/user/') && !location.pathname.startsWith('/user/sign') && <UserProtecter><Navigator /></UserProtecter>}
         {location.pathname.startsWith('/admin/') && <AdminProtucter><Header /></AdminProtucter>}
         {location.pathname.startsWith('/admin/') && <><AdminNav /></>}
@@ -102,19 +102,19 @@ export default function App() {
           <Route path="/user/profile/logout" element={ <UserProtecter><Logout /></UserProtecter> } />
           <Route path="/user/profile/:id" element={ <UserProtecter><Main /></UserProtecter> } />
           <Route path="/user/profile/:id/manage" element={ <UserProtecter><Profiler /></UserProtecter> } />
-          <Route path="/user/profile/:id/resetPassword" element={ <UserProtecter><ResetPassword /></UserProtecter> } />
-          <Route path="/user/profile/:id/address" element={ <UserProtecter><Address /></UserProtecter> } />
-          <Route path="/user/profile/:id/manageAddress" element={ <UserProtecter><ManageAddress /></UserProtecter> } />
+          <Route path="/user/profile/resetpassword" element={ <UserProtecter><ResetPassword /></UserProtecter> } />
+          <Route path="/user/profile/address" element={ <UserProtecter><Address /></UserProtecter> } />
+          <Route path="/user/profile/manageaddress" element={ <UserProtecter><ManageAddress /></UserProtecter> } />
           <Route path="/user/ordersummery" element={ <UserProtecter><OrderSummary /></UserProtecter> } />
           <Route path="/user/payment" element={ <UserProtecter><OrderPayment /></UserProtecter> } />
           <Route path="/user/success" element={ <UserProtecter><OrderSuccess /></UserProtecter> } />
-          <Route path="/user/OrderList" element={ <UserProtecter><OrderList /></UserProtecter> } />
+          <Route path="/user/Orders" element={ <UserProtecter><OrderList /></UserProtecter> } />
           <Route path="/user/OrderDetails" element={ <UserProtecter><OrderDetails/></UserProtecter> } />
           <Route path="/user/cart" element={ <UserProtecter><Cart/></UserProtecter> } />
           <Route path="/user/bookmarks" element={ <UserProtecter><Bookmark/></UserProtecter> } />
           <Route path="/user/Coupons" element={ <UserProtecter><CouponsList/></UserProtecter> } />
           <Route path="/user/Wallet" element={ <UserProtecter><Wallet/></UserProtecter> } />
-          <Route path="/user/Order/Invoice" element={ <UserProtecter><Invoice /></UserProtecter> } />
+          <Route path="/user/Order/Invoice" element={ <UserProtecter><InvoicePage /></UserProtecter> } />
           <Route path="/user/map" element={ <UserProtecter><Map /></UserProtecter> } />
           </Routes>
 

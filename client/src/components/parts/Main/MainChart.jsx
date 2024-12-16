@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGetChartsDetailsMutation } from '../../../services/Admin/adminApi';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const MainChart = ({setIsPopupOpen,
   isPopupOpen }) => {
@@ -13,7 +15,7 @@ const MainChart = ({setIsPopupOpen,
   useEffect(()=>{ (async()=>{ await getChartsDetails(`filterby=salesPeriod&period=custom`).unwrap() })() },[])
 
 
-  const [downloadFormat, setDownloadFormat] = useState('svg');
+  const [downloadFormat, setDownloadFormat] = useState('pdf');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedPeriod, setSelectedPeriod] = useState('thisWeek');
@@ -25,11 +27,11 @@ const MainChart = ({setIsPopupOpen,
   const [chartData, setChartData] = useState({
     series: [
       {
-        name: 'Fruits',
+        name: 'fruits',
         data: [0]
       },
       {
-        name: 'Vegetables',
+        name: 'vegetables',
         data: [0]
       }
     ],
@@ -132,21 +134,36 @@ const MainChart = ({setIsPopupOpen,
       }];
       colors = ['#22C55E']; // Green for total
     } else {
-      const fruitsData = data.map(day => ({
-        x: new Date(day.date).getTime(),
-        y: day.categories.find(cat => cat.categoryName === "Fruits")?.totalOrders || 0
-      }));
+      // Get unique categories from all data
+      const uniqueCategories = [...new Set(data.flatMap(day => 
+        day.categories.map(cat => cat.categoryName)
+      ))];
 
-      const vegetablesData = data.map(day => ({
-        x: new Date(day.date).getTime(),
-        y: day.categories.find(cat => cat.categoryName === "Vegetables")?.totalOrders || 0
-      }));
+      // Generate colors for each category
+      const categoryColors = {
+        'fruits': '#FF7E5C',
+        'vegetables': '#3549F8',
+        'the others': '#22C55E'
+      };
 
-      series = [
-        { name: 'Fruits', data: fruitsData },
-        { name: 'Vegetables', data: vegetablesData }
-      ];
-      colors = ['#FF7E5C', '#3549F8'];
+      // Create series for each category
+      series = uniqueCategories.map(categoryName => {
+        const categoryData = data.map(day => ({
+          x: new Date(day.date).getTime(),
+          y: day.categories.find(cat => 
+            cat?.categoryName?.toLowerCase() === categoryName?.toLowerCase()
+          )?.totalOrders || 0
+        }));
+
+        return {
+          name: categoryName?.charAt(0).toUpperCase() + categoryName?.slice(1),
+          data: categoryData
+        };
+      });
+
+      colors = uniqueCategories.map(category => 
+        categoryColors[category?.toLowerCase()] || '#' + Math.floor(Math.random()*16777215).toString(16)
+      );
     }
 
     const allValues = series.flatMap(s => s.data.map(d => d.y));
@@ -231,7 +248,149 @@ const MainChart = ({setIsPopupOpen,
   const downloadChart = () => {
     const chart = document.querySelector('.apexcharts-canvas');
     
-    if (downloadFormat === 'svg' && chart) {
+    if (downloadFormat === 'pdf') {
+      const chartContainer = document.querySelector('.chart-container');
+      
+      // Set a white background and increase scale for better quality
+      html2canvas(chartContainer, {
+        scale: 3,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: chartContainer.offsetWidth,
+        height: chartContainer.offsetHeight,
+        useCORS: true,
+        allowTaint: true,
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Calculate totals
+        const totals = data.reduce((acc, day) => {
+          day.categories.forEach(cat => {
+            const categoryName = cat.categoryName.charAt(0).toUpperCase() + cat.categoryName.slice(1);
+            if (!acc[categoryName]) {
+              acc[categoryName] = {
+                orders: 0,
+                amount: 0,
+                items: 0
+              };
+            }
+            acc[categoryName].orders += cat.totalOrders || 0;
+            acc[categoryName].amount += cat.totalAmount || 0;
+            acc[categoryName].items += cat.totalItems || 0;
+          });
+          return acc;
+        }, {});
+
+        // Create PDF with larger format
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [1080, 720]
+        });
+
+        // Add title and period with adjusted positioning
+        pdf.setFontSize(28);
+        pdf.setTextColor(51, 51, 51);
+        pdf.text('Sales Analytics Report', 50, 50);
+        
+        // Add company name or branding
+        pdf.setFontSize(16);
+        pdf.setTextColor(102, 102, 102);
+        pdf.text('Green Grocer Analytics', 50, 80);
+        
+        pdf.setFontSize(14);
+        const periodText = selectedPeriod === 'custom' 
+          ? `Period: ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`
+          : `Period: ${periodOptions.find(opt => opt.value === selectedPeriod)?.label}`;
+        pdf.text(periodText, 50, 100);
+
+        // Add current date with improved formatting
+        const currentDate = new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        pdf.text(`Generated on: ${currentDate}`, 50, 120);
+
+        // Calculate optimal chart dimensions
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const chartWidth = pageWidth - 100;  // Leave margins
+        const chartHeight = 300;  // Fixed height for the chart
+
+        // Add chart with improved positioning and size
+        pdf.addImage(imgData, 'PNG', 50, 140, chartWidth, chartHeight);
+
+        // Add totals table with improved styling
+        let yPos = chartHeight + 180;
+        pdf.setFontSize(20);
+        pdf.setTextColor(51, 51, 51);
+        pdf.text('Category Totals', 50, yPos);
+        
+        // Add table with borders and improved spacing
+        yPos += 30;
+        pdf.setFontSize(14);
+        pdf.setTextColor(51, 51, 51);
+
+        // Table headers with background
+        const headers = ['Category', 'Orders', 'Revenue (INR)', 'Items'];
+        const colWidths = [200, 150, 200, 150];
+        let xPos = 50;
+        
+        // Add header background
+        pdf.setFillColor(245, 245, 245);
+        pdf.rect(xPos, yPos - 20, colWidths.reduce((a, b) => a + b, 0), 30, 'F');
+        
+        headers.forEach((header, i) => {
+          pdf.text(header, xPos + 10, yPos);
+          xPos += colWidths[i];
+        });
+
+        // Table rows with alternating background
+        yPos += 30;
+        Object.entries(totals).forEach(([category, stats], index) => {
+          xPos = 50;
+          
+          // Add row background for even rows
+          if (index % 2 === 0) {
+            pdf.setFillColor(252, 252, 252);
+            pdf.rect(xPos, yPos - 20, colWidths.reduce((a, b) => a + b, 0), 30, 'F');
+          }
+          
+          pdf.text(category, xPos + 10, yPos);
+          pdf.text(stats.orders.toLocaleString(), xPos + colWidths[0] + 10, yPos);
+          pdf.text(`INR ${stats.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, xPos + colWidths[0] + colWidths[1] + 10, yPos);
+          pdf.text(stats.items.toLocaleString(), xPos + colWidths[0] + colWidths[1] + colWidths[2] + 10, yPos);
+          yPos += 30;
+        });
+
+        // Add grand totals with improved styling
+        yPos += 20;
+        pdf.setFillColor(240, 240, 240);
+        pdf.rect(50, yPos - 20, colWidths.reduce((a, b) => a + b, 0), 35, 'F');
+        
+        pdf.setFontSize(16);
+        pdf.setTextColor(51, 51, 51);
+        const grandTotal = Object.values(totals).reduce((acc, curr) => ({
+          orders: acc.orders + curr.orders,
+          amount: acc.amount + curr.amount,
+          items: acc.items + curr.items
+        }), { orders: 0, amount: 0, items: 0 });
+
+        pdf.text(`Total Orders: ${grandTotal.orders.toLocaleString()}`, 60, yPos);
+        pdf.text(`Total Revenue: INR ${grandTotal.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 300, yPos);
+        pdf.text(`Total Items: ${grandTotal.items.toLocaleString()}`, 600, yPos);
+
+        // Add footer
+        pdf.setFontSize(12);
+        pdf.setTextColor(128, 128, 128);
+        pdf.text(' Green Grocer Analytics - Confidential Report', 50, pageHeight - 30);
+
+        pdf.save('green-grocer-analytics-report.pdf');
+      });
+    } else if (downloadFormat === 'svg' && chart) {
       const svg = chart.getElementsByTagName('svg')[0].outerHTML;
       const data = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(data);
@@ -286,19 +445,18 @@ const MainChart = ({setIsPopupOpen,
       img.src = url;
     } else if (downloadFormat === 'csv') {
       let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Date,Fruits Orders,Vegetables Orders\n";
+      csvContent += "Date,Category,Orders,Revenue (INR),Items\n";
 
       data.forEach(day => {
-        const fruitsCategory = day.categories.find(cat => cat.categoryName === "Fruits");
-        const vegetablesCategory = day.categories.find(cat => cat.categoryName === "Vegetables");
-        
-        csvContent += `${day.date},${fruitsCategory ? fruitsCategory.totalOrders : 0},${vegetablesCategory ? vegetablesCategory.totalOrders : 0}\n`;
+        day.categories.forEach(category => {
+          csvContent += `${day.date},${category.categoryName},${category.totalOrders || 0},INR ${(category.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })},${category.totalItems || 0}\n`;
+        });
       });
 
       const encodedUri = encodeURI(csvContent);
       const a = document.createElement('a');
       a.setAttribute("href", encodedUri);
-      a.setAttribute("download", "chart-report.csv");
+      a.setAttribute("download", "green-grocer-analytics-report.csv");
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -306,41 +464,48 @@ const MainChart = ({setIsPopupOpen,
   };
 
   return (
-
     <div className="w-[100%] translate-y-[-25px]">
       <span className='flex'>
        {/* downloader */}
-     <span className='flex-1'></span>
+      <span className='flex-1'></span>
       <span className="inline-flex gap-5 items-center px-5 rounded-full">
-          {/* <select 
-            value={downloadFormat} 
-            onChange={(e) => setDownloadFormat(e.target.value)} 
-            className="w-full p-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-800"
-          >
-            <option value="svg">SVG</option>
-            <option value="png">PNG</option>
-            <option value="jpg">JPG</option>
-            <option value="csv">CSV</option>
-          </select> */}
-          {/* <i className="ri-download-fill text-[22px]"></i> */}
-        </span>
-
-        {/* Chart Controls Button */}
-        <button 
-          onClick={() => setIsPopupOpen(true)}
-          className="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors"
+        <select 
+          value={downloadFormat} 
+          onChange={(e) => setDownloadFormat(e.target.value)} 
+          className="p-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-800 custom-selecter"
         >
-          <i className="ri-settings-3-line text-[22px]"></i>
+          <option value="pdf">PDF</option>
+          <option value="svg">SVG</option>
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+          <option value="csv">CSV</option>
+        </select>
+        <button
+          onClick={downloadChart}
+          className="bg-[#ff8137] p-2 rounded-full hover:bg-[#ff9137] transition-colors"
+        >
+          <i className="ri-download-fill text-[22px] text-white"></i>
         </button>
-
       </span>
-      <ReactApexChart 
-        options={chartData.options} 
-        series={chartData.series} 
-        type="area"
-        height={400}
-      />
 
+      {/* Chart Controls Button */}
+      <button 
+        onClick={() => setIsPopupOpen(true)}
+        className="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors"
+      >
+        <i className="ri-settings-3-line text-[22px]"></i>
+      </button>
+      </span>
+
+      <div className="chart-container">
+        <ReactApexChart 
+          options={chartData.options} 
+          series={chartData.series} 
+          type="area"
+          height={400}
+        />
+      </div>
+      
       {/* Chart Controls */}
       <span className='flex items-center space-x-4 justify-center'>
       </span>
@@ -362,7 +527,7 @@ function PopupSelector({ isPopupOpen, periodOptions, setIsPopupOpen, selectedPer
           opacity: 1
         }} exit={{
           opacity: 0
-        }} className='fixed top-0 right-0 w-full z-40 flex items-center justify-center overflow-hidden '>
+        }} className='fixed top-0 right-0 w-full z-40 flex items-center justify-center overflow-hidden'>
           <motion.div initial={{
             opacity: 0,
             backdropFilter: "blur(0px)"
@@ -400,7 +565,7 @@ function PopupSelector({ isPopupOpen, periodOptions, setIsPopupOpen, selectedPer
           }} style={{
             transformPerspective: 1200,
             transformStyle: "preserve-3d"
-          }} className=" backdrop-blur-xl py-10 bg-white/90 flex items-center justify-center flex-col gap-5 rounded-3xl px-10 relative z-50 border border-gray-200">
+          }} className=" backdrop-blur-[15px] py-10  flex items-center justify-center flex-col gap-5 rounded-3xl px-10 relative z-50 border border-gray-200">
         
             <motion.div initial={{
               y: 20,
@@ -412,7 +577,7 @@ function PopupSelector({ isPopupOpen, periodOptions, setIsPopupOpen, selectedPer
               delay: 0.4
             }} className="w-full flex flex-col gap-4 px-5">
 
-            <i onClick={() => setIsPopupOpen(false)} className="ri-close-circle-line text-[30px] absolute duration-500 top-5 right-5 cursor-pointer"></i>      
+            <i onClick={() => setIsPopupOpen(false)} className="ri-close-circle-line text-[30px] absolute duration-500 top-5 right-5 cursor-pointer text-[#ff8137]"></i>      
 
               <span className='flex gap-2'>
 
@@ -421,7 +586,7 @@ function PopupSelector({ isPopupOpen, periodOptions, setIsPopupOpen, selectedPer
               }
               <div className="w-1/2">
                 <label className="block text-sm font-medium mb-2">Period</label>
-                <select value={selectedPeriod} onChange={handlePeriodChange} className="w-full p-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-800">
+                <select value={selectedPeriod} onChange={handlePeriodChange} className="w-full p-3 bg-gray-100 border custom-selecter border-gray-300 rounded-xl text-gray-800 ">
                   {periodOptions.map(option => <option key={option.value} value={option.value} className="bg-black text-white">
                     {option.label}
                   </option>)}
@@ -438,14 +603,14 @@ function PopupSelector({ isPopupOpen, periodOptions, setIsPopupOpen, selectedPer
                     scale: 1.05
                   }} whileTap={{
                     scale: 0.95
-                  }} onClick={() => setViewMode('category')} className={`flex-1 p-3 rounded-xl transition-all ${viewMode === 'category' ? 'bg-[#22c55e]' : 'border-2 border-[#22c55e]'}`}>
+                  }} onClick={() => setViewMode('category')} className={`flex-1 p-3 rounded-full transition-all ${viewMode === 'category' ? 'bg-[#ff8137] text-white' : 'border-2 border-[#ff8137]'}`}>
                     Categories
                   </motion.button>
                   <motion.button whileHover={{
                     scale: 1.05
                   }} whileTap={{
                     scale: 0.95
-                  }} onClick={() => setViewMode('total')} className={`flex-1 p-3 rounded-xl transition-all  ${viewMode === 'total' ? 'bg-[#22c55e]' : 'border-2 border-[#22c55e]'}`}>
+                  }} onClick={() => setViewMode('total')} className={`flex-1 p-3 rounded-full transition-all  ${viewMode === 'total' ? 'bg-[#ff8137] text-white' : 'border-2 border-[#ff8137]'}`}>
                     Total
                   </motion.button>
                 </div>

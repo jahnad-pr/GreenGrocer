@@ -4,6 +4,7 @@ import { useDeleteAddressMutation, useGetOdersMutation } from "../../../../servi
 import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
+import HoverKing from '../../../parts/buttons/HoverKing';
 
 const OrderList = ({userData}) => {
   const [ getOders, { isLoading, error, data }, ] = useGetOdersMutation();
@@ -104,7 +105,7 @@ const OrderList = ({userData}) => {
       transition={{ duration: 0.5 }}
       className="w-full h-[90vh] flex items-center justify-center flex-col text-center gap-5"
     >
-      <motion.img 
+      <motion.img salu
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ 
@@ -112,8 +113,8 @@ const OrderList = ({userData}) => {
           stiffness: 100,
           damping: 10
         }}
-        className="h-[70%]" 
-        src={emptyStateImage} 
+        className="h-[50%]" 
+        src={'/box-remove.svg'} 
         alt="No categories" 
       />
       <motion.div 
@@ -133,18 +134,13 @@ const OrderList = ({userData}) => {
           initial={{ y: 20 }}
           animate={{ y: 0 }}
           transition={{ delay: 0.1 }}
-          className="opacity-45"
+          className="opacity-45 text-[18px]"
         >
-          Now your order list empty, to make the order buy products
+          Now your order list empty, to make the order buy products<br/>
+          and make your life healthy and natural with us
         </motion.p>
-        <motion.p
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/user/products", { state: { name: "" } })}
-          className="font-bold opacity-100 text-blue-500 cursor-pointer"
-        >
-          Let's Buy
-        </motion.p>
+        <HoverKing event={() => navigate("/user/products")} styles={'fixed bottom-36 left-1/2 -translate-x-[45%] rounded-full border-0 font-medium text-[16px] bg-white'} Icon={<i className="ri-arrow-drop-right-line text-[50px] text-white"></i>} >Let's add your product</HoverKing>
+
       </motion.div>
     </motion.div>
   );
@@ -205,7 +201,7 @@ const OrderList = ({userData}) => {
 
             <motion.div 
               variants={containerVariants}
-              className="flex flex-wrap gap-4"
+              className="flex flex-wrap gap-3"
             >
               <AnimatePresence>
                 {orders?.map((order, index) => (

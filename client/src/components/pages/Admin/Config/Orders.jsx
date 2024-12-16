@@ -324,7 +324,7 @@ const Orders = () => {
                             </div>
 
                             <div className="font-bold text-gray-600">
-                             ₹{order.price.grandPrice}
+                            ₹{order.price.grandPrice}
                             </div>
 
                             <div className="text-gray-600">
@@ -333,7 +333,7 @@ const Orders = () => {
                           </td>
                           <td className="px-3 py-2">
                             <img
-                              src={order?.items[0]?.product.pics?.one}
+                              src={order?.items[0]?.product?.pics?.one}
                               alt={order.name}
                               className="w-12 h-12 object-cover"
                             />
@@ -447,7 +447,7 @@ const Orders = () => {
           </div>
         </div>
       </div>
-      <Recents />
+      <Recents page={'orders'} datas={ordersData} />
     </>
   );
 };

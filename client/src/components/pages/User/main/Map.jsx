@@ -204,7 +204,7 @@ function Map({userData}) {
     };
 
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_APY_KEY,
+        googleMapsApiKey:'AlzaSyZ6MMH1EASe0aF2EN-Xi9FYjsXH7YJEZTX',
         libraries,
     });
 

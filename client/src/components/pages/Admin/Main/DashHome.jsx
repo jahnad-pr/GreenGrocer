@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { useGetAllOrdersMutation, useGetChartsDetailsMutation } from '../../../../services/Admin/adminApi';
 import { motion, AnimatePresence } from 'framer-motion';
 import StatisticPopup from '../../../parts/popups/StatisticPopup';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default function DashHome() {
 
@@ -18,7 +20,119 @@ export default function DashHome() {
   const [getAllOrders, { data:recentOrders }] = useGetAllOrdersMutation();
 
   
-  const [downloadFormat, setDownloadFormat] = useState('svg');
+  const [downloadFormat, setDownloadFormat] = useState('pdf');
+  const mainChartRef = React.useRef(null);
+  const lineChartRef = React.useRef(null);
+
+  const downloadChart = (chartType) => {
+    const chartRef = chartType === 'main' ? mainChartRef : lineChartRef;
+    const chartContainer = chartRef.current;
+    
+    if (!chartContainer) return;
+    
+    if (downloadFormat === 'pdf') {
+      html2canvas(chartContainer, {
+        scale: 3,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: chartContainer.offsetWidth,
+        height: chartContainer.offsetHeight,
+        useCORS: true,
+        allowTaint: true,
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Calculate totals
+        const totalSales = data.reduce((acc, curr) => acc + (curr.totalAmount || 0), 0);
+        const totalOrders = data.reduce((acc, curr) => acc + (curr.totalOrders || 0), 0);
+        
+        // Create PDF
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [1080, 720]
+        });
+
+        // Add title
+        pdf.setFontSize(28);
+        pdf.setTextColor(51, 51, 51);
+        pdf.text(chartType === 'main' ? 'Sales Analysis Report' : 'Sales Trend Analysis', 50, 50);
+        
+        // Add company name
+        pdf.setFontSize(16);
+        pdf.setTextColor(102, 102, 102);
+        pdf.text('Green Grocer Analytics', 50, 80);
+
+        // Add date range
+        const startDate = new Date(data[0]?.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        const endDate = new Date(data[data.length - 1]?.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        pdf.text(`Period: ${startDate} - ${endDate}`, 50, 100);
+
+        // Add generation timestamp
+        const currentDate = new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        pdf.text(`Generated on: ${currentDate}`, 50, 120);
+
+        // Add chart
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const chartWidth = pageWidth - 100;
+        const chartHeight = 300;
+        pdf.addImage(imgData, 'PNG', 50, 140, chartWidth, chartHeight);
+
+        // Add summary section
+        let yPos = chartHeight + 180;
+        pdf.setFontSize(20);
+        pdf.setTextColor(51, 51, 51);
+        pdf.text('Sales Summary', 50, yPos);
+
+        // Add summary table
+        yPos += 40;
+        pdf.setFontSize(16);
+        pdf.setFillColor(245, 245, 245);
+        pdf.rect(50, yPos - 25, 400, 35, 'F');
+
+        pdf.text(`Total Revenue: INR ${totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 60, yPos);
+        pdf.text(`Total Orders: ${totalOrders.toLocaleString()}`, 350, yPos);
+
+        // Add footer
+        pdf.setFontSize(12);
+        pdf.setTextColor(128, 128, 128);
+        pdf.text(' Green Grocer Analytics - Confidential Report', 50, pageHeight - 30);
+
+        pdf.save(`${chartType === 'main' ? 'sales-analysis' : 'sales-trend'}-report.pdf`);
+      });
+    } else if (downloadFormat === 'csv') {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Date,Total Sales (INR),Orders\n";
+
+      data.forEach(item => {
+        csvContent += `${item.date},INR ${item.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })},${item.totalOrders}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `${chartType === 'main' ? 'sales-analysis' : 'sales-trend'}-report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedPeriod, setSelectedPeriod] = useState('thisYear');
@@ -101,7 +215,12 @@ export default function DashHome() {
                 <MainChart
                 setIsPopupOpen={setIsPopupOpen}
                 isPopupOpen={isPopupOpen}
-                data={data} /> 
+                data={data} 
+                chartRef={mainChartRef} 
+                downloadChart={() => downloadChart('main')} 
+                downloadFormat={downloadFormat} 
+                setDownloadFormat={setDownloadFormat} 
+                /> 
               </div>
             </div>
 
@@ -120,6 +239,8 @@ export default function DashHome() {
               setStartDate={setStartDate} 
               setEndDate={setEndDate} 
               handleCustomDateApply={handleCustomDateApply} 
+              chartRef={lineChartRef} 
+              downloadChart={() => downloadChart('line')} 
             />
 
           </div>
@@ -142,16 +263,27 @@ export default function DashHome() {
           </div>
 
           {/* profile deatail and message */}
-          <div className=" justify-center max-w-[50%] flex-1">
-
-            <h1 className='text-[30px] ml-5 font-["Lufga"]'>Sales</h1>
+          {/* <div className=" justify-center max-w-[50%] flex-1">
 
 
-            <AngleCircle />
+
+<AngleCircle />
 
 
-            <button onClick={() => navigate('/admin/sales')} className='bg-blue-500 text-white px-8 rounded-full leading-none'>Sales Report</button>
-          </div>
+</div> */}
+
+          <h1 className='text-[30px] ml-5 font-["Lufga"] mb-4'>Sales report</h1>
+          <p className='max-w-[700px] ml-5 mb-12 opacity-55'>
+            Sales report is a comprehensive summary of all the sales made by your business. 
+            It provides an overview of the sales data, including the total sales amount, 
+            average sale amount, and the number of sales. 
+            It also provides a detailed breakdown of the sales by product category, 
+            product, and sales channel. 
+            You can use this report to analyze your sales data and make informed decisions 
+            about your business.
+          </p>
+          <button onClick={() => navigate('/admin/sales')} className='bg-blue-500 ml-5 hover:bg-blue-600 text-white px-8 py-3 rounded-full leading-none'>See the sales Report</button>
+
 
         </div>
 
@@ -160,7 +292,7 @@ export default function DashHome() {
 
 
       </div>
-      <Recents datas={recentOrders} />
+      <Recents page={'dash'} datas={recentOrders} />
     </ >
 
   )
@@ -169,7 +301,7 @@ export default function DashHome() {
 
 
 
-function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, endDate, handlePeriodChange, downloadFormat, setDownloadFormat, setViewMode, showCustomDate, setStartDate, setEndDate, handleCustomDateApply}) {
+function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, endDate, handlePeriodChange, downloadFormat, setDownloadFormat, setViewMode, showCustomDate, setStartDate, setEndDate, handleCustomDateApply, chartRef, downloadChart}) {
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -185,30 +317,36 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
     setIsPopupOpen(false);
   }
 
-  // const handleDownload = () => {
-  //   // Implement download logic here
-  //   console.log('Downloading chart data', {
-  //     format: downloadFormat,
-  //     viewMode,
-  //     period: selectedPeriod,
-  //     startDate,
-  //     endDate
-  //   });
-  //   // Placeholder for actual download implementation
-  // }
-
   return (
     <div className="w-[50%] max-h-[55%] flex flex-col pl-6">
       <div className="w-full flex flex-col">
         <div className="flex flex-col w-full">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between ">
             <h1 className='text-[30px] ml-5 font-["Lufga"]'>Earnings</h1>
+
+            <div className="inline-flex gap-5 items-center rounded-full">
+              <select 
+                value={downloadFormat} 
+                onChange={(e) => setDownloadFormat(e.target.value)} 
+                className="p-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-800 custom-selecter"
+              >
+                <option value="pdf">PDF</option>
+                <option value="csv">CSV</option>
+              </select>
+            <button
+              onClick={downloadChart}
+              className="bg-[#ff8137] p-2 rounded-full hover:bg-[#ff9137] transition-colors"
+            >
+              <i className="ri-download-fill text-[22px] text-white"></i>
+            </button>
             <button 
               onClick={() => setIsPopupOpen(true)}
-              className="mr-5 p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-            >
-              <i className="ri-settings-3-line"></i>
+              className="p-2 bg-gray-200 text-white rounded-full hover:bg-gray-600 transition-colors"
+            > <i className="ri-settings-3-line text-[23px] text-black"></i>
             </button>
+            </div>
+
+            
           </div>
           <LineChart 
             data={data || []} 
@@ -216,6 +354,7 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
             selectedPeriod={selectedPeriod} 
             startDate={startDate} 
             endDate={endDate} 
+            chartRef={chartRef} 
           />
         </div>
 
@@ -298,7 +437,7 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
                     <select 
                       value={selectedPeriod}
                       onChange={handlePeriodChange}
-                      className="w-full p-3 bg-[#ffffff20] border border-white/20 rounded-xl text-white"
+                      className="w-full p-3 bg-[#ffffff20] border border-white/20 rounded-xl text-white custom-selectero"
                     >
                       {periodOptions.map(option => (
                         <option key={option.value} value={option.value} className="bg-black text-white">
@@ -346,7 +485,7 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={handleDownload}
+                        onClick={() => downloadChart()}
                         className="p-1 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
                         title="Download Chart Data"
                       >
@@ -804,14 +943,14 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
         </select>
       </div>
 
-      <div className="inline-flex justify-center absolute left-1/2 top-1/2 translate-x-[-30%] translate-y-[-46%]">
+      <div className="inline-flex justify-center absolute left-1/2 top-1/2 translate-x-[-30%] translate-y-[-46%] font-['lufga']">
         <div 
           className="w-48 h-48 bg-gradient-to-r p-2 from-[#3f9894] text-black to-[#784222] rounded-full cursor-pointer hover:scale-105 transition-transform"
           onClick={() => handleStatisticClick(datas?.orders)}
         >
           <span className='rounded-full bg-white/80 w-full h-full  flex items-center justify-center flex-col leading-none'>
             <p className='text-[18px]  opacity-70'>Total Deals</p>
-            <p className='text-[28px] font-bold'>{datas?.orders?.totalOrders || '0'}</p>
+            <p className='text-[28px] font-bold font-mono'>{datas?.orders?.totalOrders || '0'}</p>
           </span>
         </div>
 
@@ -820,7 +959,7 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
           onClick={() => handleStatisticClick(datas?.customers)}
         >
           <span className=' bottom-0 left-0 rounded-full flex bg-white/80 w-full h-full items-center justify-center flex-col leading-none'>
-            <p className='text-[18px] text-center  opacity-70'>Total <br /> Customers</p>
+            <p className='text-[18px] text-center  opacity-70 mb-2'>Total <br /> Customers</p>
             <p className='text-[28px] font-bold'>{datas?.customers?.totalCustomers || '0'}</p>
           </span> 
         </div>
@@ -830,8 +969,8 @@ function LineCharts({data, viewMode, selectedPeriod, periodOptions, startDate, e
           onClick={() => handleStatisticClick(datas?.orders)}
         >
           <div className='w-full h-full flex items-center bg-white/80 justify-center rounded-full flex-col leading-none'>
-            <p className='text-[20px] text-center opacity-70'>Total <br /> Revenue</p>
-            <p className='text-[32px] font-bold'>₹{datas?.orders.totalRevenue || '0'}</p>
+            <p className='text-[20px] text-center opacity-70 mb-3'>Total <br /> Revenue</p>
+            <p className='text-[32px] font-bold font-mono'>₹ {datas?.orders.totalRevenue || '0'}</p>
           </div>
         </div>
       </div>

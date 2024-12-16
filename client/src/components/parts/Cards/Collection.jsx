@@ -23,8 +23,9 @@ export default function CollectionCard({ pos, data, type }) {
           </span>
         </span>
         <button onClick={() => type === 'product' ? (navigate('/user/productPage', { state: { id: data._id } })) : navigate(`/user/collection/${data.name}/products`, { state: { products: data?.products, action: 'collection', title: data?.name, img: data?.pic } })} className='flex justify-start items-center font-bold rounded-full text-white absolute top-0 -right-3 bg-[linear-gradient(45deg,#789985,#b4c2ba)] overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500'>
-          <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
-          <i className="ri-arrow-up-line font-thin rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+        <img className='group-hover:-translate-x-full min-w-[70px] p-4 brightness-[100]  duration-500' src="/bag-2-1.svg" alt="" />
+        {/* <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i> */}
+        <img className='group-hover:-translate-x-full min-w-[70px] p-5 brightness-[100]  duration-500' src="/arrow-right.svg" alt="" />
         </button>
 
       </span>

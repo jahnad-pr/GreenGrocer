@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useGetChartsDetailsMutation, useGetTopUsersMutation } from "../../../services/Admin/adminApi";
 
 const style = document.createElement('style');
 style.textContent = `
@@ -25,14 +26,37 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-export default function Recents({datas}) {
+export default function Recents({datas,page}) {
 
   const [recentOrders, setRecentOrders] = useState([]);
+  const [ getTopUsers, { data } ] = useGetTopUsersMutation()
+  const [ getChartsDetails, { data:topData }] = useGetChartsDetailsMutation()
+  
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    if(topData){
+      console.log(topData)
+    }
+  }, [topData]);
+
+  useEffect(()=>{ 
+    if(page==='users'){ getTopUsers() }
+    if(page==='products'){ getChartsDetails('filterby=topProducts&period=custom') }
+    if(page==='categories'){ getChartsDetails('filterby=topCategories&period=custom') }
+  },[])
+
   useEffect(()=>{
+
+    if(page==='orders'){
+      const sortedOrders = [...datas]
+        .sort((a, b) => b.price.grandPrice - a.price.grandPrice || b.total_quantity - a.total_quantity)
+        .slice(0, 7);
+      return setRecentOrders(sortedOrders);
+    }
+    
     if (datas && Array.isArray(datas)) {
       const sortedOrders = [...datas]
         .sort((a, b) => new Date(b.time) - new Date(a.time))
@@ -91,11 +115,74 @@ export default function Recents({datas}) {
         </div>
       )}
 
-      <h1 className="text-[30px] font-bold my-5 mb-5">Recent Orders</h1>
+      { <h1 className="text-[30px] font-bold my-5 mb-5 font-['lufga']">
+        {page==='dash'?"Recent Orders":page==='users'?'Top users':page==='orders'?'Top Purchases':
+        page==='products'?'Top Products':page==='categories'?'Top Categories':""}</h1>}
 
       <span className="flex flex-col gap-5">
+
+        {
+          page === 'users' && data?.length > 0 && data?.map((user,index)=>{
+            return (
+              <div
+                key={user._id}
+                style={{ animationDelay: `${index * 150}ms` }}
+                className="w-full flex items-center font-['lufga'] gap-2 bg-[#f0f1f3] px-5 pr-8 py-3 rounded-[41px] grayscale-0 opacity-0 hover:scale-[0.90] duration-500 animate-[slideIn_0.5s_ease-out_forwards]"
+              >
+                <img
+                  className="w-12 h-12 rounded-full object-cover grayscale-0 opacity-0 animate-[fadeIn_0.3s_ease-out_forwards] delay-[200ms]"
+                  src={user.profileUrl}
+                  alt=""
+                />
+                <span className="flex flex-col flex-1 leading-none">
+                  <p className="font-bold text-[18px]">
+                    {user.username}
+                  </p>
+                  <p className="opacity-45">{user.email}</p>
+                  <p className="opacity-45">{user.phoneNumber}</p>
+                  <span className="flex gap-5 items-center text-orange-500">
+                  { user.orders ? <p>{user.orders} Orders</p>:''}
+                  { user.wallet?.amount ? <p className="m-0">{user.wallet?.amount} Rs in Wallet</p>:''}
+                  </span>
+                </span>
+              </div>
+            )
+          })
+        }
+
+        {
+          (page === 'products'||page==='categories') && topData?.length > 0 && topData.map((order, index) => {
+            return (
+              <div
+                key={index}
+                style={{ animationDelay: `${index * 150}ms` }}
+                className="w-full flex items-center font-['lufga'] gap-2 pl-10 bg-[#f0f1f3] px-5 pr-8 py-3 rounded-[41px] grayscale-0 opacity-0 hover:scale-[0.90] duration-500 animate-[slideIn_0.5s_ease-out_forwards]"
+              >
+                { page==='products' &&
+                  <img
+                    className="w-12 h-12 rounded-full object-cover grayscale-0 opacity-0 animate-[fadeIn_0.3s_ease-out_forwards] delay-[200ms]"
+                    src={order.productImage}
+                    alt=""
+                  />
+
+                }
+                <span className="flex flex-col flex-1 leading-none">
+                  <p className="font-bold text-[18px]">
+                    {order.categoryName}
+                  </p>
+                  { page === 'products' && <p className="opacity-45">{order.categoryName}</p>}
+                  <span className={`flex gap-5 mt-2 items-center ${page==='products'?'text-blue-600':'text-green-600'}`}>
+                  {  <p>{order.totalOrders} Orders</p>}
+                  { <p className="m-0">{order.totalRevenue} Rs revenur</p>}
+                  </span>
+                </span>
+              </div>
+            )
+          })
+        }
+
         {recentOrders.length > 0 ? (
-          recentOrders.map((order, index) => {
+          datas?.slice(0, 6).map((order, index) => {
             const orderTime = new Date(order.time);
             const formattedTime = `${orderTime.getDate()} ${orderTime.toLocaleString('default', { month: 'short' })} ago`;
 
@@ -103,7 +190,7 @@ export default function Recents({datas}) {
               <div
                 key={order._id}
                 style={{ animationDelay: `${index * 150}ms` }}
-                className="w-full flex items-center gap-2 bg-[#f0f1f3] px-5 pr-8 py-3 rounded-[41px] grayscale-0 opacity-0 hover:scale-[0.90] duration-500 animate-[slideIn_0.5s_ease-out_forwards]"
+                className="w-full flex items-center gap-2 bg-[#f0f1f3] font-['lufga'] px-5 pr-8 py-3 rounded-[41px] grayscale-0 opacity-0 hover:scale-[0.90] duration-500 animate-[slideIn_0.5s_ease-out_forwards]"
                 onClick={() => navigate(`/admin/orders/${order._id}`)}
               >
                 <img
@@ -119,7 +206,10 @@ export default function Recents({datas}) {
                   <p className="opacity-45">{order.user.username}</p>
                   <p className="opacity-45">{formattedTime}</p>
                 </span>
+                <span className="text-[#168f68]">
                 <p className="text-[20px] font-bold opacity-0 animate-[fadeIn_0.3s_ease-out_forwards] delay-[600ms]">₹{order.price.grandPrice.toFixed(2)}</p>
+                <p className="text-[15px] text-gray-600 font-medium opacity-0 animate-[fadeIn_0.3s_ease-out_forwards] delay-[600ms]">{order.total_quantity/1000}{order.total_quantity>=1000?'Kg':'g'}</p>
+                </span>
               </div>
             );
           })

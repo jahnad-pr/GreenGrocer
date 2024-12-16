@@ -31,7 +31,7 @@ const ToastContent = ({ title, message }) =>
   useEffect(()=>{
     if(data){
       showToast(data,'success' ) 
-       navigator('/user/profile/12') 
+      navigator('/user/profile/12') 
 
     }
   },[data])
@@ -60,161 +60,159 @@ const ToastContent = ({ title, message }) =>
 
   return (  userData &&
     <> 
-      <div className="w-[96%] h-full bg-[#f2f2f2]">
+      <div className="w-[96%] h-full bg-[#f2f2f2] ">
         <div className="w-full h-full flex flex-col items-center gap-5">
-          <span className="w-full h-full px-64 ">
-            {/* Head */}
-            <div className="flex justify-between items-center my-16 mb-5">
-              <h1 className="text-[40px] font-bold font-['lufga']">Profile</h1>
-              {!isEditMode && (
-                <button onClick={() => setIsEditMode(true)} className="px-6 py-2 bg-[#84a190] text-white rounded-full" > Edit Profile </button>
-              )}
+
+          <div className="w-full h-screen font-['lufga']">
+
+            <div className="w-full h-40 blur-[300px] relative opacity-15">
+              <img className="w-[200%] absolute inset-[-300px]" src={userData?.profileUrl||'/ph-pic.jpg'} alt="" />
+              {/* <div className="w-full h-full absolute top-0 left-0"></div> */}
             </div>
-            <div className="flex w-[80%] items-center justify-center mx-auto ml-60 mb-3">
-              {/* profile deatail and message */}
-              <div className=" h-[full] flex justify-center flex-col px-20"
-              
-              >
-                <h1 className="text-[45px] font-bold">{userData?.username}</h1>
-                <p className="text-[20px] opacity-45 translate-y-[-15px]">
-                  @{formData?.username}123HK
+
+              <h1 className="text-[35px] font-bold absolute opacity-55 top-8 left-48">Profile</h1>
+
+              {/* profile photo and the name */}
+              <img className="w-48 h-48 rounded-full bg-[#9faaa3] relative left-[20%] -top-24 shadow-2xl -translate-x-1/2" src={userData?.profileUrl || pic} alt="" />
+
+              <div onClick={() => setIsEditMode(!isEditMode)} className="inline-flex gap-2 items-center justify-center text-white bg-gradient-to-b from-[#999898] to-[#b0acacfb] hover:scale-105 hover:opacity-90 duration-300 pl-8 px-5 py-2 absolute top-44 left-[85%] pr-10 hover:cursor-pointer rounded-[30px] ">
+                <p className="text-[20px]">{!isEditMode?'Edit profile':'View mode'}</p>
+                {!isEditMode?<i className="ri-edit-circle-line text-[25px]"></i>:<i className="ri-eye-line text-[25px]"></i>}
+              </div>
+
+              <span>
+              <p className="text-[45px] font-bold top-36 left-[35%] absolute">{userData?.username}</p>
+              </span>
+
+              {/* other contents */}
+              <span className="w-full h-full flex px-64  ">
+
+                {/* The status of user */}
+                <span className="w-1/2">
+                <p className="text-[28px] font-bold">User Status</p>
+                <p className="text-[18px] mb-8 opacity-55">The user how much active in this app <br></br> according to the transactions and the count orders</p>
+
+                {/* The status of user */}
+                <span className="h-40 inline-flex gap-16 p-6 px-20 rounded-[30px] bg-gradient-to-b from-[#dcdcdc90] to-[#d9d9d990]">
+                  <span>
+                    <p className="text-[20px] leading-none opacity-65 text-center mb-3"> Totel <br /> Orders</p>
+                    <p className="text-[55px] text-[#8c8229] font-bold leading-none text-center">25</p>
+                  </span>
+                  <span>
+                    <p className="text-[20px] leading-none opacity-65 text-center mb-3"> Totel <br /> Transactons</p>
+                    <p className="text-[55px] text-[#192a69] font-bold leading-none text-center">40</p>
+                  </span>
+                  <span>
+                    <p className="text-[20px] leading-none opacity-65 text-center mb-3"> Totel <br /> Score</p>
+                    <p className="text-[55px] text-[#691919] font-bold leading-none text-center">40</p>
+                  </span>
+                </span>
+
+                {/* The status of user */}
+                <p className="text-[28px] font-bold mt-8">Account</p>
+                <p className="text-[18px] mb-5 opacity-55">The accound details <br/> and the configaration with data</p>
+
+                <span className="flex gap-12 mt-12">
+
+                <span>
+                <label className="text-[20px] opacity-35 mb-4" htmlFor="">Email address</label>
+                <p className="text-[23px] mb-5 opacity-55">{formData?.email.replace('.gmail','')}</p>
+                </span>
+
+                <span>
+                <label className="text-[20px] opacity-35 mb-4" htmlFor="">Created at</label>
+                <p className="text-[23px] mb-5 opacity-55">
+                  {new Date(formData.createdAt).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  }).split('/').join('-')}
                 </p>
+                </span>
 
-                {/* mnaage address button */}
-                <p onClick={()=>navigator('/user/profile/:12/address')} className="text-[18px] text-blue-500">Manage address</p>
-                <Link to={'/user/profile/:12/resetPassword'} ><p className="text-[18px] text-red-500">Reset password</p></Link>
-                <img className="h-16 w-16 opacity-35" src={ind} alt="" />
-              </div>
-              {/* profile pic section */}
-              <motion.div layoutId={'pic'}  className="w-[50%] max-h-[20%] flex pl-2 items-end justify-start pb-14">
-              <div className="aspect-square h-full rounded-full flex items-center relative">
-                <img className="w-full absolute " src={picr} alt="" />
-                <img className="w-full" src={pic} alt="" />
-              </div>
-            </motion.div>
-            </div>
+                </span>
 
-            {/* editer */}
-            <div className="flex-1 h-10 w-full flex flex-col items-center  gap-8">
-              {/* Name */}
-              
-              {/* tag name and phone */}
-              <div className="flex gap-8">
-              <div className="flex-col flex gap-1">
-                <label
-                  className="font-bold opacity-35 w-full max-w-[410px] ml-2"
-                  htmlFor=""
-                >
-                  User Name
-                </label>
-                <input
-                  className="w-full max-w-[450px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px] "
-                  type="text"
-                  placeholder="shalu"
-                  name="username"
+                </span>
+
+
+                  {/* the filds of ueser details */}
+                  <div className="w-1/2 h-full">
+
+                  <p className="text-[28px] font-bold">User Details</p>
+                  <p className="text-[18px] mb-5 opacity-55">Users can see thier data <br></br> and change the data on your profile</p>
+
+                  {/* fields */}
+                  <span className="flex flex-col gap-5 flex-nowrap">
+                  <span className="flex gap-5">
+                  <span className="inline-flex flex-col pr-5">
+                  <label className="text-[20px] opacity-35 ml-2 mb-2" htmlFor="">User name</label>
+                  <input placeholder="Shalu!23"
+                    name="username"
+                    onChange={inputHandler}
+                    value={formData?.username}
+                    disabled={!isEditMode}
+                  className="max-w-[300px] outline-none px-6 text-[18px] bg-[#6b817325] w-96 h-12 rounded-[18px] rounded-br-[100px] flex" type="text" />
+                  </span>
+
+                  <span className="inline-flex flex-col pl-5">
+                  <label className="text-[20px] opacity-35 ml-2 mb-2" htmlFor="">Number</label>
+                  <input placeholder="90XXXXXXXX"
+                  value={formData?.phone}
+                  name="phone"
                   onChange={inputHandler}
-                  value={formData?.username}
+                  type="text"
                   disabled={!isEditMode}
-                />
-              </div>
-                {/* phone */}
-                <span className="flex flex-col flex-1 gap-1">
-                  <label
-                    className="font-bold opacity-35 w-full max-w-[420px] ml-2"
-                    htmlFor=""
-                  >
-                    &nbsp;&nbsp;Phone
-                  </label>
+                  className="max-w-[300px] outline-none px-6 text-[18px] bg-[#6b817325] w-96 h-12 rounded-[18px] rounded-br-[100px] flex" />
+                  </span>
+                  </span>
 
-                  <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px]"
-                    value={formData?.phone}
-                    name="phone"
-                    onChange={inputHandler}
-                    type="text"
-                    placeholder="+918978XXXXXX"
-                    disabled={!isEditMode}
-                  />
-                </span>
-              </div>
-              {/* email */}
-              <div className="flex-col flex gap-1">
-                <label
-                  className="font-bold opacity-35 w-full max-w-[420px] ml-2"
-                  htmlFor=""
-                >
-                  Email
-                </label>
-                <input
-                  className="w-full max-w-[450px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px]"
-                  value={formData?.email.replace(/\.gmail$/, "")}
-                  type="text"
-                  name="email"
+                  <span className="flex gap-5">
+                  <span className="inline-flex flex-col pr-5">
+                  <label className="text-[20px] opacity-35 ml-2 mb-2" htmlFor="">Place</label>
+                  <input placeholder="Gujarat"
                   onChange={inputHandler}
-                  placeholder="shalu@gmail.com"
-                  disabled={true}
-                />
-              </div>
+                  name="place"
+                  value={formData?.place}
+                  disabled={!isEditMode}
+                  className="max-w-[300px] bg-[#6b817325] outline-none px-6 text-[18px] w-96 h-12 rounded-[18px] rounded-br-[100px] flex" type="text" />
+                  </span>
+                  <span className="inline-flex flex-col pl-5">
+                  <label className="text-[20px] opacity-35 ml-2 mb-2" htmlFor="">Gender</label>
+                  <select placeholder=""
+                  value={formData?.gender}
+                  onChange={inputHandler}
+                  disabled={!isEditMode}
+                  name="gender"
+                  className="max-w-[300px] custom-selecto bg-[#6b817325] outline-none px-6 text-[18px] w-96 h-12 rounded-[18px] rounded-br-[100px] flex" type="text" >
+                    <option value="">Male</option>
+                    <option value="">Female</option>
+                  </select>
+                  
+                  </span>
+                  </span>
 
-              {/* place and gender*/}
-              <div className="flex gap-8">
-                <span className="flex flex-col gap-1">
-                  <label
-                    className="font-bold opacity-35 w-full max-w-[200px] ml-2"
-                    htmlFor=""
-                  >
-                    &nbsp;&nbsp;Place
-                  </label>
-                  <input
-                    className="w-full max-w-[200px] py-3 px-5 bg-[#84a19030] rounded-full text-[18px]"
-                    type="text"
-                    onChange={inputHandler}
-                    name="place"
-                    value={formData?.place}
-                    placeholder="Techno"
-                    disabled={!isEditMode}
-                  />
-                </span>
-                {/* Gender */}
-                <span className="flex flex-col flex-1 gap-">
-                  <label
-                    className="font-bold opacity-35 w-full max-w-[420px] ml-2"
-                    htmlFor=""
-                  >
-                    &nbsp;&nbsp;Gender
-                  </label>
-                  <select
-                    value={formData?.gender}
-                    className="w-52 py-3 px-5 rounded-full text-[18px] bg-[#84a19030] custom-selecter"
-                    name="gender"
-                    onChange={inputHandler}
-                    disabled={!isEditMode}
-                  >
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                  </select> 
-                </span>
-              </div>
+                  <button onClick={!isEditMode?null:updateProfileSumbmit} className={`px-6 py-3 mt-5 mx-40 text-[16px] ${isEditMode?'hover:scale-105 hover:opacity-70':'opacity-30'}  duration-300 bg-[#84a190] text-white rounded-full`}>Update the profile</button>
 
-              {isEditMode && (
-                <div className="flex gap-4 justify-center">
-                  <button 
-                    onClick={() => setIsEditMode(false)} 
-                    className="px-5 py-[15px] bg-gray-400 text-[18px] rounded-full text-white font-medium mt-5 w-full max-w-[140px]"
-                  >
-                    Cancel
-                  </button>
-                  <HoverKing
-                    event={updateProfileSumbmit}
-                    Icon={<FaSave className="text-[20px]" />}
-                    styles="w-[260px] rounded-full mt-5 absolute"
-                  >
-                    Save
-                  </HoverKing>
-                </div>
-              )}
-            </div>
-          </span>
+                  <span className="flex items-center justify-center">
+                    <span>
+                  <p className="text-[28px] font-bold leading-none mt-5">Actions</p>
+                  <p className="text-[18px]  opacity-55">Users can see thier data <br></br> and change the data on your profile</p>
+                    </span>
+                    <span className="flex-1"></span>
+                    <span>
+                    <i onClick={() => navigator('/user/profile/logout')} className="ri-logout-circle-r-line text-[35px] text-red-600 hover:scale-125 hover:opacity-70 duration-300 cursor-pointer"></i>
+
+                    </span>
+                  </span>
+
+                  </span>
+
+                  
+
+                  </div>
+
+              </span>
+          </div>
         </div>
       </div>
     </>

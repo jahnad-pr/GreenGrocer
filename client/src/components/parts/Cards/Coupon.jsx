@@ -29,14 +29,14 @@ export function Coupon({ index, coupon, setCode }) {
       <h3 className="font-semibold mb-2">{coupon.title}</h3>
 
       { /* Coupon Code */ }
-      <div className={` ${coupon.theme === 'green' ? 'text-orange-500' : 'text-blue-500'} font-bold mb-2 text-[38px]`}>
+      <div className={` ${coupon.theme === 'green' ? 'text-orange-500' : 'text-[#6b7280]'} font-bold mb-2 text-[38px]`}>
         {coupon.code}
         <br />
       </div>
 
       { /* Description */ }
       <p className="text-gray-700 mb-4 font-medium text-[20px] opacity-65">
-        Get flat <span className={coupon.theme === 'green' ? 'text-red-500' : 'text-blue-500'}>
+        Get flat <span className={coupon.theme === 'green' ? 'text-red-500' : 'text-blue-800'}>
           {coupon.discountType==='percentage' ? coupon.discountAmount+'%' : coupon.discountAmount+'₹'}
           <br />
         </span> {coupon.description}

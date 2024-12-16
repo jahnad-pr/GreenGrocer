@@ -24,4 +24,12 @@ export const authEndpoints = (builder) => ({
       }),
     }),
 
+    getTopUsers: builder.mutation({
+      query: () => ({
+        url: 'admin/getTopUsers',
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
+
 });

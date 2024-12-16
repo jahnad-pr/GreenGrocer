@@ -249,8 +249,9 @@ export default function Carts({ data,setProductData,index,showToast }) {
         {/* <p  className="w-[calc(100%_-_64px)] text-center py-[6px] bg-[#ffffff50] my-2 rounded-full">Buy now</p> */}
         
         <button onClick={() => navigation("/user/ordersummery", { state: { items: [{ product:data?.product,quantity:convertToGrams(qnt) }], qnt: qnt } })} className='flex justify-start items-center font-bold rounded-full text-white absolute bottom-3 -right-3 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group'>
-        <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
-        <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+        <img className='group-hover:-translate-x-full min-w-[70px] p-4 brightness-[100]  duration-500' src="/bag-2-1.svg" alt="" />
+        {/* <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i> */}
+        <img className='group-hover:-translate-x-full min-w-[70px] p-5 brightness-[100]  duration-500' src="/arrow-right.svg" alt="" />
         </button>
       </div>
     </div>

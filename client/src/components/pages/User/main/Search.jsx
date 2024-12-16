@@ -182,15 +182,15 @@ const showToast = (message, type = "success") => {
   return (
     <>
     <ToastContainer title="Error" position="bottom-left" />
-    <div className="w-[96%] h-full bg-product">
-      <div className=" mix-blend-screen bg-[#ffffff85] absolute w-full h-full"></div>
+    <div className="w-[96%] h-full bg-[#f2f2f2]">
+      <div className=" mix-blend-screen absolute w-full h-full"></div>
       <div className="w-full h-full backdrop-blur-3xl pr-40">
         <div className="w-full h-full  overflow-y-scroll flex">
           {/* Filter Sidebar */}
 
-          <div className="w-[400px] h-full pr-6">
+          <div className="w-[400px] h-full pr-6 mr-6 bg-[#899a9015]">
             <div className="h-full bg-[#ffffff20] backdrop-blur-md  p-6 px-20 overflow-scroll pb-40">
-              <h2 onClick={() => getAllCollection()} className="text-[30px] font-medium mb-6">Filters</h2>
+              <h2 onClick={() => getAllCollection()} className="text-[30px] mt-8 font-bold mb-6">Filters</h2>
 
               {/* View Options */}
               <div className="mb-6">
@@ -256,7 +256,7 @@ const showToast = (message, type = "success") => {
                     step={250}
                     disabled={!showProducts}
                     progress
-                    className="custom-slider"
+                    className="py-4"
                     graduated
                     renderMark={mark => {
                       if ([10, 500, 1000, 1500, 2000, 2500].includes(mark)) {
@@ -266,48 +266,48 @@ const showToast = (message, type = "success") => {
                     }}
                     tooltip={false}
                   />
-                </div>
-                <div className="flex justify-between mt-6">
-                  <input 
-                    type="number" 
-                    value={priceRange[0]} 
-                    disabled={!showProducts}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === '') {
-                        setPriceRange([0, priceRange[1]]);
-                        return;
-                      }
-                      const newValue = parseInt(value);
-                      if (newValue <= priceRange[1]) {
-                        setPriceRange([newValue, priceRange[1]]);
-                        handlePriceChange(null, [newValue, priceRange[1]]);
-                      }
-                    }}
-                    className="w-24 px-4 py-2 rounded-[10px] bg-[#3f6b5130] text-black outline-none text-center"
-                    min={10}
-                    max={priceRange[1]}
-                  />
-                  <input 
-                    type="number" 
-                    value={priceRange[1]} 
-                    disabled={!showProducts}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === '') {
-                        setPriceRange([priceRange[0], 0]);
-                        return;
-                      }
-                      const newValue = parseInt(value);
-                      if (newValue >= priceRange[0] && newValue <= 2500) {
-                        setPriceRange([priceRange[0], newValue]);
-                        handlePriceChange(null, [priceRange[0], newValue]);
-                      }
-                    }}
-                    className="w-24 px-4 py-2 rounded-[10px] bg-[#3f6b5130] text-black outline-none text-center"
-                    min={priceRange[0]}
-                    max={2500}
-                  />
+                  <div className="flex justify-between mt-6">
+                    <input 
+                      type="number" 
+                      value={priceRange[0]} 
+                      disabled={!showProducts}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '') {
+                          setPriceRange([0, priceRange[1]]);
+                          return;
+                        }
+                        const newValue = parseInt(value);
+                        if (newValue <= priceRange[1]) {
+                          setPriceRange([newValue, priceRange[1]]);
+                          handlePriceChange(null, [newValue, priceRange[1]]);
+                        }
+                      }}
+                      className="w-24 px-4 py-2 rounded-[10px] bg-[#3f6b5130] text-black outline-none text-center"
+                      min={10}
+                      max={priceRange[1]}
+                    />
+                    <input 
+                      type="number" 
+                      value={priceRange[1]} 
+                      disabled={!showProducts}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '') {
+                          setPriceRange([priceRange[0], 0]);
+                          return;
+                        }
+                        const newValue = parseInt(value);
+                        if (newValue >= priceRange[0] && newValue <= 2500) {
+                          setPriceRange([priceRange[0], newValue]);
+                          handlePriceChange(null, [priceRange[0], newValue]);
+                        }
+                      }}
+                      className="w-24 px-4 py-2 rounded-[10px] bg-[#3f6b5130] text-black outline-none text-center"
+                      min={priceRange[0]}
+                      max={2500}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -332,7 +332,7 @@ const showToast = (message, type = "success") => {
                       );
                       setFilteredProducts(filtered);
                     }}
-                    className="category-radio"
+                    className="category-checkbox"
                   />
                   Show In-Stock Only
                 </label>
@@ -353,7 +353,7 @@ const showToast = (message, type = "success") => {
                       );
                       setFilteredProducts(filtered);
                     }}
-                    className="category-radio"
+                    className="category-checkbox"
                   />
                   Show Featured Only
                 </label>
@@ -362,7 +362,7 @@ const showToast = (message, type = "success") => {
                 <select
                   value={sortBy}
                   onChange={(e) => handleSort(e.target.value)}
-                  className="w-full px-4 py-2 bg-[#3f6b51] custom-selectero text-white rounded-[10px] focus:outline-none"
+                  className="w-full px-4 py-2 bg-[#809e8c] custom-selectero text-white rounded-[10px] focus:outline-none"
                 >
                   <option value="name-asc">Name (A-Z)</option>
                   <option value="name-desc">Name (Z-A)</option>
@@ -380,7 +380,7 @@ const showToast = (message, type = "success") => {
           <div className="flex-1 pt-16">
             {/* Search input */}
             <div className="relative w-3/4 mb-10">
-              <div className="search-container">
+              <div className="search-container relative mb-6">
                 <input
                   type="text"
                   placeholder="Search products..."
@@ -392,9 +392,9 @@ const showToast = (message, type = "success") => {
                     );
                     setFilteredProducts(filtered);
                   }}
-                  className="search-input"
+                  className="search-input bg-white/10 border border-[#8aa595]rounded-lg py-3 px-5 w-full text-[#14532d] text-base transition-all duration-300 ease-in-out hover:bg-white/15 focus:bg-white/20 focus:border-[#52aa57] focus:shadow-lg outline-none placeholder:text-[#14532d]/60"
                 />
-                <FiSearch className="search-icon text-xl" />
+                <FiSearch className="search-icon absolute right-5 top-1/2 transform -translate-y-1/2 text-[#8aa595] transition-all duration-300 ease-in-out hover:text-[#52aa57]"></FiSearch>
               </div>
             </div>
 
@@ -420,12 +420,36 @@ const showToast = (message, type = "success") => {
               </div>
             )}
 
+              {!showProducts && filteredProducts.length !== 0 &&
+              <div className="mb-8 flex gap-4 ml-4 text-[18px] absolute bottom-0 right-20">
+                <span className='flex gap-3 items-center'>
+                  <div className="h-4 w-4 bg-[#89a494] rounded-full"></div>
+                  <p>In stocking</p>
+                </span>
+                <span className='flex gap-3 items-center'>
+                  <div className="h-4 w-4 bg-[#d27876] rounded-full"></div>
+                  <p>Out of stock</p>
+                </span>
+                <span className='flex gap-3 items-center'>
+                  <div className="h-4 w-4 bg-[#cda686] rounded-full"></div>
+                  <p>Featured</p>
+                </span>
+            
+              </div>}
+
             {/* No Results Message */}
-            {showProducts && filteredProducts.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-[20px] text-gray-600">
-                  No products found matching your criteria
-                </p>
+              {showProducts && filteredProducts.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="flex flex-col gap-2">
+                  <img className="w-[30%] mx-auto filter-[brightness(0)]" src='/bag-cross-1.svg' alt="No categories" />
+                    <h1 className="text-[30px] font-bold">Sorry no products!</h1>
+                    <p className="opacity-45 text-[18px]">
+                      We cant find the product,check internet or <br />
+                      make sure you typed the product name correctly
+                      <br/>and try again, if you think this is a mistake
+                    </p>
+
+                  </div>
               </div>
             )}
           </div>
@@ -532,26 +556,25 @@ function ProductCard({ navigate, product, userData, showToast }) {
           <p className={`opacity-60 text-[25px]  font-bold ${product?.stock>0?'text-[#14532d]':'text-red-600'}`}>
             ₹ {product.salePrice}
           </p>
-          <p className={`${product?.stock>0?'text-[#14532d]':'text-red-900'} font-medium opacity-55`}>{product?.stock>0?(product.stock/1000).toFixed(0):'Out of Stock'}{product?.stock>1000?" Kg left":product?.stock?" g":""}</p>
-          { product?.featured &&
-            <p className={`bg-yellow-500 rounded-full font-medium opacity-55 pl-4 text-[black] mt-2 py-1`}>Featured</p>
-          }
+          <p className={`${product?.stock>0?'text-[#14532d]':'text-red-900'} font-medium text-[17px] opacity-55`}>{product?.stock>0?(product.stock/1000).toFixed(0):'Out of Stock'}{product?.stock>1000?" Kg left":product?.stock>0?" g":""}</p>
+        
         </span>
       </span>
       { userData?._id && product?.stock>0 ?
-      <button onClick={handleAddToCart} className={`flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 ${product?.stock>0?'bg-[linear-gradient(#b4c2ba,#789985)]':'bg-[linear-gradient(45deg,#e07373,#ad867c)]'} overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500`}>
+      <button onClick={handleAddToCart} className={`flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 ${product?.featured&&product?.stock>0?'bg-[linear-gradient(#f8982f,#789985)]':product?.stock>0?'bg-[linear-gradient(#b4c2ba,#789985)]':'bg-[linear-gradient(45deg,#e07373,#ad867c)]'} overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500`}>
         <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
         { !product?.stock>0?
           <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>:
           <i className="ri-shopping-cart-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
         }
       </button>:
-      <button className={`flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 ${product?.stock>0?'bg-[linear-gradient(#b4c2ba,#789985)]':'bg-[linear-gradient(45deg,#e07373,#ad867c)]'} overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500`}>
+      <button className={`flex justify-start items-center font-bold rounded-full text-white absolute bottom-0 right-3 ${product?.featured&&product?.stock<=0?'bg-[linear-gradient(#f8982f,#d47875)]':product?.stock>0?'bg-[linear-gradient(#b4c2ba,#789985)]':'bg-[linear-gradient(45deg,#e07373,#ad867c)]'} overflow-hidden w-[70px] h-[70px] group-hover:scale-125 duration-500`}>
       <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
       <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
     </button>
       }
     </span>
+    
   </div>);
 }
 

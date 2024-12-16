@@ -4,12 +4,14 @@ import {  Tostify,showToast } from "../Toast/Tostify";
 import { useAddtoCartMutation, useCheckPorductInCartMutation, useRemoveBookmarkItmeMutation } from "../../../services/User/userApi";
 import DeletePopup from "../popups/DeletePopup";
 import { useNavigate } from "react-router-dom";
+import ImageUploadPopup from "../popups/ImgaePicker";
 
 export default function BookmarkCard({ data,userData,setBookData }) {
 
   const [removeBookmark, { data: removeData }] = useRemoveBookmarkItmeMutation();
   const [addtoCart, { error: addError, data: addData }] = useAddtoCartMutation()
   const [checkPorductInCart, { data: checkData }] = useCheckPorductInCartMutation();
+
 
   const [dPopup,setDPopup] = useState(false);
   const [goToCart,setGoToCart] = useState(false);
@@ -21,8 +23,6 @@ export default function BookmarkCard({ data,userData,setBookData }) {
         quantity: data?.product?.stock>1000?1000:500,
         product: id,
     }
-    console.log();
-    
     addtoCart({ cartData, userId })
   }
 
@@ -53,9 +53,22 @@ export default function BookmarkCard({ data,userData,setBookData }) {
     }
   }, [addData]);
 
+ const addToCartHandler = ()=>{
+  if(data?.product?.stock<=0){
+    showToast("Out of stock","error")
+    return;
+  }
+  if(addData||goToCart){
+    navigate('/user/cart')
+  }else{
+    addToCartItem(data.product._id)
+  }
+    
+ }
+
 
   return (
-    <> 
+    <>
     <Tostify />
     {dPopup && (
         <DeletePopup
@@ -71,9 +84,10 @@ export default function BookmarkCard({ data,userData,setBookData }) {
 
     <div className="h-60 min-w-60 max-w-48 relative ">
 
-      <button onClick={() =>addData||goToCart?navigate('/user/cart'):addToCartItem(data.product._id)} className={`flex justify-start items-center font-bold rounded-full group text-white absolute ${!data.is_collection?'-left-4':'-right-4'} bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 bottom-0 z-10`}>
-        <i className="ri-shopping-cart-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
-        <i className={`${addData||goToCart?'ri-arrow-right-line':'ri-add-large-fill'} rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500`}></i>
+      <button onClick={addToCartHandler} className={`flex justify-start items-center font-bold rounded-full group text-white absolute ${!data.is_collection?'-left-4':'-right-4'} bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 bottom-0 z-10`}>
+      <img className='group-hover:-translate-x-full min-w-[70px] p-4 brightness-[100]  duration-500' src="/bag-2-1.svg" alt="" />
+        {/* <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i> */}
+        <img className='group-hover:-translate-x-full min-w-[70px] p-5 brightness-[100]  duration-500' src="/arrow-right.svg" alt="" />
       </button>
 
       <div className={`w-60 h-60 overflow-hidden bg-[#e6e9e7] rounded-[30px] ${data.is_collection?'rounded-tr-[120px]':'rounded-bl-[120px]'} -z-10`}>
@@ -84,9 +98,9 @@ export default function BookmarkCard({ data,userData,setBookData }) {
         <p className="text-[20px] font-medium text-[#2b662c]">{data.product?.category?.name}</p>
         {
           !data.is_collection &&
-          <i onClick={()=>(navigate('/user/productPage',{ state:{ id:data.product._id } }))} className="ri-shopping-bag-fill absolute top-0 right-0 rounded-full p-5 text-[30px] hover:scale-125 duration-500"></i>
+          <img onClick={()=>(navigate('/user/productPage',{ state:{ id:data.product._id } }))}  className='group-hover:-translate-x-full cursor-pointer absolute top-0 right-0 min-w-[70px] p-4  duration-500' src="/bag-2-2.svg" alt="" />
         }
-        <i onClick={() => setDPopup(true)} className="ri-bookmark-fill absolute top-12 right-0 rounded-full p-5 text-[30px] hover:scale-150 duration-500"></i>
+        <img src="/hearted.svg" onClick={() => setDPopup(true)} className="w-20 h-20 cursor-pointer absolute top-12 right-0 rounded-full p-5 text-[30px] hover:scale-150 duration-500"></img>
 
         </div>
 

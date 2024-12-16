@@ -48,6 +48,8 @@ export const {
 
   useGetAllOrdersMutation,
 
+  useGetTopUsersMutation,
+
   useUpdateOrderStatusMutation,
 
   

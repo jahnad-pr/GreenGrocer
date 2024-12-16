@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import coin from "../../../../../assets/images/con.png";
 import past from '../../../../../assets/images/ane.gif'
 import tick from '../../../../../assets/images/tick.webp'
+import cross from '../../../../../assets/images/cross.png'
 import { useLocation, useNavigate } from 'react-router-dom';
 
 
@@ -20,12 +21,20 @@ export default function OrderSuccess() {
   return (
     <div className='w-[96%] h-full bg-[#f5f5f5] mx-auto'>
       <div className="w-full h-full px-4 md:px-20 lg:px-80 flexitems-center gap-5 fade-in">
-        <img className='bg-blend-darken mx-auto mt-32 mb-12 rounded-lg w-28 h-28' src={tick} alt="" />
+        <img className='bg-blend-darken mx-auto mt-28 mb-12 rounded-lg w-28 h-28' src={data?.payment_status !== 'pending' || data?.payment_method ===  'Cash on Delivery' ? tick : cross} alt="" />
         <span className='flex flex-col items-center gap-4'>
           <span className='leading-[32px] text-center'>
-            <p className='text-[40px] mb-8 font-["lufga"]'>Thank you for your purchase</p>
+            <p onClick={()=>console.log(data)} className='text-[40px] mb-8 font-["lufga"]'>
+              {data?.payment_status !== 'pending' || data?.payment_method ===  'Cash on Delivery' ? 'Thank you for your purchase':'Payment Failed'}</p>
+              {
+                data?.payment_status !== 'pending' || data?.payment_method ===  'Cash on Delivery'&&
             <p className='text-[20px] opacity-75 ["lufga"]'>We've received your order will ship in 3-4 hours.<br />
               Your order ID is <span className=''>{data?.order_id}</span></p>
+              }
+              {
+                data?.payment_status === 'pending' || data?.payment_method !==  'Cash on Delivery' &&
+                <p className='text-[20px] opacity-75 ["lufga"]'>You can check your order status in your account.<br/> And you can continue with your paynment</p> 
+              }
           </span>
 
           {/* <div className="flex items-center gap-5 relative">
@@ -74,9 +83,9 @@ export default function OrderSuccess() {
               </div>
             </span>
 
-            <button onClick={() => navigator('/user/Order/Invoice', { state: { data: data } })}  className='flex justify-start group items-center font-bold rounded-full text-white absolute bottom-0 right-3 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group'>
-              <i className="ri-article-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i>
-              <i className="ri-arrow-right-line rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></i>
+            <button onClick={() => navigator('/user/Order/Invoice', { state: { norma:true, data } })}  className={`flex justify-start group items-center font-bold rounded-full text-white absolute bottom-0 right-3 ${data?.payment_status !== 'pending' || data?.payment_method ===  'Cash on Delivery' ? 'bg-[linear-gradient(#b4c2ba,#789985)]' : 'bg-[linear-gradient(#ff000080,#ff000090)]'} overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group`}>
+              <img src='/receipt-item.svg' className="p-4 brightness-[100] font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></img>
+              <img src='/arrow-right.svg' className="ri-arrow-right-line p-5 brightness-[100] rounded-full min-w-[70px] text-[25px] group-hover:-translate-x-full duration-500"></img>
             </button>
 
           </div>
@@ -87,9 +96,9 @@ export default function OrderSuccess() {
           </span> */}
 
           <div className="flex gap-3 mt-5 ['lufga']">
-            <button onClick={() => navigator('/user/OrderList')} className='group text-[18px] px-14 py-4 bg-[#85a290] rounded-full text-white'>View Orders</button>
-            <button className='text-[18px] font-medium bg-[#85a290] rounded-full p-[2px]'>
-              <p className='text-[#85a290] bg-white w-full h-full px-12 text-center flex items-center rounded-full font-medium'>View Wallet</p>
+            <button onClick={() => navigator('/user/Orders',{replace:true})} className={`group text-[18px] px-14 py-4 ${data?.payment_status !== 'pending' || data?.payment_method ===  'Cash on Delivery' ? 'bg-[#85a290]' : 'bg-[linear-gradient(to_left,#ee3241,#f8858c)]'} rounded-full text-white`}>View Orders</button>
+            <button onClick={() => navigator('/user/Wallet',{replace:true})} className={`text-[18px] font-medium  ${data?.payment_status !== 'pending' || data?.payment_method ===  'Cash on Delivery' ? 'bg-[#85a290]' : 'bg-[linear-gradient(to_left,#ee3241,#f8858c)]'} rounded-full p-[2px]`}>
+              <p className={` ${data?.payment_status !== 'pending' || data?.payment_method ===  'Cash on Delivery' ? 'bg-[#85a290]' : 'text-[#e65757]'}  bg-white w-full h-full px-12 text-center flex items-center rounded-full font-medium`}>View Wallet</p>
             </button>
           </div>
         </span>

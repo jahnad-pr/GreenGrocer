@@ -10,6 +10,7 @@ import Product from "../../../parts/Cards/Product";
 import { useNavigate } from "react-router-dom";
 import CollectionCard from "../../../parts/Cards/Collection";
 import DeletePopup from '../../../parts/popups/DeletePopup';
+import HoverKing from "../../../parts/buttons/HoverKing";
 
 export default function Products({ userData }) {
   const [cPosition, setPosition] = useState(0);
@@ -69,43 +70,41 @@ export default function Products({ userData }) {
     setShowPopup(true);
   }, []);
 
+  const EmptyState = () => {
+    const navigate = useNavigate()
+    return (
+    <div className="w-full h-[60vh] flex items-center pr-20 justify-center mt-36 flex-col text-center gap-5 relative">
+        <img className="h-[80%] filter-[brightness(0)]" src='/bag-cross-1.svg' alt="No categories" />
+        <div className="flex flex-col gap-2">
+          <h1 className="text-[30px] font-bold">Sorry no products!</h1>
+          <p className="opacity-45 text-[18px]">
+            We are looking for some changes in app or <br /> we could not find any products,<br />
+            check your internet connection or refresh the page
+          </p>
+        
+        </div>
+      </div>
+  )};
+
   return (
     <div className="w-[96%] h-full bg-[#f2f2f2]">
       <div className="w-full h-full backdrop-blur-3xl pl-40">
         <div className="w-full h-full pt-16 overflow-y-scroll">
-          <h1 className="text-[30px] font-bold">Shop</h1>
-
-          {/* Popup for getting current location */}
-          {showPopup && (
-            <DeletePopup
-              title="Get Current Location"
-              description="It's important to get your current location for accurate delivery. Would you like to proceed?"
-              onCancel={handleClosePopup}
-              onConfirm={handleGetLocation}
-            />
-          )}
+          {/* Main head */}
+          {  catData?.data?.length > 0 ?
+          <>
+          <h1 className="text-[35px] font-bold">Shop</h1>
 
           {/* menu navigator */}
-          <div className="flex text-[20px] my-10 font-[500] relative py-3">
+          <div className="flex text-[20px] items-center py-3 my-3 font-[500] relative">
             {catData?.data?.map((data, index) => {
               return data.isListed && (
-                <p
-                  key={index}
-                  style={{
-                    opacity: cPosition === index ? "100%" : "40%",
-                    cursor: isLoading ? "wait" : "pointer",
-                  }}
-                  onClick={() => handleCategoryChange(index)}
-                  className={`w-28 transition-opacity duration-300 ${
-                    isLoading ? "pointer-events-none" : ""
-                  }`}
-                >
-                  {data.name}
-                </p>
+            
+                <p key={index} style={{ opacity: cPosition === index ? "100%" : "40%", cursor: isLoading ? "wait" : "pointer", }} onClick={() => handleCategoryChange(index)} className={`w-40 transition-opacity capitalize duration-300 m-0 leading-none ${ isLoading ? "pointer-events-none" : "" }`} > {data.name} </p>
               );
             })}
             <div
-              style={{ left: `${112 * cPosition}px` }}
+              style={{ left: `${160 * cPosition}px` }}
               className={`w-16 h-1 duration-500 bg-[#00000050] absolute bottom-0`}
             />
           </div>
@@ -175,6 +174,9 @@ export default function Products({ userData }) {
               </>
             )}
           </div>
+          </>:
+              <EmptyState/>
+          }
         </div>
       </div>
     </div>

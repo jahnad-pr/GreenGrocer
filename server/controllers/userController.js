@@ -8,9 +8,12 @@ const SECRET_KEY = process.env.SECRET_KEY || "secret";
 
 // Create a new user
 module.exports.createAUser = async (req, res) => {
-  const { email, password, username, place, gender, phone } = req.body;
+  const { email, password, username, place, gender, phone, profileUrl } = req.body;
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
+
+  console.log(profileUrl);
+  
 
   const newUser = new User({
     email,
@@ -22,6 +25,8 @@ module.exports.createAUser = async (req, res) => {
     createdAt: Date.now(),
     isVerified: false,
     isListed: true,
+    profileUrl,
+    couponApplyed:{}
   });
 
   try {
@@ -31,7 +36,6 @@ module.exports.createAUser = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 
 // if user exits 
 module.exports.isUerExist = async(req, res)=>{
@@ -385,4 +389,41 @@ module.exports.addLocation = async (req, res) => {
     return res.status(400).json({ message: error.message });
 
   }
+};
+
+
+// New route to find the top 8 users based on orders and wallet
+module.exports.getTopUsers = async (req, res) => {
+    try {
+        const topUsers = await User.aggregate([
+            {
+                $lookup: {
+                    from: 'orders', // Assuming orders collection is named 'orders'
+                    localField: '_id',
+                    foreignField: 'user',
+                    as: 'userOrders'
+                }
+            },
+            {
+                $project: {
+                    userId: '$_id',
+                    username: 1,
+                    email: 1, // Include email in the projection
+                    wallet: 1,
+                    orders: { $size: '$userOrders' },
+                    profileUrl:1
+                }
+            },
+            {
+                $sort: { orders: -1, wallet: -1 } // Sort by number of orders and wallet
+            },
+            {
+                $limit: 8 // Limit to top 8 users
+            }
+        ]);
+
+        return res.status(200).json(topUsers);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error fetching top users', error });
+    }
 };

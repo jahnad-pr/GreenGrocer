@@ -104,7 +104,7 @@ module.exports.getCAtegoryProducts = async(req,res)=>{
     
     try {
         
-        const products = await Product.find({  category:id }).populate('category','name discount' )
+        const products = await Product.find({  category:id,isListed:true }).populate('category','name discount' )
         
         if(products.length<=0){
 
@@ -112,11 +112,10 @@ module.exports.getCAtegoryProducts = async(req,res)=>{
 
         }else{
 
-            if(products[0].isListed){
+        
 
                 res.status(200).json({mission:true,message:'successfull',data:products})
 
-            }
 
         }
         

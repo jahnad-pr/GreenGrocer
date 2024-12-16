@@ -177,14 +177,14 @@
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  border-radius: 10px;
-  background: rgba(138, 165, 149, 0.1);
+  border-radius: 30px;
+  background: #8aa69520;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(138, 165, 149, 0.2);
   transition: all 0.3s ease;
   cursor: pointer;
   font-weight: 500;
-  color: #14532d;
+  color: #10291acb;
 }
 
 .category-label:hover {
@@ -194,7 +194,7 @@
 }
 
 .category-label input:checked + span {
-  color: #52aa57;
+  color: #809e8c;
 }
 
 /* Price display */
@@ -240,3 +240,192 @@
 .product-grid > *:nth-child(7) { animation-delay: 0.7s; }
 .product-grid > *:nth-child(8) { animation-delay: 0.8s; }
 .product-grid > *:nth-child(n+9) { animation-delay: 0.9s; }
+
+
+/* {
+  "coupon": {
+      "code": "UITYR2",
+      "amount": 20
+  },
+  "price": {
+      "grandPrice": 97.3,
+      "discountPrice": 18,
+      "others": {
+          "tax": 5.3,
+          "delivery": 40,
+          "totel": 90
+      }
+  },
+  "_id": "675a87dfb4f6cf87e7b19bc8",
+  "user": {
+      "wallet": {
+          "updatedAt": "2024-12-12T05:26:54.702Z",
+          "amount": 117.3,
+          "createdAt": "2024-12-07T06:58:53.571Z"
+      },
+      "_id": "673ec808164a06013bb9de8d",
+      "email": "mshapesacc@gmail.com",
+      "password": "$2a$10$ri1AKmoPLt0XpDnqDSiLCOFo4agHg3vDBDNFytIGOK4TDBhNgAPDS",
+      "username": "Shalu",
+      "phone": 8590245980,
+      "place": "Malppuram",
+      "createdAt": "2024-11-21T05:41:28.888Z",
+      "isVerified": false,
+      "isListed": true,
+      "googleMail": "",
+      "__v": 0,
+      "couponApplyed": {
+          "UI89UI": "1",
+          "UITYR2": 1
+      }
+  },
+  "delivery_address": {
+      "_id": "674601f58f68c0cb72f89180",
+      "uniqueID": "673ec808164a06013bb9de8d1732641269413",
+      "FirstName": "Jahnaad",
+      "LastName": "Puthankotiil",
+      "__v": 0,
+      "city": "Kochi",
+      "createdAt": "2024-11-26T17:14:29.413Z",
+      "exactAddress": "Puthankottil House, apthat po",
+      "idDefault": false,
+      "landmark": "Kochi",
+      "location": null,
+      "locationType": "Home",
+      "phone": 8878675645,
+      "pincode": 897867,
+      "state": "Kerala",
+      "streetAddress": "Mardu,Brototype",
+      "updatedAt": "2024-11-26T17:14:29.413Z",
+      "user": "673ec808164a06013bb9de8d"
+  },
+  "payment_method": "Cash on Delivery",
+  "items": [
+      {
+          "product": {
+              "discount": {
+                  "updatedAt": 1733486957638,
+                  "type": "Discount",
+                  "isPercentage": true,
+                  "value": 20,
+                  "minQuantity": 500,
+                  "maxAmount": 600
+              },
+              "_id": "674df928233175698a1e69d2",
+              "name": "Mango",
+              "pics": {
+                  "one": "http://localhost:3333/uploads/Products/1733163304158-388965434-profile.png",
+                  "three": "http://localhost:3333/uploads/Products/1733163264527-114808607-profile.png",
+                  "two": "http://localhost:3333/uploads/Products/1733163264510-410329781-profile.png"
+              },
+              "isListed": true,
+              "createdAt": "2024-12-02T18:15:04.350Z",
+              "updatedAt": "2024-12-12T06:21:20.848Z",
+              "category": "67330399f1253d47197eec6f",
+              "description": "The king of fruits",
+              "regularPrice": 90,
+              "salePrice": 80,
+              "stock": 204000,
+              "freshness": "Harvested",
+              "harvestedTime": "2024-12-02T12:43:00.000Z",
+              "from": "Shalu's farm",
+              "featured": false,
+              "__v": 0,
+              "productCollection": "673d58fc257ad3f291213a1d"
+          },
+          "quantity": 1000,
+          "_id": "675a87dfb4f6cf87e7b19bc9"
+      }
+  ],
+  "order_id": "1733986271629-M6VJWX",
+  "time": "2024-12-12T06:51:11.629Z",
+  "total_quantity": 1000,
+  "order_status": "Processed",
+  "payment_status": "pending",
+  "__v": 0,
+  "totelProducts": 90,
+  "taxes": 5.3,
+  "deliveryFee": 40
+} */
+
+/* {
+  "coupon": {
+      "code": "UITYR2",
+      "amount": 20
+  },
+  "price": {
+      "grandPrice": 97.3,
+      "discountPrice": 18,
+      "others": {
+          "tax": 5.3,
+          "delivery": 40,
+          "totel": 90
+      }
+  },
+  "_id": "675a87dfb4f6cf87e7b19bc8",
+  "user": "673ec808164a06013bb9de8d",
+  "delivery_address": {
+      "_id": "674601f58f68c0cb72f89180",
+      "uniqueID": "673ec808164a06013bb9de8d1732641269413",
+      "FirstName": "Jahnaad",
+      "LastName": "Puthankotiil",
+      "__v": 0,
+      "city": "Kochi",
+      "createdAt": "2024-11-26T17:14:29.413Z",
+      "exactAddress": "Puthankottil House, apthat po",
+      "idDefault": false,
+      "landmark": "Kochi",
+      "location": null,
+      "locationType": "Home",
+      "phone": 8878675645,
+      "pincode": 897867,
+      "state": "Kerala",
+      "streetAddress": "Mardu,Brototype",
+      "updatedAt": "2024-11-26T17:14:29.413Z",
+      "user": "673ec808164a06013bb9de8d"
+  },
+  "payment_method": "Cash on Delivery",
+  "items": [
+      {
+          "product": {
+              "discount": {
+                  "updatedAt": 1733486957638,
+                  "type": "Discount",
+                  "isPercentage": true,
+                  "value": 20,
+                  "minQuantity": 500,
+                  "maxAmount": 600
+              },
+              "_id": "674df928233175698a1e69d2",
+              "name": "Mango",
+              "pics": {
+                  "one": "http://localhost:3333/uploads/Products/1733163304158-388965434-profile.png",
+                  "three": "http://localhost:3333/uploads/Products/1733163264527-114808607-profile.png",
+                  "two": "http://localhost:3333/uploads/Products/1733163264510-410329781-profile.png"
+              },
+              "isListed": true,
+              "createdAt": "2024-12-02T18:15:04.350Z",
+              "updatedAt": "2024-12-12T06:21:20.848Z",
+              "category": "67330399f1253d47197eec6f",
+              "description": "The king of fruits",
+              "regularPrice": 90,
+              "salePrice": 80,
+              "stock": 204000,
+              "freshness": "Harvested",
+              "harvestedTime": "2024-12-02T12:43:00.000Z",
+              "from": "Shalu's farm",
+              "featured": false,
+              "__v": 0,
+              "productCollection": "673d58fc257ad3f291213a1d"
+          },
+          "quantity": 1000,
+          "_id": "675a87dfb4f6cf87e7b19bc9"
+      }
+  ],
+  "order_id": "1733986271629-M6VJWX",
+  "time": "2024-12-12T06:51:11.629Z",
+  "total_quantity": 1000,
+  "order_status": "Processed",
+  "payment_status": "pending",
+  "__v": 0
+} */

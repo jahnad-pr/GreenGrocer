@@ -8,6 +8,7 @@ module.exports.addtoCart = async (req, res) => {
 
     const { cartData, userId } = req.body
 
+    console.log(req.body);
     
 
 
@@ -27,7 +28,7 @@ module.exports.addtoCart = async (req, res) => {
             
         return res.status(400).json('Somthing went wrong')
 
-      } catch (error) {
+    } catch (error) {
 
         return res.status(400).json(error.message)
 

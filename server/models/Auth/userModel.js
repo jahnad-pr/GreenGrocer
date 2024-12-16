@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema({
             default:Date.now()
         }
     },
+    profileUrl:{
+        type:String,
+        default:''
+    },
     location: {
         first: {
             type: Object,

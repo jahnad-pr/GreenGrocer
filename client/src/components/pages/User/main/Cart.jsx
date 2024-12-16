@@ -18,7 +18,7 @@ export default function Cart() {
   useEffect(()=>{
     setTotelAmount(
       productsData.reduce((acc, item) => {
-        return acc + item.product.regularPrice * item.quantity/1000;
+        return acc + item.product?.regularPrice * item.quantity/1000;
       }, 0)
     )
   },[productsData])
@@ -77,15 +77,15 @@ const showToast = (message, type = "success") => {
   useEffect(()=>{ if(data?.items){ setProductData(data?.items) } },[data])
 
   const EmptyState = () => (
-    <div className="w-full h-[60vh] flex items-center pr-20 justify-center flex-col text-center gap-5 relative">
-      <img className="h-[80%] filter-[brightness(0)]" src={emptyStateImage} alt="No categories" />
+    <div className="w-full h-[60vh] flex items-center pr-20 justify-center mt-20 flex-col text-center gap-5 relative">
+      <img className="h-[80%] filter-[brightness(0)]" src='/bag-cross.svg' alt="No categories" />
       <div className="flex flex-col gap-2">
         <h1 className="text-[30px] font-bold">Sorry, No Carts items</h1>
-        <p className="opacity-45">
+        <p className="opacity-45 text-[18px]">
           Add your products to cart for buy the products,<br></br> You can buy many products in one order
         </p>
         {/* <p onClick={() => navigate("/user/products")} className="text-[20px] text-blue-600 font-medium"></p> */}
-        <HoverKing event={() => navigate("/user/products")} styles={'fixed bottom-36 left-1/2 -translate-x-[65%] rounded-full font-medium shadow-2xl shadow-[#45855370] text-[16px] bg-white'} Icon={<i className="ri-arrow-drop-right-line text-[50px] text-white"></i>} >Let's add your product</HoverKing>
+        <HoverKing event={() => navigate("/user/products")} styles={'fixed bottom-36 left-1/2 -translate-x-[65%] rounded-full border-0 font-medium text-[16px] bg-white'} Icon={<i className="ri-arrow-drop-right-line text-[50px] text-white"></i>} >Let's add your product</HoverKing>
       </div>
     </div>
   );
@@ -98,8 +98,11 @@ const showToast = (message, type = "success") => {
       <div className="w-full h-full backdrop-blur-3xl">
         <div className="w-full h-full  pt-16 overflow-y-scroll relative">
           {/* Main head */}
+          {
+          totelAmount > 0 &&
           <p className="absolute right-48 text-[60px] top-28 font-bold leading-none text-center font-mono"> ₹{totelAmount} <br /> <span className="text-[20px] relative top-[-20px]">Totel amount</span> </p>
-          <h1 className="text-[35px] font-bold px-40 ">Carts</h1>
+          }
+          { productsData?.length > 0 && <h1 className="text-[35px] font-bold px-40 ">Carts</h1>}
           { productsData?.length>0 && <p className="opacity-45 text-[20px] font-mono translate-y-[-5px] px-40 ">{productsData?.length} totel items</p>}
 
           {/* the list of bookmarks */}

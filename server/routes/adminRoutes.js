@@ -1,6 +1,6 @@
 const express = require('express');
 const { getCustomers, getAdmins, updateUserAccess,getAdmin,logoutAdmin } = require('../controllers/adminControllers');
-// const {  } = require('../controllers/userController')
+const { getTopUsers } = require('../controllers/userController')
 const { upsertProducts,getProducts,updateProduct,updateOffer,getAllDiscounts } = require('../controllers/config/ProductController')
 const { upsertCollection,getCollections,updateCollection } = require('../controllers/config/collectionController')
 const { upsertCategory, getCategories, updateCategory, } = require('../controllers/config/categoryController')
@@ -22,7 +22,9 @@ router.get('/getCustomers',adminAuthMiddleware,getCustomers);
 router.get('/getCategories',adminAuthMiddleware,getCategories);
 router.get('/getCollections',adminAuthMiddleware,getCollections);
 router.get('/getProducts',adminAuthMiddleware,getProducts);
+
 router.get('/getAdmin',adminAuthMiddleware,getAdmin);
+router.get('/getTopUsers',adminAuthMiddleware,getTopUsers);
 
 
 router.put('/upsertCategory',adminAuthMiddleware,upsertCategory);

@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import HoverKing from "../../../../parts/buttons/HoverKing";
 import ProductDetailsPopup from "./ProductDetailsPopup";
 import { Coupon } from "../../../../parts/Cards/Coupon";
+import AddressSelectionPopup from '../AddressSelectionPopup'; // Adjust the import path as necessary
 // import useData from "rsuite/esm/InputPicker/hooks/useData";
 import { showToast } from '../../../../parts/Toast/Tostify';
 
@@ -43,7 +44,9 @@ export default function OrderSummary({userData}) {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  
+  const [showAddressPopup, setShowAddressPopup] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setShowPopup(true);
@@ -67,26 +70,26 @@ export default function OrderSummary({userData}) {
   };
   
   const resetcoupons = () => {
-    if(couponData){
-      setOriginalCouponData(couponData);
-      setCouponData(couponData.filter( data => {
-        if(userData?.couponApplyed[data?.code]<data.usageLimit || !userData?.couponApplyed[data?.code]){
-          if(data.minimumPurchase<=grandTotal){
-            return data
-          }
-        }
-      } )) 
-    }
+    
   }
 
+  useEffect(() => {
+    if (couponCode) {
+      couponApplyHandler()
+    }
+  }, [couponCode]);
+  
   useEffect(()=>{ 
     resetcoupons()
-  },[couponData,userData,grandTotal])
+    setCouponData(couponData)
+  },[userData])
 
   useEffect(() => {
     
     if (location?.state?.items) {
       setItems(location?.state?.items)
+      console.log(location?.state?.items);
+      
       const items = location?.state?.items
     
       items?.map((data) => {  
@@ -127,6 +130,8 @@ export default function OrderSummary({userData}) {
                 name: data.product.name,
                 quantity: data.quantity || "1 unit",
                 price: data.product.regularPrice,
+                freshness: data.product.freshness,
+                cat: data.product.category,
                 imgSrc: data.product.pics.one,
                 regularPrice: data.product.regularPrice,
                 discount: {
@@ -163,6 +168,12 @@ export default function OrderSummary({userData}) {
     } 
   },[data])
 
+  useEffect(()=>{
+    if(applyCoupon){
+      setCouponData(couponData.filter( data => data.code !== couponCode ))
+    }
+  },[applyCoupon,couponCode])
+
   const couponApplyHandler = ()=>{
     if(couponCode.length<=0){
       return showToast('enter coupon code', 'error')
@@ -172,7 +183,7 @@ export default function OrderSummary({userData}) {
     }
     if(CouponDatas.filter( data => data.code === couponCode ).length>0){
       showToast('coupon applied', 'success')
-      setCouponData(CouponDatas.filter( data => data.code !== couponCode ))
+      console.log(CouponDatas.filter( data => data.code !== couponCode ));
       setApplyCoupon(couponData.filter( data => data.code === couponCode )[0])
     }else{
       showToast('invalid coupon', 'error')
@@ -186,122 +197,231 @@ export default function OrderSummary({userData}) {
     }
   },[applyCoupon])
 
+  const onQuantityChange = (e, id) => {
+    const newQuantity = parseInt(e.target.value);
+    setCart((prevData) => {
+      const updatedCart = prevData.map((item) => {
+        if (item.id === id) {
+          return { ...item, quantity: newQuantity * 1000 };
+        }
+        return item;
+      });
+      return updatedCart;
+    });
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address);
+    setShowAddressPopup(false);
+  };
+
   return (
-    <>
-    <div className="w-[96%] h-full">
-      <div className="absolute w-full h-full"></div>
-      <div className="w-full h-full px-40 py-10 flex gap-20 relative">
-        <span className="min-w-[50%]">
-          {/* Head */}
-          <h1 onClick={()=>console.log(applyCoupon)} className="text-[30px] font-bold my-8">Order Summary</h1>
+    <> 
+    <div className="w-[92%] h-full flex bg-[#f2f2f2] ">
+    {/* from-[#e7ecef] via-[#e6ebee] to-[#c8ccce] */}
+      {/* <div className="absolute w-full h-full overflow-scroll"></div> */}
 
-          {/* order address */}
-          <p className="text-[20px] opacity-40 font-medium">
-            Choose The Address to Deliver the Products
-          </p>
+          {/* new one */}
+          <div className="min-w-[80%] px-20 overflow-scroll pb-40">
 
-          {/* address seelcter */}
-          {  adressData?.length > 0 ? <div className="mt-4">
-            <div className="mt-2">
-              <select onChange={(e)=>setAddress(e.target.value)} className="px-5 min-w-[700px] p-2 border rounded custom-select">
 
-                { adressData?.map((data)=>{
-                  return (
-                <option className="text-[15px]">
-                  {data?.exactAddress}, <br/>{data?.streetAddress},  INDIA,{data?.state.toUpperCase()}, {data?.pincode}
-                </option>
+          <h1 onClick={()=>console.log(applyCoupon)} className="text-[35px] font-bold my-8">Order Summary</h1>
 
-                  )
-                }) }
-              </select>
-            </div>
-          </div>: <p onClick={()=>navigate('/user/profile/:12/address')} className="text-[18px] font-medium text-blue-500">Add your adress and coutinue</p>
-          }
+          {/* info conatianer */}
+          <span className="flex gap-20 w-full">
+
+          {/* basic informations */}
+          <span className="min-w-[40%]">
+          <span className="flex flex-col justify-between w-full">
+          <p className="text-[28px] font-bold mb-8">Informations</p>
+          
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Date</p>
+            <p className="opacity-65">{new Date().toDateString()}</p>
+          </span>
+
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Time</p>
+            <p  className="opacity-65">{new Date().toLocaleTimeString()}</p>
+          </span>
+
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Items count</p>
+            <p  className="opacity-65"p>10</p>
+          </span>
+
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Delivery methode</p>
+            <p  className="opacity-65">Eco ddelivery</p>
+          </span>
+            </span>
+
+          </span>
+
+          {/* deal informations */}
+          <span className="min-w-[50%] flex">
+            <span>
+          <p className="text-[28px] font-bold">Deal info</p>
+          <p className="text-[18px] opacity-40 mb-8 max-w-[320px]">May happen slight changes according to your distunse the products</p>
+            </span>
+
+          <span className=" inline-flex flex-col justify-end">
+          <span className="flex gap-16 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Arrive date</p>
+            <p  className="opacity-65">{new Date().toDateString()}</p>
+          </span>
+
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Arrive time</p>
+            <p  className="opacity-65">{new Date().toLocaleTimeString()}</p>
+          </span>
+
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Distens</p>
+            <p  className="opacity-65">10</p>
+          </span>
+
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Duration</p>
+            <p  className="opacity-65">3 Hourse</p>
+          </span>
+
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Cancel until</p>
+            <p  className="opacity-65">Shipping</p>
+          </span>
+          <span className="flex gap-10 text-[15px] items-center justify-between">
+            <p className="text-[18px]">Return period</p>
+            <p  className="opacity-65">24 hourse</p>
+          </span>
+            </span>
+
+          </span>
+          </span>
+
+
+          {/* product info container */}
+          <span className="flex gap-8 pb-10">
+          {/* product list */}
+          <div className="w-1/2 h-80 mt-8 overflow-scroll bg-gradient-to-b from-[#dcdcdc90] to-[#d9d9d970] p-6 px-10 rounded-[30px]">
+          <p className="text-[28px] font-bold leading-none">Products</p>
+          <p className="text-[18px] opacity-45">Products and its additional informations</p>
+
+          <div className="w-full mt-5 ">
           <div className="mt-4">
-            <label className="block text-[20px] opacity-40 font-medium">
-              Enter Your Mobile Number to get updates
-            </label>
-            <div className="mt-2 flex items-center space-x-2">
-              <span className="bg-[#f5efef] rounded-full p-3">+91</span>
-              <input
-                type="text"
-                onChange={(e)=>setNumber(e.target.value)}
-                value={userData?.phone||''}
-                className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
-                placeholder="9078454323"
-              />
-            </div>
-          </div>
-
-          <div className="mt-8 w-full space-x-8 bg-[linear-gradient(#f4e7e7,#e3f1e4)] rounded-[30px]">
-      <div className="px-10 py-10">
-        <h3 className="text-lg font-bold">Items in Cart and Their Pricing</h3>
-        <div className="mt-4">
           {cart.map((item) => (
-            <div key={item.id} className="flex justify-between items-center mt-2 cursor-pointer hover:bg-[#ffffff80] p-2 rounded-lg transition-all" onClick={() => handleProductClick(item)}>
+            <div key={item.id} className="flex justify-between items-center mt-2 cursor-pointer hover:bg-[#ffffff90] p-2 rounded-[30px] transition-all" onClick={() => handleProductClick(item)}>
               <div className="flex items-center space-x-2">
-                <img src={item.imgSrc} alt={item.name} className="w-8 h-8 object-cover" />
-                <span>{item.name}</span>
-                <span className="text-gray-500 font-medium">{item.quantity>=1000?item.quantity/1000:item.quantity} {item.quantity>=1000?'Kg':'g'}</span>
+                <img src={item.imgSrc} alt={item.name} className="w-16 h-16 mr-8 object-cover" />
+                <span className="flex flex-col ml-8">
+                <p className="opacity-40">{item.cat.name}</p>
+                <span className="text-[18px]">{item.name}</span>
+                <span className="flex items-center gap-3">
+                <div className={`h-2 w-2 ${item.freshness === 'fresh' ? 'bg-green-500' : 'bg-orange-500'} rounded-full`}></div>
+                <p className="opacity-40 inline">{item.freshness}</p>
+                </span>
+                {/* <span className="text-gray-500 text-[18px]">{item.quantity>=1000?item.quantity/1000:item.quantity} {item.quantity>=1000?'Kg':'g'}</span> */}
+                </span>
               </div>
-              <span className="text-green-600 font-bold">₹{(item.quantity/1000)*item.price}</span>
+              <span className="flex items-center gap-10 pr-10">
+              <select disabled={true} className="max-w-[100px] p-2 border rounded custom-selecter bg-transparent" name="quantity" id="quantity" onChange={(e) => onQuantityChange(e, item.id)}>
+                {Array.from({length: item.quantity/1000}, (_, i) => i + 1).map((option, index) => (
+                  <option key={index} value={item.quantity>=1000?item.quantity/1000:item.quantity}>{item.quantity>=1000?item.quantity/1000:item.quantity}  {item.quantity>=1000?'Kg':'g'}</option>
+                ))}
+              </select>
+              <span onClick={()=>console.log(item)} className="text-green-600 font-mono text-[22px]">₹{(item.quantity/1000)*item.price}</span>
+              <img className="w-8 h-8" src="/trash.svg" alt="" />
+              </span>
             </div>
           ))}
-        </div>
+        </div>  
+          </div>
+          </div>
 
-        {/* Subtotal and Summary */}
-        <div className="mt-4 bg-[#ffffff60] p-4 rounded-[20px]">
-          <div className="flex justify-between">
+          {/* payment totel info */}
+          <div className="w-1/2 h-80 mt-8 pl-10  bg-gradient-to-b from-[#dcdcdc70] to-[#d9d9d990] p-5 rounded-[30px]">
+          <p className="text-[28px] font-bold leading-none">Payment</p>
+          <p className="text-[18px] opacity-45">The payment bill additional informations</p>
+
+          <span className="text-[18px] flex flex-col mt-4 gap-1">
+          <div className="flex justify-between ">
             <span>Items</span>
-            <span className="font-bold">₹ {summary.items/2}</span>
+            <span className="font-bold font-mono w-28">₹ {summary.items/2}</span>
           </div>
           <div className="flex justify-between">
             <span>Discount</span>
-            <span className="font-bold">-₹ {summary.discount/2}</span>
+            <span className="font-bold font-mono  w-28">-₹ {summary.discount/2}</span>
           </div>
           <div className="flex justify-between">
             <span>Taxes</span>
-            <span className="font-bold">₹ {summary.taxes}</span>
+            <span className="font-bold font-mono  w-28">₹ {summary.taxes}</span>
           </div>
           <div className="flex justify-between">
             <span>Delivery Fee</span>
-            <span className="font-bold">₹ {summary.deliveryFee}</span>
+            <span className="font-bold font-mono  w-28">₹ {summary.deliveryFee}</span>
           </div>
           <div className="flex justify-between">
             
             <span>Coupon</span>
-            <span className="font-bold">-₹ {counDiscount.toFixed(2)||0}</span>
+            <span className="font-bold font-mono  w-28">-₹ {counDiscount.toFixed(2)||0}</span>
           </div>
           <div className="flex justify-between mt-4 text-xl font-bold">
             <span>Grand Total</span>
-            <span className="text-green-600">₹{grandTotal}</span>
+            <span className="text-green-600 font-mono  w-28">₹{grandTotal}</span>
           </div>
-        </div>
-      </div>
-    </div>
-        </span>
+          </span>
+        
+          </div>
 
-        <span className="pt-10">
+            
+
+          </span>
+
+          <span className="flex">
+          {/* coupons */}
+          <div className="w-1/2 mt-3">
+          <p onClick={()=>console.log(applyCoupon)} className="text-[25px] font-bold leading-none">Coupons</p>
+          <p className="text-[18px] opacity-45">Available coupons for you</p>
+
+          <div className="inline-flex gap-5 mt-8 overflow-x-scroll pb-10">
+                  {CouponDatas?.map((coupon, index) => (
+                    <Coupon setCode={setCode} index={index} coupon={coupon} />
+                    
+                  ))}
+
+                </div>
+          
+          </div>
+          
           {/* delivery methode */}
-          <div className="w-full">
-            <h3 className="text-lg font-bold"></h3>
-            <p className="text-[20px] opacity-40 font-medium">Choose the Delivery Method</p>
-            {/* container */}
-            <div className="mt-4 flex space-x-4">
+          <div className="w-1/2 h-44 mt-3">
+          <p className="text-[25px] font-bold leading-none">Delivery method</p>
+          <p className="text-[18px] opacity-45  mb-8">Choose according to your preference,<br />Perfect time for you</p>
 
+          
+                  <span className="flex gap-5">
 
               {/* first */}
-              <div onClick={()=>setDelivery('Fast Delivery')} className="w-1/3 p-5 hover:scale-[1.04] duration-500 text-center border hover:shadow-[0px_0px_20px_#d5dfff] rounded-[40px] shadow relative pt-8 bg-[radial-gradient(#d5dfff,white)]">
+              <div onClick={()=>setDelivery('Fast Delivery')} className="w-1/3 p-5 cursor-pointer hover:scale-[1.04] duration-500 text-center border hover:shadow-[0px_0px_20px_#d5dfff] rounded-[30px] rounded-br-[80px] shadow relative pt-8 bg-gradient-to-b from-[#dcdcdc70] to-[#d9d9d970]">
                 <img
-                  src={past}
+                  src='/flash-1.svg'
                   alt="Fast Delivery"
-                  className="w-full object-cover rounded"
+                  className=" object-cover mx-auto mb-3 rounded w-14 h-14"
                 />
-                <h4 className="mt-2 font-bold">Fast Delivery</h4>
-                <p className="text-gray-500 grid place-items-center text-sm h-[40%] text-center">
-                  Fast delivery, bringing your order to you in no time!, speedy
-                  delivery, right to your door!
-                </p>
+                <span>
+                  <h4 className="text-[18px]">Fast delivery</h4>
+                  <p className="opacity-65">Delivery within minitus,like flash</p>
+                </span>
+              
                 <div className={`absolute left-5 top-5 w-5 h-5 rounded-full border-2 border-[#717fa8] ] p-[3px]`}>
                   <div className={`w-full h-full bg-[#4b5e97] rounded-full ${delivery==='Fast Delivery'?"opacity-100":'opacity-0'}`}></div>
                 </div>
@@ -309,16 +429,17 @@ export default function OrderSummary({userData}) {
 
 
               {/* second */}
-              <div onClick={()=>setDelivery('Normal Delivery')} className="w-1/3 p-5 hover:scale-[1.04] duration-500 text-center border hover:shadow-[0px_0px_20px_#fcffd1] rounded-[40px] shadow relative pt-8 bg-[radial-gradient(#fcffd1,white)]">
+              <div onClick={()=>setDelivery('Normal Delivery')} className="w-1/3 p-5 cursor-pointer hover:scale-[1.04] duration-500 text-center border hover:shadow-[0px_0px_20px_#fcffd1] rounded-[30px] rounded-br-[80px] shadow relative pt-8 bg-gradient-to-b from-[#dcdcdc70] to-[#d9d9d970]">
                 <img
-                  src={normal}
+                  src='/group.svg'
                   alt="Fast Delivery"
-                  className="w-full object-cover rounded"
+                  className="object-cover mb-3 mx-auto rounded w-14 h-14"
                 />
-                <h4 className="mt-2 font-bold">Normal Delivery</h4>
-                <p className="text-gray-500 text-sm">
-                Offering safe and natural normal delivery services through our app – ensuring comfort, care, and expert support for every mother and baby
-                </p>
+              <span>
+                  <h5 className="text-[18px] mb-1">Normal delivery</h5>
+                  <p className="opacity-65">Normal delivery, more duraration for that</p>
+                </span>
+
                 <div className="absolute left-5 top-5 w-5 h-5 border-[#6f7430] border-2 p-[3px] rounded-full">
                 <div className={`w-full h-full bg-[#4b5e97] rounded-full ${delivery==='Normal Delivery'?"opacity-100":'opacity-0'}`}></div>
                 </div>
@@ -326,80 +447,122 @@ export default function OrderSummary({userData}) {
 
 
               {/* third */}
-              <div onClick={()=>setDelivery('Eco Delivery')} className="w-1/3 p-5  hover:scale-[1.04] duration-500 text-center border rounded-[40px] hover:shadow-[0px_0px_20px_#ceffde] relative pt-8 bg-[radial-gradient(#ceffde,white)]">
+              <div onClick={()=>setDelivery('Eco Delivery')} className="w-1/3 px-4 cursor-pointer hover:scale-[1.04] duration-500 text-center border rounded-[30px] bg-gradient-to-b from-[#dcdcdc70] to-[#d9d9d970] rounded-br-[80px] hover:shadow-[0px_0px_20px_#ceffde] relative pt-8">
                 <img
-                  src={eco}
+                  src='/sun-fog.svg'
                   alt="Fast Delivery"
-                  className="w-full object-cover rounded"
+                  className="object-cover mx-auto w-14 h-14 rounded"
                 />
-                <h4 className="mt-2 font-bold">Eco Delivery</h4>
-                <p className="text-gray-500 text-sm">
-                Introducing Eco Delivery – a slower, eco-friendly delivery option that puts the safety of nature first, reducing carbon footprints with every order.inspired by Zelova
-                </p>
+              <span>
+                  <h4 className="text-[18px]">Eco delivery</h4>
+                  <p className="opacity-65">For the environment, little time consuming</p>
+                </span>
+                
                 <div className="absolute left-5 top-5 w-5 h-5 border-[#218342] border-2 p-[3px] rounded-full">
                 <div className={`w-full h-full bg-[#4b5e97] rounded-full ${delivery==='Eco Delivery'?"opacity-100":'opacity-0'}`}></div>
                 </div>
               </div>
+                  </span>
+          
+          
+          </div>
+          </span>
 
+          </div>
 
-              
+          <div className="min-w-[20%] h-full py-10">
+            <div className="w-full h-full px-8 pt-10 flex flex-col gap-10">
+
+            {/* constact */}
+            <div className="w-full h-auto pb-12 border-2 pl-12 rounded-[30px] relative rounded-bl-[120px] bg-gradient-to-b from-[#dcdcdc90] to-[#d9d9d970] px-5 py-3"> 
+              <p className="text-[20px] font-bold mb-3">Contact info</p>
+
+              <span className="flex gap-10 text-[15px] items-center justify-between">
+                <p className="text-[18px]">Name</p>
+                <p className="opacity-65">{userData?.username}</p>
+              </span>
+              <span className="flex gap-10 text-[15px] flex- items-center max-w-full justify-between">
+                <p className="text-[18px]">Mail</p>
+                <p className="opacity-65 text-wrap block whitespace-normal max-w-[100px] break-words">
+                  {userData?.email?.replace('.gmail', '')}
+                </p>
+
+              </span>
+              <span className="flex gap-10 text-[15px] items-center justify-between">
+                <p className="text-[18px]">Phone</p>
+                <p className="opacity-65">{adressData && adressData.length > 0 && adressData[0]?.phone}</p>
+              </span>
+
+            
+
+            </div>
+            
+               {/* address */}
+              <div className="w-full h-auto pb-12 border-black/15 border-2 rounded-[30px] relative rounded-bl-[120px]  px-5 pl-12 py-3">
+              <p className="text-[20px] font-bold mb-3">Shipping address</p>
+
+              <p className="text-[18px] opacity-65">
+              {selectedAddress
+                ? `${selectedAddress.exactAddress}, ${selectedAddress.streetAddress}, ${selectedAddress.state}, ${selectedAddress.pincode}`
+                : adressData && adressData.length > 0
+                ? `${adressData[0]?.exactAddress || 'N/A'}, ${adressData[0]?.streetAddress || 'N/A'}, ${adressData[0]?.state || 'N/A'}, ${adressData[0]?.pincode || 'N/A'}`
+                : 'No address available'}
+              </p>
+
+              <button onClick={() => setShowAddressPopup(true)} className='flex justify-start items-center font-bold rounded-full text-white absolute -bottom-6 left-2 bg-[linear-gradient(#b4c2ba,#789985)] overflow-hidden w-[70px] h-[70px] hover:scale-125 duration-500 group'>
+                <img className='group-hover:-translate-x-full min-w-[70px] p-4 brightness-[100]  duration-500' src="/edit.svg" alt="" />
+                {/* <i className="ri-shopping-bag-line font-thin rounded-full min-w-[70px] text-[25px]  group-hover:-translate-x-full duration-500"></i> */}
+                <img className='group-hover:-translate-x-full min-w-[70px] p-5 brightness-[100]  duration-500' src="/arrow-right.svg" alt="" />
+              </button>
+
             </div>
 
-            <div className="mt-8 mb-3">
-              { CouponDatas?.length>0 &&  <>
-              <h3 onClick={()=>console.log(CouponDatas)} className="text-lg opacity-40 font-medium mb-5">Available Coupos</h3>
-              <div className="inline-flex gap-5 overflow-x-scroll max-w-[700px]">
-                  {CouponDatas?.map((coupon, index) => (
-                    <Coupon setCode={setCode} index={index} coupon={coupon} />
-                    
-                  ))}
+              {/* coupon */}
+            <div className="w-full h-auto pb-12 border-2 pl-12 rounded-[30px] relative rounded-bl-[120px]  bg-gradient-to-b from-[#dcdcdc90] to-[#d9d9d970] px-5 py-3"> 
+              {
+                applyCoupon ?
+                <>
+              <p className="text-[20px] font-bold mb-3">Coupon info</p>
 
-                </div> </> 
-    }
-                
-            </div>
+              <span className="flex gap-10 text-[15px] items-center justify-between">
+                <p className="text-[18px]">Code</p>
+                <p className="opacity-65">{applyCoupon?.code}</p>
+              </span>
+              <span className="flex gap-10 text-[15px] items-center justify-between">
+                <p className="text-[18px]">Amount</p>
+                <p className="opacity-65">{applyCoupon?.discountAmount}</p>
+              </span>
+              <span className="flex gap-10 text-[15px] items-center justify-between">
+                <p className="text-[18px]">Expiry date</p>
+                <p className="opacity-65">{formatDate(applyCoupon?.expiryDate)}</p>
+            </span>
+                </>:<p className="pt-5 text-[18px] pl-8">No coupon applyed</p>
+              }
 
-            <div className="mt-8">
-              <h3 className="text-lg mb-3 opacity-40 font-medium">Apply Coupon</h3>
-              <div className="mt-2 flex items-center space-x-2">
-                <input
-                  type="text"
-                  className="w-full max-w-[450px] py-3 px-5 bg-[linear-gradient(45deg,#f5efef,#f5efef)] rounded-full text-[18px]"
-                  value={couponCode}
-                  placeholder="Coupon Code"
-                  onChange={(e)=>setCode(e.target.value)}
-                />
-                <button onClick={couponApplyHandler} className={`px-6 py-3 bg-[#498f53] text-white rounded-full ${applyCoupon?'opacity-45':'opacity-100'}`}>
-                {/* bg-[linear-gradient(#e7ecff,#dcffe7)] */}
+            {/* {!applyCoupon &&<button onClick={couponApplyHandler} className={`px-6 py-3 bg-[#498f53] text-white rounded-full ${applyCoupon?'opacity-45':'opacity-100'} absolute -bottom-5 right-2 font-bold`}>
                 {applyCoupon?.code?'Applied':'Apply'} 
-                </button>
-                <button onClick={()=> {
+                </button>} */}
+
+            {applyCoupon &&<button onClick={()=> {
                   if(applyCoupon) {
                     // Restore original coupons with filters
-                    if(originalCouponData) {
-                      setCouponData(originalCouponData.filter(data => {
-                        if(userData?.couponApplyed[data?.code]<data.usageLimit || !userData?.couponApplyed[data?.code]){
-                          if(data.minimumPurchase<=grandTotal){
-                            return data
-                          }
-                        }
-                      }));
-                    }
+                    setCouponData(couponData)
                     setApplyCoupon(false);
                     setCode('');
                     setCouponDiscount(0);
                   }
-                }} className="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-bold">
+                }} className="px-6 py-3 absolute -bottom-5 right-2 bg-gray-500 text-gray-100 rounded-full font-bold">
                   Cancel
-                </button>
-              </div>
-            </div>
-          </div>
+                </button>}
 
-          <div className="mt-8 flex justify-end">
-            { adressData?.length > 0 ? (
+
+            </div>
+
+          
+            <div className="mt-8 flex justify-end">
+            { adressData && adressData.length > 0 ? (
               <HoverKing 
-                event={()=>navigate('/user/payment',{ state:{ add:{ totelProducts:summary.items/2,taxes:summary.taxes,deliveryFee:summary.deliveryFee }, order:{ offerPrice:summary.discount/2,address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt,coupon:{ code:applyCoupon.code, amount: counDiscount,usage:userData?.couponApplyed[applyCoupon?.code] || 0 } } } })} 
+                event={()=>navigate('/user/payment',{ state:{ add:{ totelProducts:summary.items/2,taxes:summary.taxes,deliveryFee:summary.deliveryFee }, order:{ offerPrice:summary.discount/2,address,price:grandTotal,deliveryMethod:delivery,items:itemses,qnt:location?.state?.qnt,coupon:{ code:applyCoupon?.code, amount: counDiscount,usage:(userData?.couponApplyed?.[applyCoupon?.code] || 0) } } } })} 
                 styles={'fixed bottom-12 border-0 right-20 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
                 Icon={<i className="ri-arrow-right-line text-[30px] rounded-full text-white"></i>}
               >
@@ -407,8 +570,8 @@ export default function OrderSummary({userData}) {
               </HoverKing>
             ) : (
               <HoverKing 
-                event={()=>navigate('/user/profile/:id/address')} 
-                // event={()=>navigate('/user/profile/:id/address', { state: { items: location?.state?.items } })} 
+                event={()=>navigate('/user/profile/address')} 
+                // event={()=>navigate('/user/profile/address', { state: { items: location?.state?.items } })} 
                 styles={'fixed bottom-12 border-0 right-64 rounded-full bg-[linear-gradient(to_left,#0bc175,#0f45ff)] font-bold'} 
                 Icon={<i className="ri-arrow-left-line text-[30px] rounded-full text-white"></i>}
               >
@@ -416,8 +579,9 @@ export default function OrderSummary({userData}) {
               </HoverKing>
             )}
           </div>
-        </span>
-      </div>
+
+            </div>
+          </div>
     </div>
 
   
@@ -429,6 +593,9 @@ export default function OrderSummary({userData}) {
         onPrev={handlePrevProduct}
       />
     )}
+    {showAddressPopup && (
+        <AddressSelectionPopup userData={userData} onClose={() => setShowAddressPopup(false)} onSelect={handleAddressSelect} />
+      )}
     </>
   );
 }

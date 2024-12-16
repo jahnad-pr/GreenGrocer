@@ -311,7 +311,7 @@ const Categories = () => {
           </div>
         </div>
       </div>
-      <Recents />
+      <Recents page={'categories'} />
     </>
   );
 };
