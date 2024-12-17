@@ -88,6 +88,7 @@ export default function Navigator({userData}) {
         {/* { userData &&  <i onClick={()=>navigator(`/user/profile/${userData._id}`)} className="ri-user-line text-[30px] cursor-pointer transition-colors"></i>}
         { userData && <i onClick={()=>navigator(`/user/Cart`)}  className="ri-shopping-cart-line text-[30px] cursor-pointer transition-colors"></i>} */}
 
+        { userData?._id &&
         <div onClick={()=>navigator(`/user/profile/${userData._id}`)} className="w-full duration-500 h-20 flex items-center gap-4 cursor-pointer">
           <img className='h-14 w-14 object-cover rounded-full' src={userData?.profileUrl||'/ph-pic.jpg'} alt="" />
           <span className={` ${!expanded ? 'w-0 opacity-0' : 'w-[200px] opacity-100'}  overflow-hidden duration-500`}>
@@ -95,6 +96,8 @@ export default function Navigator({userData}) {
           <p className='text-[15px] leading-none opacity-65 duration-500 text-nowrap'>{userData?.email}</p>
           </span>
         </div>
+
+        }
           
         </div>
         

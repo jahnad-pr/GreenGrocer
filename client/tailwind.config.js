@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss-motion';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,5 +9,5 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [require('tailwindcss-motion')],
+  plugins: [plugin],  // Use 'plugin' directly as it's already imported
 }

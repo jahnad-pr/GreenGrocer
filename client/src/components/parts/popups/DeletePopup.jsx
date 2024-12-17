@@ -75,7 +75,7 @@ export default function DeletePopup({showPopup,redish=true,deleteData={},updater
                         transformPerspective: 1200,
                         transformStyle: "preserve-3d"
                     }}
-                    className={`w-full max-w-[550px] backdrop-blur-2xl py-10 ${redish ? 'bg-[linear-gradient(to_right,#7c165a,#dc262670)]' :'bg-[linear-gradient(to_left,#4e9b55,#3d7251)]'} flex items-center justify-center flex-col gap-5 rounded-3xl px-10 relative z-10`}
+                    className={`w-full max-w-[550px] backdrop-blur-2xl py-10 ${redish ? ' bg-gradient-to-r from-[#3b3636] to-[#6e1919]' :'bg-[linear-gradient(to_left,#4e9b55,#3d7251)]'} flex items-center justify-center flex-col gap-5 rounded-3xl px-10 relative z-10`}
                 >
                     <motion.h1 
                         initial={{ y: 20, opacity: 0 }}
@@ -103,7 +103,7 @@ export default function DeletePopup({showPopup,redish=true,deleteData={},updater
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={cancelHandler} 
-                            className={`flex-1 border-2 0 ${redish ? 'border-red-900' :'border-green-900'} rounded-2xl grid place-items-center text-[18px] font-medium py-3 text-white cursor-pointer`}
+                            className={`flex-1 border-2 0 ${redish ? 'border-red-300/30' :'border-green-900'} rounded-2xl grid place-items-center text-[18px] font-medium py-3 text-white cursor-pointer`}
                         >
                             Cancel
                         </motion.div>
