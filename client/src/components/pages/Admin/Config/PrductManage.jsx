@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import pic from "../../../../assets/images/plp.png";
-import place_three from "../../../../assets/images/three_place.png";
 import Recents from "../../../parts/Main/Recents";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -376,7 +375,7 @@ const ProductManage = () => {
                   <img
                     onClick={() => showPopup(true)}
                     className="w-[60%] border-2 border-gray-300 border-dashed rounded-3xl m-5"
-                    src={place_three}
+                    src={''}
                     alt=""
                   />
                 )}
