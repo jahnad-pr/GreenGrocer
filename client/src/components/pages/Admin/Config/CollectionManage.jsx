@@ -5,7 +5,6 @@ import axios from "axios";
 // Component imports
 import ImagePicker from "../../../parts/popups/ImgaePicker";
 import { ToastContainer, toast } from "react-toastify";
-import emptyStateImage from "../../../../assets/images/noCAtegory.png";
 
 
 // API hooks
@@ -16,7 +15,6 @@ import {
 } from "../../../../services/Admin/adminApi";
 
 // Assets
-import placeholderImage from "../../../../assets/images/three_place.png";
 import ColorPick from "../../../parts/popups/ColorPickerPopup";
 
 // Constants
@@ -397,7 +395,7 @@ const CollectionManage = () => {
                 <img
                   onClick={() => setShowImagePicker(true)}
                   className="w-[80%] border-2 border-gray-300 border-dashed rounded-3xl m-5 mr-10 cursor-pointer transition-transform hover:scale-105"
-                  src={ collectionImage[0] || formState.pic ||  placeholderImage}
+                  src={ collectionImage[0] || formState.pic }
                   alt="Collection"
                 />
               </div>
